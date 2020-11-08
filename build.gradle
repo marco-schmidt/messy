@@ -11,6 +11,7 @@ plugins {
   id 'com.github.spotbugs' version '4.6.0'
   id 'de.thetaphi.forbiddenapis' version '3.1'
   id 'jacoco'
+  id 'org.owasp.dependencycheck' version '6.0.3'
 }
 
 ext.vendorlibs = [
@@ -124,4 +125,14 @@ subprojects {
     showViolations true
     configDirectory = file("${rootDir}/config/checkstyle")
   }
+
+  dependencyCheck {
+    cveValidForHours=24
+    failBuildOnCVSS=0
+    suppressionFile=file("${rootDir}/config/dependencyCheck/suppressions.xml")
+    analyzers {
+      assemblyEnabled=false
+    }
+  }
+  check.dependsOn dependencyCheckAnalyze
 }
