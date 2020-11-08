@@ -1,0 +1,4 @@
+include 'msgdata'
+include 'msgio'
+
+rootProject.name = 'messy'

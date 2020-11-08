@@ -1,0 +1,7 @@
+apply plugin: 'java-library'
+
+dependencies {
+  implementation vendorlibs.slf4j_api
+  implementation vendorlibs.logback_classic
+  testImplementation vendorlibs.junit
+}

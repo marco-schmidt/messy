@@ -1,0 +1,102 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+}
+
+plugins {
+  id 'com.diffplug.spotless' version '5.7.0'
+  id "com.github.ben-manes.versions" version '0.35.0'
+  id 'com.github.jk1.dependency-license-report' version '1.16'
+  id 'de.thetaphi.forbiddenapis' version '3.1'
+  id 'jacoco'
+}
+
+ext.vendorlibs = [
+  junit: 'junit:junit:4.13.1',
+  logback_classic: "ch.qos.logback:logback-classic:1.2.3",
+  slf4j_api: "org.slf4j:slf4j-api:1.7.30"
+]
+
+// version is stable if it contains only numerical parts or a 'stable keyword'
+def isStable = { String version ->
+  def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase(Locale.ENGLISH).contains(it) }
+  def regex = /^[0-9,.v-]+(-r)?$/
+  return stableKeyword || (version ==~ regex)
+}
+
+dependencyUpdates {
+  rejectVersionIf {
+    !isStable(it.candidate.version)
+  }
+  outputDir = "${buildDir}/reports/dependencyUpdates"
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'jacoco'
+  apply plugin: 'com.diffplug.spotless'
+  apply plugin: 'com.github.jk1.dependency-license-report'
+
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
+
+  tasks.withType(JavaCompile) {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = sourceCompatibility
+    options.debugOptions.debugLevel = 'lines,vars,source'
+    options.encoding = java.nio.charset.StandardCharsets.UTF_8
+    options.warnings = true
+    options.deprecation = true
+    options.compilerArgs += ['-Xlint:all', '-Werror']
+  }
+ 
+  javadoc {
+    options {
+      windowTitle = "${project.name} ${project.version} API documentation"
+      docTitle = '<a target="_top" href="https://github.com/marco-schmidt/messy">messy ' + project.version + '</a>'
+      linksOffline 'https://docs.oracle.com/javase/8/docs/api/', "${rootDir}/config/javadoc/"
+    }
+  }
+
+  // https://github.com/diffplug/spotless
+  spotless {
+    java {
+      licenseHeaderFile "${rootDir}/config/spotless/license-header.txt"
+      removeUnusedImports()
+      trimTrailingWhitespace()
+      eclipse().configFile "${rootDir}/config/eclipse/formatter.xml"
+    }
+  }
+
+  licenseReport {
+    allowedLicensesFile = new File("$rootDir/config/licenseReport/allowed-licenses.json")
+  }
+  check.dependsOn checkLicense
+
+  forbiddenApis {
+    bundledSignatures = ['jdk-system-out', 'jdk-unsafe', 'jdk-internal',
+    'jdk-deprecated', 'jdk-non-portable', 'jdk-reflection' ]
+    // https://jenkins.thetaphi.de/job/Forbidden-APIs/javadoc/signatures-syntax.html
+    signaturesFiles = files("${rootDir}/config/forbiddenApis/signatures.txt")
+    ignoreFailures = false
+  }
+
+  jacoco {
+    toolVersion = "0.8.6"
+  }
+
+  jacocoTestReport {
+    reports {
+      xml.enabled true
+      xml.destination file("${buildDir}/reports/jacoco/report.xml")
+      csv.enabled false
+      html.destination file("${buildDir}/reports/jacoco")
+    }
+  }
+  jacocoTestCoverageVerification.dependsOn test
+  jacocoTestReport.dependsOn jacocoTestCoverageVerification
+
+}
