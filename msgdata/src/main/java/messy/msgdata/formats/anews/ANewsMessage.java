@@ -15,6 +15,7 @@
  */
 package messy.msgdata.formats.anews;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -49,12 +50,12 @@ public class ANewsMessage
 
   public Date getDate()
   {
-    return date;
+    return date == null ? null : new Date(date.getTime());
   }
 
   public void setDate(Date newDate)
   {
-    date = newDate;
+    date = newDate == null ? null : new Date(newDate.getTime());
   }
 
   public String getDateString()
@@ -99,7 +100,7 @@ public class ANewsMessage
     {
       String[] parts = path.split("!");
       setPathElements(parts);
-      if (parts != null && parts.length > 0)
+      if (parts.length > 0)
       {
         setFrom(parts[parts.length - 1]);
       }
@@ -118,12 +119,12 @@ public class ANewsMessage
 
   public String[] getPathElements()
   {
-    return pathElements;
+    return pathElements == null ? null : Arrays.copyOf(pathElements, pathElements.length);
   }
 
   public void setPathElements(String[] pathElements)
   {
-    this.pathElements = pathElements;
+    this.pathElements = pathElements == null ? null : Arrays.copyOf(pathElements, pathElements.length);
   }
 
   public String getFrom()
