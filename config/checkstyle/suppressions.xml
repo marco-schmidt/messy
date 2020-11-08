@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+    <!-- no javadoc for test code -->
+    <suppress checks="Javadoc.*"
+              files=".*[/\\]src[/\\]test[/\\].+"/>
+    <!-- allow catching Exception and similar high-level exception types because some APIs have such throws clauses -->
+    <suppress checks="IllegalCatch" files=".+MetadataExtraction\.java"/>
+    <suppress checks="IllegalCatch" files=".+ShutdownThread\.java"/>
+</suppressions>

@@ -24,7 +24,7 @@ import messy.msgdata.formats.anews.ANewsMessage;
  *
  * @author Marco Schmidt
  */
-public class ANewsMessageConverter
+public final class ANewsMessageConverter
 {
   private static final int NUM_HEADER_LINES = 5;
 
