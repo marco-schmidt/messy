@@ -27,7 +27,7 @@ import org.junit.Test;
  */
 public class ANewsMessageTest
 {
-  private static final String[] LINES = new String[]
+  private static final String[] LINES_ARRAY = new String[]
   {
       "Salutation", "This is a sentence."
   };
@@ -35,39 +35,39 @@ public class ANewsMessageTest
   private static final String PATH_2 = "me";
   private static final String PATH = PATH_1 + "!" + PATH_2;
   private ANewsMessage msg;
-  private final Date sent = new Date(123456L);
-  private final String sentString = sent.toString();
-  private final String msgId = "abc.123";
-  private final String newsgroups = "group1,group2";
-  private final String subject = "Message description";
-  private final List<String> lines = Arrays.asList(LINES);
+  private static final Date SENT = new Date(123456L);
+  private static final String SENT_STRING = SENT.toString();
+  private static final String MESSAGE_ID = "abc.123";
+  private static final String NEWSGROUPS = "group1,group2";
+  private static final String SUBJECT = "Message description";
+  private static final List<String> LINES = Arrays.asList(LINES_ARRAY);
 
   @Before
   public void setUp()
   {
     msg = new ANewsMessage();
     msg.setPath(PATH);
-    msg.setDate(sent);
-    msg.setDateString(sentString);
-    msg.setBodyLines(lines);
-    msg.setMessageId(msgId);
-    msg.setNewsgroups(newsgroups);
-    msg.setSubject(subject);
+    msg.setDate(SENT);
+    msg.setDateString(SENT_STRING);
+    msg.setBodyLines(LINES);
+    msg.setMessageId(MESSAGE_ID);
+    msg.setNewsgroups(NEWSGROUPS);
+    msg.setSubject(SUBJECT);
   }
 
   @Test
   public void testGetters()
   {
     Assert.assertEquals("From must be last part of path element.", PATH_2, msg.getFrom());
-    Assert.assertEquals("Date content must be identical.", sent.getTime(), msg.getDate().getTime());
-    Assert.assertEquals("Date string must be identical.", sentString, msg.getDateString());
-    Assert.assertEquals("Message ID must be identical.", msgId, msg.getMessageId());
-    Assert.assertEquals("Newsgroups must be identical.", newsgroups, msg.getNewsgroups());
+    Assert.assertEquals("Date content must be identical.", SENT.getTime(), msg.getDate().getTime());
+    Assert.assertEquals("Date string must be identical.", SENT_STRING, msg.getDateString());
+    Assert.assertEquals("Message ID must be identical.", MESSAGE_ID, msg.getMessageId());
+    Assert.assertEquals("Newsgroups must be identical.", NEWSGROUPS, msg.getNewsgroups());
     Assert.assertEquals("Path must be identical.", PATH, msg.getPath());
-    Assert.assertEquals("Subject must be identical.", subject, msg.getSubject());
+    Assert.assertEquals("Subject must be identical.", SUBJECT, msg.getSubject());
     final List<String> msgLines = msg.getBodyLines();
     Assert.assertNotNull("Lines list must be non-null.", msgLines);
-    Assert.assertEquals("Number of lines must be identical.", msgLines.size(), LINES.length);
+    Assert.assertEquals("Number of LINES_ARRAY must be identical.", msgLines.size(), LINES_ARRAY.length);
   }
 
   @Test
