@@ -38,10 +38,12 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew check generateLicenseReport dependencyUpdates jacocoTestReport --info --stacktrace
     - name: Upload application package
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
-        name: am-${{github.run_number}}-distribution
-        path: build/libs/
+        name: messy-${{github.run_number}}-distribution
+        path: |
+          msgdata/build/libs/
+          msgio/build/libs/
     - name: Send coverage information to codecov.io
       uses: codecov/codecov-action@v1
       with:
