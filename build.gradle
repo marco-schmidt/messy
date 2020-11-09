@@ -139,6 +139,22 @@ artifactId=${project.name}
     }
   }
 
+  task packageJavadoc(type: Jar, dependsOn: 'javadoc') {
+    from javadoc.destinationDir
+    classifier = 'javadoc'
+  }
+
+  task packageSources(type: Jar, dependsOn: 'classes') {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+  }
+
+  task packageLicenseReport(type: Zip, dependsOn: 'generateLicenseReport') {
+    description "create a zip archive with license report information"
+    from licenseReport.outputDir
+    classifier = 'deplicensereport'
+  }
+
   // https://github.com/diffplug/spotless
   spotless {
     java {
@@ -176,6 +192,12 @@ artifactId=${project.name}
   }
   jacocoTestCoverageVerification.dependsOn test
   jacocoTestReport.dependsOn jacocoTestCoverageVerification
+
+  task packageCoverageReport(type: Zip, dependsOn: 'jacocoTestReport') {
+    description "create a zip archive with coverage report information"
+    from jacocoTestReport.reports.html.destination
+    classifier = 'coveragereport'
+  }
 
   spotbugs {
     toolVersion = '4.1.4'
@@ -224,6 +246,10 @@ artifactId=${project.name}
     publications {
       library(MavenPublication) {
         from components.java
+        artifact packageSources
+        artifact packageJavadoc
+        artifact packageCoverageReport
+        artifact packageLicenseReport
         groupId group
         pom.withXml {
         asNode().appendNode('name', project.name)
