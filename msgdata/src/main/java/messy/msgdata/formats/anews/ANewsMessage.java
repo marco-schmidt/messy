@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * A data class to store one NetNews message in the A News format.
+ * A data class to store one NetNews message in <a href="https://en.wikipedia.org/wiki/A_News">A News format</a>.
  *
  * Package msgio's ANewsMessageConverter class can be used to create an object of this class from a list of strings.
  *

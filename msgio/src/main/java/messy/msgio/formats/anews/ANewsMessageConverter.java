@@ -64,7 +64,6 @@ public final class ANewsMessageConverter
     // fourth line: date
     String dateString = list.get(3);
     msg.setDateString(dateString);
-    msg.setDate(new java.util.Date()/* SentExtraction.extractDate(dateString) */);
     // fifth line: Subject
     msg.setSubject(list.get(4));
     // all remaining lines are part of the body

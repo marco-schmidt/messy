@@ -37,3 +37,7 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: ./gradlew check generateLicenseReport dependencyUpdates jacocoTestReport --info --stacktrace
+    - name: Send coverage information to codecov.io
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
