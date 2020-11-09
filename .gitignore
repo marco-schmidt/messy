@@ -5,7 +5,7 @@ build/
 # Eclipse
 .project
 .classpath
-/.settings
+.settings/
 bin/
 
 # Mac OS

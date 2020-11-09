@@ -36,6 +36,7 @@ dependencyUpdates {
 
 subprojects {
   apply plugin: 'checkstyle'
+  apply plugin: 'eclipse'
   apply plugin: 'jacoco'
   apply plugin: 'java'
   apply plugin: 'com.diffplug.spotless'
