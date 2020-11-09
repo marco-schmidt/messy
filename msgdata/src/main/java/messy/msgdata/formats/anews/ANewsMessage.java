@@ -28,6 +28,10 @@ import java.util.List;
  */
 public class ANewsMessage
 {
+  /**
+   * String separating parts in a path string.
+   */
+  public static final String PATH_SEPARATOR = "!";
   private String messageId;
   private String newsgroups;
   private String path;
@@ -98,10 +102,16 @@ public class ANewsMessage
     this.path = path;
     if (path != null)
     {
-      String[] parts = path.split("!");
-      setPathElements(parts);
-      if (parts.length > 0)
+      if ("".equals(path))
       {
+        setPathElements(new String[]
+        {});
+        setFrom("");
+      }
+      else
+      {
+        final String[] parts = path.split(PATH_SEPARATOR);
+        setPathElements(parts);
         setFrom(parts[parts.length - 1]);
       }
     }
