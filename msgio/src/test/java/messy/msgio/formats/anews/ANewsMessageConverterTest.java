@@ -15,9 +15,7 @@
  */
 package messy.msgio.formats.anews;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import messy.msgdata.formats.anews.ANewsMessage;
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,26 +34,38 @@ public class ANewsMessageConverterTest
   @Test
   public void testTooSmallInput()
   {
-    Assert.assertNull("Empty input yields null output.", ANewsMessageConverter.fromLines(Arrays.asList(new String[]{})));
+    Assert.assertNull("Empty input yields null output.", ANewsMessageConverter.fromLines(Arrays.asList(new String[]
+    {})));
   }
 
   @Test
   public void testWrongSignatureInput()
   {
-    Assert.assertNull("First line does not start with 'A' leads to null output.", ANewsMessageConverter.fromLines(Arrays.asList(new String[]{"X", "", "", "", "", ""})));
+    Assert.assertNull("First line does not start with 'A' leads to null output.",
+        ANewsMessageConverter.fromLines(Arrays.asList(new String[]
+        {
+            "X", "", "", "", "", ""
+        })));
   }
 
   @Test
   public void testMissingMessageId()
   {
-    Assert.assertNull("First line contains an 'A' only, leads to null output.", ANewsMessageConverter.fromLines(Arrays.asList(new String[]{"A", "", "", "", "", ""})));
+    Assert.assertNull("First line contains an 'A' only, leads to null output.",
+        ANewsMessageConverter.fromLines(Arrays.asList(new String[]
+        {
+            "A", "", "", "", "", ""
+        })));
   }
 
   @Test
   public void testMessageId()
   {
     String id = "test.12";
-    ANewsMessage msg = ANewsMessageConverter.fromLines(Arrays.asList(new String[]{"A" + id, "", "", "", "", ""}));
+    ANewsMessage msg = ANewsMessageConverter.fromLines(Arrays.asList(new String[]
+    {
+        "A" + id, "", "", "", "", ""
+    }));
     Assert.assertFalse("Correct A news lines lead to non-null message object.", msg == null);
     Assert.assertEquals("Message ID properly parsed.", id, msg.getMessageId());
   }
