@@ -42,8 +42,8 @@ jobs:
       with:
         name: messy-${{github.run_number}}-distribution
         path: |
-          msgdata/build/libs/
-          msgio/build/libs/
+          msgdata/build/libs/*
+          msgio/build/libs/*
     - name: Send coverage information to codecov.io
       uses: codecov/codecov-action@v1
       with:
