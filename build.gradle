@@ -20,6 +20,9 @@ ext.vendorlibs = [
   slf4j_api: "org.slf4j:slf4j-api:1.7.30"
 ]
 
+description 'a tool suite for electronic messages'
+ext.licenseName = 'The Apache Software License, Version 2.0'
+
 // version is stable if it contains only numerical parts or a 'stable keyword'
 def isStable = { String version ->
   def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase(Locale.ENGLISH).contains(it) }
@@ -34,11 +37,39 @@ dependencyUpdates {
   outputDir = "${buildDir}/reports/dependencyUpdates"
 }
 
+def retrieveGitModification = { ->
+  def baos = new ByteArrayOutputStream()
+  exec {
+    commandLine 'git', 'diff', '--shortstat'
+    standardOutput = baos
+  }
+  return baos.toString().trim()
+}
+
+def retrieveGitRevision = { ->
+  def baos = new ByteArrayOutputStream()
+  exec {
+    commandLine 'git', 'rev-parse', 'HEAD'
+    standardOutput = baos
+  }
+  return baos.toString().trim()
+}
+rootProject.ext.revision = retrieveGitRevision()
+rootProject.ext.modified = retrieveGitModification()
+rootProject.ext.modified = !(rootProject.ext.modified == null || rootProject.ext.modified.trim().length() == 0)
+
+def timeZone = java.util.TimeZone.getTimeZone(java.time.ZoneOffset.UTC)
+def dateFormatter = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", java.util.Locale.ENGLISH)
+dateFormatter.setTimeZone(timeZone)
+rootProject.ext.now = dateFormatter.format(new Date())
+rootProject.ext.gradleVersion = getProject().getGradle().getGradleVersion()
+
 subprojects {
   apply plugin: 'checkstyle'
   apply plugin: 'eclipse'
   apply plugin: 'jacoco'
   apply plugin: 'java'
+  apply plugin: 'maven-publish'
   apply plugin: 'com.diffplug.spotless'
   apply plugin: 'com.github.jk1.dependency-license-report'
   apply plugin: 'com.github.spotbugs'
@@ -57,7 +88,49 @@ subprojects {
     options.deprecation = true
     options.compilerArgs += ['-Xlint:all', '-Werror']
   }
- 
+
+  task createPomProperties() {
+    description "create a text file to be included in the jar to make it self-describing"
+    doLast {
+      new File(buildDir, "pom.properties").text = """version=${version}
+groupId=${project.group}
+artifactId=${project.name}
+"""
+    }
+  }
+
+  jar {
+    manifest {
+      attributes(
+        'Implementation-Title': project.name,
+        'Implementation-Version': project.version,
+        'Implementation-URL': 'https://github.com/marco-schmidt/messy/',
+        'Automatic-Module-Name': "${project.group}.${project.name}",
+        'Created-By': 'Gradle ' + rootProject.ext.gradleVersion,
+        'Build-Date': rootProject.ext.now,
+        'License': rootProject.ext.licenseName,
+        //'Main-Class': mainClassName,
+        'Java-Version': targetCompatibility,
+        'Git-Revision': rootProject.ext.revision,
+        'Git-Modified': rootProject.ext.modified
+        //,        'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' ')
+        )
+    }
+    from ('..') {
+      include 'LICENSE'
+      into 'META-INF'
+    }
+    into("META-INF/maven/${project.group}/${project.name}") {
+      from { generatePomFileForLibraryPublication }
+      rename ".*", "pom.xml"
+    }
+    from (buildDir) {
+      include 'pom.properties'
+      into "META-INF/maven/${project.group}/${project.name}"
+    }
+  }
+  jar.dependsOn createPomProperties
+
   javadoc {
     options {
       windowTitle = "${project.name} ${project.version} API documentation"
@@ -136,4 +209,49 @@ subprojects {
     }
   }
   check.dependsOn dependencyCheckAnalyze
+
+  publishing {
+    repositories {
+      maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/marco-schmidt/messy")
+        credentials {
+          username = project.findProperty("gpr.user") ?: System.getenv("gpr.user")
+          password = project.findProperty("gpr.key") ?: System.getenv("gpr.key")
+        }
+      }
+    }
+    publications {
+      library(MavenPublication) {
+        from components.java
+        groupId group
+        pom.withXml {
+        asNode().appendNode('name', project.name)
+        asNode().appendNode('url', 'https://github.com/marco-schmidt/messy')
+        asNode().appendNode('description', rootProject.description)
+        asNode().appendNode('packaging', 'jar')
+        asNode().appendNode('inceptionYear', '2020')
+        asNode().appendNode('properties').
+          appendNode('gitrevision', rootProject.ext.revision).parent().
+          appendNode('gitmodified', rootProject.ext.modified).parent().
+          appendNode('buildtime', rootProject.ext.now).parent().
+          appendNode('gradleversion', rootProject.ext.gradleVersion).parent().
+          appendNode('java', targetCompatibility)
+        asNode().appendNode('scm').
+          appendNode('connection', 'scm:git:git@github.com:marco-schmidt/messy.git').parent().
+          appendNode('developerConnection', 'scm:git:git@github.com:marco-schmidt/messy.git').parent().
+          appendNode('url', 'https://github.com/marco-schmidt/messy')
+        asNode().appendNode('developers').appendNode('developer').
+          appendNode('id', 'marco-schmidt').parent().
+          appendNode('name', 'Marco Schmidt').parent().
+          appendNode('email', 'mschmidtgit@protonmail.com').parent().
+          appendNode('organization', 'private').parent().
+          appendNode('organizationUrl', 'https://github.com/marco-schmidt')
+        asNode().appendNode('licenses').appendNode('license').
+          appendNode('name', rootProject.ext.licenseName).parent().
+          appendNode('url', 'https://www.apache.org/licenses/LICENSE-2.0.html')
+        }
+      }
+    }
+  }
 }
