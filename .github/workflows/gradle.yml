@@ -36,14 +36,17 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: ./gradlew check generateLicenseReport dependencyUpdates jacocoTestReport --info --stacktrace
-    - name: Upload application package
+      run: ./gradlew check packageLicenseReport packageJavadoc packageSources dependencyUpdates packageCoverageReport --info --stacktrace
+    - name: Upload msgdata package
       uses: actions/upload-artifact@v2
       with:
-        name: messy-${{github.run_number}}-distribution
-        path: |
-          msgdata/build/libs/*
-          msgio/build/libs/*
+        name: messy-${{github.run_number}}-msgdata
+        path: msgdata/build/libs 
+    - name: Upload msgio package
+      uses: actions/upload-artifact@v2
+      with:
+        name: messy-${{github.run_number}}-msgio
+        path: msgio/build/libs 
     - name: Send coverage information to codecov.io
       uses: codecov/codecov-action@v1
       with:
