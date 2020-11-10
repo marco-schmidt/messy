@@ -15,6 +15,7 @@ plugins {
 }
 
 ext.vendorlibs = [
+  commons_compress: 'org.apache.commons:commons-compress:1.20',
   junit: 'junit:junit:4.13.1',
   logback_classic: "ch.qos.logback:logback-classic:1.2.3",
   slf4j_api: "org.slf4j:slf4j-api:1.7.30"
@@ -190,7 +191,16 @@ artifactId=${project.name}
       html.destination file("${buildDir}/reports/jacoco")
     }
   }
-  jacocoTestCoverageVerification.dependsOn test
+  jacocoTestCoverageVerification {
+    violationRules {
+      rule {
+        limit {
+          minimum = 0.0
+        }
+      }
+    }
+    dependsOn test
+  }
   jacocoTestReport.dependsOn jacocoTestCoverageVerification
 
   task packageCoverageReport(type: Zip, dependsOn: 'jacocoTestReport') {

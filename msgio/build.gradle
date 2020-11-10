@@ -2,7 +2,8 @@ apply plugin: 'java-library'
 
 dependencies {
   implementation project(':msgdata')
-  implementation vendorlibs.slf4j_api
+  implementation vendorlibs.commons_compress
   implementation vendorlibs.logback_classic
+  implementation vendorlibs.slf4j_api
   testImplementation vendorlibs.junit
 }
