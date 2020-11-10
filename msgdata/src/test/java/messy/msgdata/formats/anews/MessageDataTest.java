@@ -16,6 +16,7 @@
 package messy.msgdata.formats.anews;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
@@ -77,7 +78,7 @@ public class MessageDataTest
     final Date timestampCheck = msg.getTimestamp();
     Assert.assertEquals("Time unchanged.", epoch.getTime(), timestampCheck.getTime());
 
-    msg.setPath(Path.of("."));
+    msg.setPath(Paths.get("."));
     final Path pathCheck = msg.getPath();
     Assert.assertEquals("Path unchanged.", ".", pathCheck.toString());
   }
