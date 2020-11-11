@@ -22,6 +22,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
+ * Test {@link MboxMessage}.
+ *
  * @author Marco Schmidt
  */
 public class MboxMessageTest

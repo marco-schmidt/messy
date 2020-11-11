@@ -75,5 +75,6 @@ public class FileSystemTarMessageSinkTest
         e.printStackTrace();
       }
     });
+    Files.delete(tempDirectory);
   }
 }
