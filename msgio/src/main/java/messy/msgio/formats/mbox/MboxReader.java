@@ -24,7 +24,7 @@ import messy.msgdata.formats.mbox.MboxMessage;
 
 /**
  * Read <a target="_top" href="http://www.faqs.org/rfcs/rfc822.html">RFC 822</a> style messages as
- * {@link messages.io.mbox.MboxMessage} objects from a {@link java.io.Reader} in
+ * {@link messy.msgdata.formats.mbox.MboxMessage} objects from a {@link java.io.Reader} in
  * <a target="_top" href="http://www.qmail.org/qmail-manual-html/man5/mbox.html">mbox(5)</a> format.
  *
  * Call {@link #next()} repeatedly until it returns <code>null</code>.
