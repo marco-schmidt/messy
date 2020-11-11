@@ -52,6 +52,7 @@ public class FileSystemTarMessageSinkTest
     FileSystemTarMessageSink sink = new FileSystemTarMessageSink(tempDirectory, Long.MAX_VALUE);
     Assert.assertEquals("Maximum file size identical.", Long.MAX_VALUE, sink.getMaxFileSize());
     sink.put(msg);
+    msg.setTimestamp(new Date());
     sink.put(msg);
     sink.close();
     sink.close();

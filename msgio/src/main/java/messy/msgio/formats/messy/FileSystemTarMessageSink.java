@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Date;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import messy.msgdata.formats.messy.MessageData;
@@ -89,6 +90,11 @@ public class FileSystemTarMessageSink extends AbstractTarMessageSink
     final String hashString = MessageData.formatHash(contentHash);
     final TarArchiveEntry entry = new TarArchiveEntry(hashString);
     entry.setSize(content.length);
+    final Date timestamp = msg.getTimestamp();
+    if (timestamp != null)
+    {
+      entry.setModTime(timestamp);
+    }
     out.putArchiveEntry(entry);
     out.write(content);
     out.closeArchiveEntry();
