@@ -202,6 +202,7 @@ artifactId=${project.name}
     dependsOn test
   }
   jacocoTestReport.dependsOn jacocoTestCoverageVerification
+  check.dependsOn jacocoTestCoverageVerification
 
   task packageCoverageReport(type: Zip, dependsOn: 'jacocoTestReport') {
     description "create a zip archive with coverage report information"
