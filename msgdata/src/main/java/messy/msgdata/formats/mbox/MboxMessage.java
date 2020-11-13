@@ -17,10 +17,12 @@ package messy.msgdata.formats.mbox;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import messy.msgdata.formats.imf.RawMessage;
 
 /**
  * Data class to store elements of an <a target="_top" href="http://www.faqs.org/rfcs/rfc822.html">RFC 822</a> message
@@ -30,22 +32,20 @@ import java.util.TimeZone;
  *
  * @author Marco Schmidt
  */
-public class MboxMessage
+public class MboxMessage extends RawMessage
 {
   private static final String FROM = "From ";
-  private List<String> headerLines;
-  private List<String> bodyLines;
   private String envSender;
   private Date envDate;
 
-  public List<String> getBodyLines()
+  public MboxMessage()
   {
-    return bodyLines;
+    this(new ArrayList<>(), new ArrayList<>());
   }
 
-  public List<String> getHeaderLines()
+  public MboxMessage(List<String> headerLines, List<String> bodyLines)
   {
-    return headerLines;
+    super(headerLines, bodyLines);
   }
 
   public Date getDate()
@@ -56,11 +56,6 @@ public class MboxMessage
   public String getSender()
   {
     return envSender;
-  }
-
-  public void setBodyLines(List<String> lines)
-  {
-    bodyLines = lines;
   }
 
   private SimpleDateFormat createFormatter()
@@ -107,8 +102,4 @@ public class MboxMessage
     }
   }
 
-  public void setHeaderLines(List<String> lines)
-  {
-    headerLines = lines;
-  }
 }

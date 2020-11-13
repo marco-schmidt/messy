@@ -10,6 +10,10 @@
   </Match>
   <Match>
     <Class name="~.*"/>
+    <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
+  </Match>
+  <Match>
+    <Class name="~.*"/>
     <Bug pattern="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING" type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"/>
   </Match>
 </FindBugsFilter>
