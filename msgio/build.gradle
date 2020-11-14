@@ -1,5 +1,7 @@
 apply plugin: 'java-library'
 
+description 'library to read, parse, convert and write electronic messages in various formats'
+
 dependencies {
   implementation project(':msgdata')
   implementation vendorlibs.commons_compress
