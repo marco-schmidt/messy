@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import messy.msgdata.formats.imf.RawMessage;
+import messy.msgdata.formats.RawMessage;
 
 /**
  * Data class to store elements of an <a target="_top" href="http://www.faqs.org/rfcs/rfc822.html">RFC 822</a> message
