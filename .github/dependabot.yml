@@ -1,0 +1,10 @@
+# Dependabot configuration
+# Dependabot is a service that creates pull requests if newer versions of dependencies become available.
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "daily"
