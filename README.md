@@ -39,6 +39,7 @@ As of 2020, a one-person hobby project.
 * Dependencies:
     * JUnit for unit tests,
     * archive I/O from Apache Commons Compress,
+    * MIME support from Jakarta Mail,
     * logging with slf4j and logback.
 * Static code analysis with
     * gradle plugins spotbugs, checkstyle and forbiddenApis and

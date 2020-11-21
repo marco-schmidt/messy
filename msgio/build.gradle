@@ -5,6 +5,7 @@ description 'library to read, parse, convert and write electronic messages in va
 dependencies {
   implementation project(':msgdata')
   implementation vendorlibs.commons_compress
+  implementation vendorlibs.jakarta_mail
   implementation vendorlibs.logback_classic
   implementation vendorlibs.slf4j_api
   testImplementation vendorlibs.junit

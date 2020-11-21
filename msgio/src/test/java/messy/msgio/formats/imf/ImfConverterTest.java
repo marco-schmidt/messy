@@ -64,7 +64,24 @@ public class ImfConverterTest
   {
     final ImfHeaderList list = new ImfHeaderList();
     final String newsgroups = "net.general";
-    final String subject = "The subject line";
+    final String subject = "Man";
+    list.add(new ImfHeaderField("Newsgroups", newsgroups));
+    // https://en.wikipedia.org/wiki/MIME#Encoded-Word
+    // https://en.wikipedia.org/wiki/Base64#Examples
+    list.add(new ImfHeaderField("Subject", "=?iso-8859-1?B?TWFu?="));
+    final ImfMessage input = new ImfMessage(list, new ArrayList<String>());
+    final ImfConverter converter = new ImfConverter();
+    final Message output = converter.convert(input);
+    Assert.assertNotNull("Expect non-null result.", output);
+    Assert.assertEquals("Expect identical subject.", subject, output.getSubject());
+  }
+
+  @Test
+  public void testBrokenSubjectEncodingRfc850()
+  {
+    final ImfHeaderList list = new ImfHeaderList();
+    final String newsgroups = "net.general";
+    final String subject = "=?not-a-valid-encoding?B?TWFu?=";
     list.add(new ImfHeaderField("Newsgroups", newsgroups));
     list.add(new ImfHeaderField("Subject", subject));
     final ImfMessage input = new ImfMessage(list, new ArrayList<String>());

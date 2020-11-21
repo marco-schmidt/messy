@@ -15,9 +15,11 @@
  */
 package messy.msgio.formats.imf;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import jakarta.mail.internet.MimeUtility;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.imf.ImfHeaderField;
 import messy.msgdata.formats.imf.ImfHeaderList;
@@ -78,6 +80,18 @@ public class ImfConverter
     }
   }
 
+  private String decodeText(String input)
+  {
+    try
+    {
+      return MimeUtility.decodeText(input);
+    }
+    catch (final UnsupportedEncodingException e)
+    {
+      return input;
+    }
+  }
+
   private Message convertPreRfc850(Map<String, String> lookup, ImfMessage message)
   {
     final Message result = new Message();
@@ -92,7 +106,7 @@ public class ImfConverter
     final Message result = new Message();
     result.setMedium(Message.MEDIUM_USENET);
     result.setFormat(ImfMessage.FORMAT_INTERNET_MESSAGE_FORMAT);
-    result.setSubject(lookup.get(FIELD_SUBJECT));
+    result.setSubject(decodeText(lookup.get(FIELD_SUBJECT)));
     return result;
   }
 }
