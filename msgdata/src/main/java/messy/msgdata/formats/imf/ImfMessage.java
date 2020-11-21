@@ -25,6 +25,11 @@ import messy.msgdata.formats.RawMessage;
  */
 public class ImfMessage
 {
+  /**
+   * Constant for format IMF (Internet Message Format).
+   */
+  public static final String FORMAT_INTERNET_MESSAGE_FORMAT = "imf";
+
   private ImfHeaderList headerList;
   private List<String> bodyLines;
   private RawMessage rawMessage;

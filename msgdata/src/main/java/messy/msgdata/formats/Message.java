@@ -24,6 +24,10 @@ import java.util.Date;
  */
 public class Message
 {
+  /**
+   * Constant for medium Usenet.
+   */
+  public static final String MEDIUM_USENET = "usenet";
   private String authorName;
   private String format;
   private String medium;
