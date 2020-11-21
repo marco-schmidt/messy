@@ -26,7 +26,6 @@ import org.junit.Test;
  *
  * @author Marco Schmidt
  */
-
 public class RawMessageTest
 {
   @Test
