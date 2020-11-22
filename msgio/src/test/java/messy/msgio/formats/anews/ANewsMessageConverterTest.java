@@ -16,9 +16,11 @@
 package messy.msgio.formats.anews;
 
 import java.util.Arrays;
-import messy.msgdata.formats.anews.ANewsMessage;
+import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
+import messy.msgdata.formats.Message;
+import messy.msgdata.formats.anews.ANewsMessage;
 
 /**
  * Test {@link ANewsMessageConverter} class.
@@ -61,12 +63,36 @@ public class ANewsMessageConverterTest
   @Test
   public void testMessageId()
   {
-    String id = "test.12";
-    ANewsMessage msg = ANewsMessageConverter.fromLines(Arrays.asList(new String[]
+    final String id = "test.12";
+    final ANewsMessage msg = ANewsMessageConverter.fromLines(Arrays.asList(new String[]
     {
         "A" + id, "", "", "", "", ""
     }));
     Assert.assertFalse("Correct A news lines lead to non-null message object.", msg == null);
     Assert.assertEquals("Message ID properly parsed.", id, msg.getMessageId());
+  }
+
+  @Test
+  public void testToMessage()
+  {
+    final Date date = new Date();
+    final String from = "janedoe";
+    final String mid = "jane44.55";
+    final String subject = "Request for comments";
+
+    final ANewsMessage input = new ANewsMessage();
+    input.setDate(date);
+    input.setFrom(from);
+    input.setMessageId(mid);
+    input.setSubject(subject);
+
+    final Message output = ANewsMessageConverter.toMessage(input);
+
+    Assert.assertEquals("Date got properly converted.", date, output.getSent());
+    Assert.assertEquals("Format is A News.", ANewsMessageConverter.FORMAT_A_NEWS_NETNEWS, output.getFormat());
+    Assert.assertEquals("From got properly converted.", from, output.getAuthorName());
+    Assert.assertEquals("Medium is Usenet.", Message.MEDIUM_USENET, output.getMedium());
+    Assert.assertEquals("Message ID got properly converted.", mid, output.getMessageId());
+    Assert.assertEquals("Subject got properly converted.", subject, output.getSubject());
   }
 }
