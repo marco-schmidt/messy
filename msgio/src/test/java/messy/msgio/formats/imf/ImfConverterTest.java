@@ -60,6 +60,22 @@ public class ImfConverterTest
   }
 
   @Test
+  public void testNormalizeMessageId()
+  {
+    Assert.assertNull("Expect null result for null input.", ImfConverter.normalizeMessageId(null));
+    final String noLeft = "sdffs3sd@example.org>";
+    Assert.assertEquals("Expect identical if left angle bracket missing.", noLeft,
+        ImfConverter.normalizeMessageId(noLeft));
+    final String noRight = "<sdffs3sd@example.org";
+    Assert.assertEquals("Expect identical if right angle bracket missing.", noRight,
+        ImfConverter.normalizeMessageId(noRight));
+    final String exact = "<sdffs3sd@example.org>";
+    Assert.assertEquals("Expect identical if no extra data.", exact, ImfConverter.normalizeMessageId(exact));
+    Assert.assertEquals("Expect message id for padded left.", exact, ImfConverter.normalizeMessageId("  " + exact));
+    Assert.assertEquals("Expect message id for padded right.", exact, ImfConverter.normalizeMessageId(exact + " "));
+  }
+
+  @Test
   public void testRfc850()
   {
     final ImfHeaderList list = new ImfHeaderList();

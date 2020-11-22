@@ -33,10 +33,12 @@ public class MessageTest
     msg.setAuthorName(null);
     msg.setFormat(null);
     msg.setMedium(null);
+    msg.setMessageId(null);
     msg.setSent(null);
     msg.setSubject(null);
     Assert.assertNull("Expect author name to remain null.", msg.getAuthorName());
     Assert.assertNull("Expect format name to remain null.", msg.getFormat());
+    Assert.assertNull("Expect message id to remain null.", msg.getMessageId());
     Assert.assertNull("Expect medium name to remain null.", msg.getMedium());
     Assert.assertNull("Expect sent timestamp to remain null.", msg.getSent());
     Assert.assertNull("Expect subject to remain null.", msg.getSubject());
@@ -48,6 +50,7 @@ public class MessageTest
     final String authorName = "Jane Doe";
     final String format = "imf";
     final String medium = "mail";
+    final String messageId = "<a43ms@example.org>";
     final String subject = "Just a message";
     final long millis = 123456789L;
     final Date sent = new Date(millis);
@@ -55,13 +58,14 @@ public class MessageTest
     msg.setAuthorName(authorName);
     msg.setFormat(format);
     msg.setMedium(medium);
+    msg.setMessageId(messageId);
     msg.setSent(sent);
     msg.setSubject(subject);
     Assert.assertEquals("Expect author name to remain identical.", authorName, msg.getAuthorName());
     Assert.assertEquals("Expect format name to remain identical.", format, msg.getFormat());
     Assert.assertEquals("Expect medium name to remain identical.", medium, msg.getMedium());
+    Assert.assertEquals("Expect message id to remain identical.", messageId, msg.getMessageId());
     Assert.assertEquals("Expect sent timestamp to remain identical.", sent, msg.getSent());
     Assert.assertEquals("Expect subject to remain identical.", subject, msg.getSubject());
   }
-
 }

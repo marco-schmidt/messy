@@ -31,6 +31,7 @@ public class Message
   private String authorName;
   private String format;
   private String medium;
+  private String messageId;
   private Date sent;
   private String subject;
 
@@ -62,6 +63,16 @@ public class Message
   public void setMedium(String medium)
   {
     this.medium = medium;
+  }
+
+  public String getMessageId()
+  {
+    return messageId;
+  }
+
+  public void setMessageId(String messageId)
+  {
+    this.messageId = messageId;
   }
 
   public Date getSent()

@@ -47,6 +47,7 @@ public class ImfConverter
 
   // header field names RFC850 and later
   private static final String FIELD_SUBJECT = "subject";
+  private static final String FIELD_MESSAGE_ID = "message-id";
 
   private Map<String, String> createLookup(ImfHeaderList list)
   {
@@ -80,6 +81,37 @@ public class ImfConverter
     }
   }
 
+  public static String normalizeMessageId(String mid)
+  {
+    return normalizeMessageId(mid, 0);
+  }
+
+  /**
+   * Extract a message ID, a string value in angle brackets, from a certain position of a given string.
+   *
+   * @param mid
+   *          string to be searched
+   * @param initialIndex
+   *          zero-based index into string where searching begins
+   * @return resulting message id including angle brackets on success, input string otherwise
+   */
+  public static String normalizeMessageId(String mid, int initialIndex)
+  {
+    if (mid == null)
+    {
+      return null;
+    }
+    int fromIndex = initialIndex;
+    final int angleLeft = mid.indexOf('<', fromIndex);
+    fromIndex = angleLeft < 0 ? 0 : angleLeft + 1;
+    final int angleRight = mid.indexOf('>', fromIndex);
+    if (angleLeft >= 0 && angleRight >= 0)
+    {
+      return mid.substring(angleLeft, angleRight + 1);
+    }
+    return mid;
+  }
+
   private String decodeText(String input)
   {
     try
@@ -98,6 +130,7 @@ public class ImfConverter
     result.setMedium(Message.MEDIUM_USENET);
     result.setFormat(ImfMessage.FORMAT_INTERNET_MESSAGE_FORMAT);
     result.setSubject(lookup.get(FIELD_TITLE));
+    result.setMessageId(lookup.get(FIELD_ARTICLE_ID));
     return result;
   }
 
@@ -107,6 +140,7 @@ public class ImfConverter
     result.setMedium(Message.MEDIUM_USENET);
     result.setFormat(ImfMessage.FORMAT_INTERNET_MESSAGE_FORMAT);
     result.setSubject(decodeText(lookup.get(FIELD_SUBJECT)));
+    result.setMessageId(normalizeMessageId(lookup.get(FIELD_MESSAGE_ID)));
     return result;
   }
 }
