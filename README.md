@@ -52,7 +52,7 @@ As of 2020, a one-person hobby project.
 * API documentation with javadoc.
 * Code coverage reporting with jacoco and codecov.io.
 * Check for new versions of dependencies with gradle plugin versions.
-* Create reports of dependencies and their licenses and check against licenses against positive list.
+* Create reports of dependencies and their licenses and check licenses against positive list.
 
 ## Development Setup
 
