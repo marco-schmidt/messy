@@ -16,6 +16,9 @@
 package messy.msgio.formats.imf;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -44,10 +47,12 @@ public class ImfConverter
   // header field names B News before RFC850
   private static final String FIELD_ARTICLE_ID = "article-i.d.";
   private static final String FIELD_TITLE = "title";
+  private static final String FIELD_POSTED = "posted";
 
   // header field names RFC850 and later
   private static final String FIELD_SUBJECT = "subject";
   private static final String FIELD_MESSAGE_ID = "message-id";
+  private static final String FIELD_DATE = "date";
 
   private Map<String, String> createLookup(ImfHeaderList list)
   {
@@ -112,6 +117,43 @@ public class ImfConverter
     return mid;
   }
 
+  private Date decodeDate(String s, String pattern)
+  {
+    final SimpleDateFormat parser = new SimpleDateFormat(pattern, Locale.ROOT);
+    try
+    {
+      return parser.parse(s);
+    }
+    catch (final ParseException pe)
+    {
+      return null;
+    }
+  }
+
+  private static final String[] DATE_PATTERNS =
+  {
+      "EEE, dd MMM yyyy HH:mm:ss z", "dd MMM yyyy HH:mm:ss z", "dd MMM yy HH:mm:ss z", "EEE, dd MMM yy HH:mm:ss z",
+      "EEE, dd MMM yyyy HH:mm:ss", "yyyy/MM/dd", "dd MMM yyyy HH:mm z", "dd MMM yyyy HH:mm:ss",
+      "EEE, dd MMM yy HH:mm z", "EEE, dd MMM yy HH:mm:ss Z", "dd MMM yyyy HH:mm z", "EEE, dd MMM yyyy HH:mm",
+  };
+
+  private Date decodeDate(String s)
+  {
+    if (s == null)
+    {
+      return null;
+    }
+    for (final String pattern : DATE_PATTERNS)
+    {
+      final Date result = decodeDate(s, pattern);
+      if (result != null)
+      {
+        return result;
+      }
+    }
+    return null;
+  }
+
   private String decodeText(String input)
   {
     try
@@ -131,6 +173,7 @@ public class ImfConverter
     result.setFormat(ImfMessage.FORMAT_INTERNET_MESSAGE_FORMAT);
     result.setSubject(lookup.get(FIELD_TITLE));
     result.setMessageId(lookup.get(FIELD_ARTICLE_ID));
+    result.setSent(decodeDate(lookup.get(FIELD_POSTED)));
     return result;
   }
 
@@ -141,6 +184,7 @@ public class ImfConverter
     result.setFormat(ImfMessage.FORMAT_INTERNET_MESSAGE_FORMAT);
     result.setSubject(decodeText(lookup.get(FIELD_SUBJECT)));
     result.setMessageId(normalizeMessageId(lookup.get(FIELD_MESSAGE_ID)));
+    result.setSent(decodeDate(lookup.get(FIELD_DATE)));
     return result;
   }
 }

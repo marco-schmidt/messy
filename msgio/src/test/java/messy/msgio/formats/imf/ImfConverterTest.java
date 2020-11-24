@@ -16,6 +16,7 @@
 package messy.msgio.formats.imf;
 
 import java.util.ArrayList;
+import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import messy.msgdata.formats.Message;
@@ -81,15 +82,20 @@ public class ImfConverterTest
     final ImfHeaderList list = new ImfHeaderList();
     final String newsgroups = "net.general";
     final String subject = "Man";
+    final Date date = new Date(1360882792000L);
+    final String dateString = "Fri, 15 Feb 2013 00:59:52 +0200";
+
     list.add(new ImfHeaderField("Newsgroups", newsgroups));
     // https://en.wikipedia.org/wiki/MIME#Encoded-Word
     // https://en.wikipedia.org/wiki/Base64#Examples
     list.add(new ImfHeaderField("Subject", "=?iso-8859-1?B?TWFu?="));
+    list.add(new ImfHeaderField("Date", dateString));
     final ImfMessage input = new ImfMessage(list, new ArrayList<String>());
     final ImfConverter converter = new ImfConverter();
     final Message output = converter.convert(input);
     Assert.assertNotNull("Expect non-null result.", output);
     Assert.assertEquals("Expect identical subject.", subject, output.getSubject());
+    Assert.assertEquals("Expect identical date.", date, output.getSent());
   }
 
   @Test
