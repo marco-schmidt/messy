@@ -1,0 +1,14 @@
+apply plugin: 'java-library'
+
+description 'message full text search index'
+
+dependencies {
+  implementation project(':msgdata')
+  implementation vendorlibs.logback_classic
+  implementation vendorlibs.slf4j_api
+  implementation vendorlibs.lucene_analyzers_common
+  implementation vendorlibs.lucene_core
+  implementation vendorlibs.lucene_queries
+  implementation vendorlibs.lucene_queryparsers
+  testImplementation vendorlibs.junit
+}
