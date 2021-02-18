@@ -5,19 +5,19 @@ buildscript {
 }
 
 plugins {
-  id 'com.diffplug.spotless' version '5.9.0'
+  id 'com.diffplug.spotless' version '5.10.2'
   id "com.github.ben-manes.versions" version '0.36.0'
   id 'com.github.jk1.dependency-license-report' version '1.16'
   id 'com.github.spotbugs' version '4.6.0'
   id 'de.thetaphi.forbiddenapis' version '3.1'
   id 'jacoco'
-  id 'org.owasp.dependencycheck' version '6.0.5'
+  id 'org.owasp.dependencycheck' version '6.1.1'
 }
 
 ext.vendorlibs = [
   commons_compress: 'org.apache.commons:commons-compress:1.20',
   jakarta_mail: 'com.sun.mail:jakarta.mail:2.0.0',
-  junit: 'junit:junit:4.13.1',
+  junit: 'junit:junit:4.13.2',
   logback_classic: "ch.qos.logback:logback-classic:1.2.3",
   lucene_analyzers_common: "org.apache.lucene:lucene-analyzers-common:${luceneVersion}",
   lucene_core: "org.apache.lucene:lucene-core:${luceneVersion}",
