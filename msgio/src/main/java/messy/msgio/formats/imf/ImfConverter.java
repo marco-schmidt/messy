@@ -54,6 +54,13 @@ public class ImfConverter
   private static final String FIELD_MESSAGE_ID = "message-id";
   private static final String FIELD_DATE = "date";
 
+  private static final String[] DATE_PATTERNS =
+  {
+      "EEE, dd MMM yyyy HH:mm:ss z", "dd MMM yyyy HH:mm:ss z", "dd MMM yy HH:mm:ss z", "EEE, dd MMM yy HH:mm:ss z",
+      "EEE, dd MMM yyyy HH:mm:ss", "yyyy/MM/dd", "dd MMM yyyy HH:mm z", "dd MMM yyyy HH:mm:ss",
+      "EEE, dd MMM yy HH:mm z", "EEE, dd MMM yy HH:mm:ss Z", "dd MMM yyyy HH:mm z", "EEE, dd MMM yyyy HH:mm",
+  };
+
   private Map<String, String> createLookup(ImfHeaderList list)
   {
     final Map<String, String> result = new HashMap<>();
@@ -129,13 +136,6 @@ public class ImfConverter
       return null;
     }
   }
-
-  private static final String[] DATE_PATTERNS =
-  {
-      "EEE, dd MMM yyyy HH:mm:ss z", "dd MMM yyyy HH:mm:ss z", "dd MMM yy HH:mm:ss z", "EEE, dd MMM yy HH:mm:ss z",
-      "EEE, dd MMM yyyy HH:mm:ss", "yyyy/MM/dd", "dd MMM yyyy HH:mm z", "dd MMM yyyy HH:mm:ss",
-      "EEE, dd MMM yy HH:mm z", "EEE, dd MMM yy HH:mm:ss Z", "dd MMM yyyy HH:mm z", "EEE, dd MMM yyyy HH:mm",
-  };
 
   private Date decodeDate(String s)
   {
