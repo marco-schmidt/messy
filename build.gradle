@@ -14,6 +14,11 @@ plugins {
   id 'org.owasp.dependencycheck' version '6.1.2'
 }
 
+repositories {
+  mavenLocal()
+  mavenCentral()
+}
+
 ext.vendorlibs = [
   commons_compress: 'org.apache.commons:commons-compress:1.20',
   jakarta_mail: 'com.sun.mail:jakarta.mail:2.0.0',
@@ -71,6 +76,11 @@ rootProject.ext.now = dateFormatter.format(new Date())
 rootProject.ext.gradleVersion = getProject().getGradle().getGradleVersion()
 
 subprojects {
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
+
   apply plugin: 'checkstyle'
   apply plugin: 'eclipse'
   apply plugin: 'jacoco'
@@ -79,11 +89,6 @@ subprojects {
   apply plugin: 'com.diffplug.spotless'
   apply plugin: 'com.github.jk1.dependency-license-report'
   apply plugin: 'com.github.spotbugs'
-
-  repositories {
-    mavenLocal()
-    mavenCentral()
-  }
 
   tasks.withType(JavaCompile) {
     sourceCompatibility = JavaVersion.VERSION_1_8
