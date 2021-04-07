@@ -21,7 +21,7 @@ repositories {
 
 ext.vendorlibs = [
   commons_compress: 'org.apache.commons:commons-compress:1.20',
-  jakarta_mail: 'com.sun.mail:jakarta.mail:2.0.0',
+  jakarta_mail: 'com.sun.mail:jakarta.mail:2.0.1',
   junit: 'junit:junit:4.13.2',
   logback_classic: "ch.qos.logback:logback-classic:1.2.3",
   lucene_analyzers_common: "org.apache.lucene:lucene-analyzers-common:${luceneVersion}",
