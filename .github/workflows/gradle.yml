@@ -47,6 +47,11 @@ jobs:
       with:
         name: messy-${{github.run_number}}-msgio
         path: msgio/build/libs 
+    - name: Upload msgsearch package
+      uses: actions/upload-artifact@v2
+      with:
+        name: messy-${{github.run_number}}-msgsearch
+        path: msgsearch/build/libs 
     - name: Send coverage information to codecov.io
       uses: codecov/codecov-action@v1
       with:
