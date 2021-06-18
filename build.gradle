@@ -28,7 +28,7 @@ ext.vendorlibs = [
   lucene_core: "org.apache.lucene:lucene-core:${luceneVersion}",
   lucene_queries: "org.apache.lucene:lucene-queries:${luceneVersion}",
   lucene_queryparsers: "org.apache.lucene:lucene-queryparser:${luceneVersion}",
-  slf4j_api: "org.slf4j:slf4j-api:1.7.30"
+  slf4j_api: "org.slf4j:slf4j-api:1.7.31"
 ]
 
 description 'a tool suite for electronic messages'
