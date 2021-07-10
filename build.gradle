@@ -5,13 +5,13 @@ buildscript {
 }
 
 plugins {
-  id 'com.diffplug.spotless' version '5.12.5'
+  id 'com.diffplug.spotless' version '5.14.1'
   id "com.github.ben-manes.versions" version '0.39.0'
   id 'com.github.jk1.dependency-license-report' version '1.16'
-  id 'com.github.spotbugs' version '4.7.1'
+  id 'com.github.spotbugs' version '4.7.2'
   id 'de.thetaphi.forbiddenapis' version '3.1'
   id 'jacoco'
-  id 'org.owasp.dependencycheck' version '6.2.0'
+  id 'org.owasp.dependencycheck' version '6.2.2'
 }
 
 repositories {
@@ -28,7 +28,7 @@ ext.vendorlibs = [
   lucene_core: "org.apache.lucene:lucene-core:${luceneVersion}",
   lucene_queries: "org.apache.lucene:lucene-queries:${luceneVersion}",
   lucene_queryparsers: "org.apache.lucene:lucene-queryparser:${luceneVersion}",
-  slf4j_api: "org.slf4j:slf4j-api:1.7.30"
+  slf4j_api: "org.slf4j:slf4j-api:1.7.31"
 ]
 
 description 'a tool suite for electronic messages'
@@ -190,14 +190,11 @@ artifactId=${project.name}
   }
 
   jacoco {
-    toolVersion = "0.8.6"
+    toolVersion = "0.8.7"
   }
 
   jacocoTestReport {
     reports {
-      xml.enabled true
-      xml.destination file("${buildDir}/reports/jacoco/report.xml")
-      csv.enabled false
       html.destination file("${buildDir}/reports/jacoco")
     }
   }
@@ -216,7 +213,7 @@ artifactId=${project.name}
 
   task packageCoverageReport(type: Zip, dependsOn: 'jacocoTestReport') {
     description "create a zip archive with coverage report information"
-    from jacocoTestReport.reports.html.destination
+    from jacocoTestReport.reports.html.outputLocation
     classifier = 'coveragereport'
   }
 
