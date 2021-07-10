@@ -213,7 +213,7 @@ artifactId=${project.name}
 
   task packageCoverageReport(type: Zip, dependsOn: 'jacocoTestReport') {
     description "create a zip archive with coverage report information"
-    from jacocoTestReport.reports.html.outputLocation
+    from jacocoTestReport.reports.html.entryPoint
     classifier = 'coveragereport'
   }
 
