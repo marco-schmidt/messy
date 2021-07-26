@@ -5,9 +5,9 @@ buildscript {
 }
 
 plugins {
-  id 'com.diffplug.spotless' version '5.14.1'
+  id 'com.diffplug.spotless' version '5.14.2'
   id "com.github.ben-manes.versions" version '0.39.0'
-  id 'com.github.jk1.dependency-license-report' version '1.16'
+  id 'com.github.jk1.dependency-license-report' version '1.17'
   id 'com.github.spotbugs' version '4.7.2'
   id 'de.thetaphi.forbiddenapis' version '3.1'
   id 'jacoco'
@@ -20,15 +20,15 @@ repositories {
 }
 
 ext.vendorlibs = [
-  commons_compress: 'org.apache.commons:commons-compress:1.20',
+  commons_compress: 'org.apache.commons:commons-compress:1.21',
   jakarta_mail: 'com.sun.mail:jakarta.mail:2.0.1',
   junit: 'junit:junit:4.13.2',
-  logback_classic: "ch.qos.logback:logback-classic:1.2.3",
+  logback_classic: "ch.qos.logback:logback-classic:1.2.5",
   lucene_analyzers_common: "org.apache.lucene:lucene-analyzers-common:${luceneVersion}",
   lucene_core: "org.apache.lucene:lucene-core:${luceneVersion}",
   lucene_queries: "org.apache.lucene:lucene-queries:${luceneVersion}",
   lucene_queryparsers: "org.apache.lucene:lucene-queryparser:${luceneVersion}",
-  slf4j_api: "org.slf4j:slf4j-api:1.7.31"
+  slf4j_api: "org.slf4j:slf4j-api:1.7.32"
 ]
 
 description 'a tool suite for electronic messages'
