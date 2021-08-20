@@ -23,6 +23,17 @@ import org.junit.Test;
 public class TwitterStatusTest
 {
   @Test
+  public void testEmptyTwitterStatus()
+  {
+    final TwitterStatus ts = new TwitterStatus();
+    Assert.assertNull("Expected null value for createdAt.", ts.getCreatedAt());
+    Assert.assertNull("Expected null value for id.", ts.getId());
+
+    ts.setCreatedAt(null);
+    Assert.assertNull("Expected null value for createdAt.", ts.getCreatedAt());
+  }
+
+  @Test
   public void testTwitterStatus()
   {
     final TwitterStatus ts = new TwitterStatus();

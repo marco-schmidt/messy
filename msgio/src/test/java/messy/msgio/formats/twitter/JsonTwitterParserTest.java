@@ -19,9 +19,28 @@ import java.math.BigInteger;
 import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
+import messy.msgdata.formats.Message;
+import messy.msgdata.formats.twitter.TwitterStatus;
 
 public class JsonTwitterParserTest
 {
+  @Test
+  public void testEmptyIdConversion()
+  {
+    final TwitterStatus msg = new TwitterStatus();
+    final Message message = JsonTwitterParser.toMessage(msg);
+    Assert.assertNotNull("Converted message must not be null.", message);
+  }
+
+  @Test
+  public void testRegularConversion()
+  {
+    final TwitterStatus msg = new TwitterStatus();
+    msg.setId(BigInteger.ONE);
+    final Message message = JsonTwitterParser.toMessage(msg);
+    Assert.assertNotNull("Converted message must not be null.", message);
+  }
+
   @Test
   public void testTimestampParser()
   {

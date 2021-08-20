@@ -21,6 +21,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import messy.msgdata.formats.Message;
 import messy.msgdata.formats.twitter.TwitterStatus;
 
 /**
@@ -38,9 +39,31 @@ public final class JsonTwitterParser
    * Tweet id number, positive integer.
    */
   public static final String ID = "id";
+  /**
+   * Format of JSON tweet messages.
+   */
+  public static final String FORMAT_JSON_TWEET = "jsontweet";
 
   private JsonTwitterParser()
   {
+  }
+
+  /**
+   * Convert {@link TwitterStatus} to {@link Message}.
+   *
+   * @param msg
+   *          input twitter message
+   * @return converted {@link Message}
+   */
+  public static Message toMessage(TwitterStatus msg)
+  {
+    final Message result = new Message();
+    result.setFormat(FORMAT_JSON_TWEET);
+    result.setMedium(Message.MEDIUM_TWITTER);
+    final BigInteger id = msg.getId();
+    result.setMessageId(id == null ? null : id.toString());
+    result.setSent(msg.getCreatedAt());
+    return result;
   }
 
   public static BigInteger parseBigInteger(Object o)
