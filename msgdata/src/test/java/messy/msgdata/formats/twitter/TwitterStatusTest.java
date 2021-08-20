@@ -13,3 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package messy.msgdata.formats.twitter;
+
+import java.math.BigInteger;
+import java.util.Date;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class TwitterStatusTest
+{
+  @Test
+  public void testTwitterStatus()
+  {
+    final TwitterStatus ts = new TwitterStatus();
+    final Date createdAt = new Date(1000L);
+    ts.setCreatedAt(createdAt);
+    final BigInteger id = BigInteger.ONE;
+    ts.setId(id);
+
+    Assert.assertEquals("Expected equal values for createdAt.", createdAt, ts.getCreatedAt());
+    Assert.assertEquals("Expected equal values for id.", id, ts.getId());
+  }
+}

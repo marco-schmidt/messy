@@ -6,6 +6,7 @@ dependencies {
   implementation project(':msgdata')
   implementation vendorlibs.commons_compress
   implementation vendorlibs.jakarta_mail
+  implementation vendorlibs.json_smart
   implementation vendorlibs.logback_classic
   implementation vendorlibs.slf4j_api
   testImplementation vendorlibs.junit
