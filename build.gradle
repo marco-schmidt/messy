@@ -300,3 +300,25 @@ artifactId=${project.name}
     }
   }
 }
+
+task codeCoverageReport(type: JacocoReport)
+{
+  executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+  subprojects.each {
+    sourceSets it.sourceSets.main
+  }
+
+  reports
+  {
+    xml.required = true
+    xml.destination file("${buildDir}/reports/jacoco/report.xml")
+    html.required = true
+    csv.required = false
+  }
+}
+
+codeCoverageReport.dependsOn
+{
+  subprojects*.test
+}
