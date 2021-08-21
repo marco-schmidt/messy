@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.Locale;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.twitter.TwitterStatus;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
 
 /**
  * Parse JSON string to {@link TwitterStatus} object.
@@ -40,6 +42,10 @@ public final class JsonTwitterParser
    */
   public static final String ID = "id";
   /**
+   * Tweet message text.
+   */
+  public static final String TEXT = "text";
+  /**
    * Format of JSON tweet messages.
    */
   public static final String FORMAT_JSON_TWEET = "jsontweet";
@@ -48,22 +54,32 @@ public final class JsonTwitterParser
   {
   }
 
-  /**
-   * Convert {@link TwitterStatus} to {@link Message}.
-   *
-   * @param msg
-   *          input twitter message
-   * @return converted {@link Message}
-   */
-  public static Message toMessage(TwitterStatus msg)
+  public static TwitterStatus parse(String s)
   {
-    final Message result = new Message();
-    result.setFormat(FORMAT_JSON_TWEET);
-    result.setMedium(Message.MEDIUM_TWITTER);
-    final BigInteger id = msg.getId();
-    result.setMessageId(id == null ? null : id.toString());
-    result.setSent(msg.getCreatedAt());
+    if (s == null)
+    {
+      return null;
+    }
+    final Object obj = JSONValue.parse(s);
+    if (obj == null)
+    {
+      return null;
+    }
+    if (!(obj instanceof JSONObject))
+    {
+      return null;
+    }
+    final JSONObject j = (JSONObject) obj;
+    final TwitterStatus result = new TwitterStatus();
+    result.setCreatedAt(parseTimestamp(j.get(CREATED_AT)));
+    result.setId(parseBigInteger(j.get(ID)));
+    result.setText(asString(j.get(TEXT)));
     return result;
+  }
+
+  public static String asString(Object o)
+  {
+    return o == null ? null : o.toString();
   }
 
   public static BigInteger parseBigInteger(Object o)
@@ -99,5 +115,23 @@ public final class JsonTwitterParser
     {
       return null;
     }
+  }
+
+  /**
+   * Convert {@link TwitterStatus} to {@link Message}.
+   *
+   * @param msg
+   *          input twitter message
+   * @return converted {@link Message}
+   */
+  public static Message toMessage(TwitterStatus msg)
+  {
+    final Message result = new Message();
+    result.setFormat(FORMAT_JSON_TWEET);
+    result.setMedium(Message.MEDIUM_TWITTER);
+    final BigInteger id = msg.getId();
+    result.setMessageId(id == null ? null : id.toString());
+    result.setSent(msg.getCreatedAt());
+    return result;
   }
 }

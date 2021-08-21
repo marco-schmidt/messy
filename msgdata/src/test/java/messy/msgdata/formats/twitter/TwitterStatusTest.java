@@ -28,7 +28,6 @@ public class TwitterStatusTest
     final TwitterStatus ts = new TwitterStatus();
     Assert.assertNull("Expected null value for createdAt.", ts.getCreatedAt());
     Assert.assertNull("Expected null value for id.", ts.getId());
-
     ts.setCreatedAt(null);
     Assert.assertNull("Expected null value for createdAt.", ts.getCreatedAt());
   }
@@ -41,8 +40,10 @@ public class TwitterStatusTest
     ts.setCreatedAt(createdAt);
     final BigInteger id = BigInteger.ONE;
     ts.setId(id);
-
+    final String text = "Hi all!";
+    ts.setText(text);
     Assert.assertEquals("Expected equal values for createdAt.", createdAt, ts.getCreatedAt());
     Assert.assertEquals("Expected equal values for id.", id, ts.getId());
+    Assert.assertEquals("Expected equal values for text.", text, ts.getText());
   }
 }

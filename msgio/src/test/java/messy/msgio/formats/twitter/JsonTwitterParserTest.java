@@ -24,6 +24,21 @@ import messy.msgdata.formats.twitter.TwitterStatus;
 
 public class JsonTwitterParserTest
 {
+  public static final BigInteger ID = BigInteger.TEN;
+  public static final String CREATED_ID_TEXT = "Sun Jan 01 07:00:06 +0000 2012";
+  public static final long CREATED_ID_MILLIS = 1325401206000L;
+  public static final String JSON_MESSAGE = "{\"created_at\":\"" + CREATED_ID_TEXT + "\",\"id\":" + ID.toString() + "}";
+
+  @Test
+  public void testAsString()
+  {
+    Assert.assertNull("Null input leads to null output.", JsonTwitterParser.asString(null));
+    final String in = "test";
+    final String out = JsonTwitterParser.asString(in);
+    Assert.assertNotNull("Non-null input leads to non-null output.", out);
+    Assert.assertEquals("Input and output identical.", in, out);
+  }
+
   @Test
   public void testEmptyIdConversion()
   {
@@ -82,6 +97,27 @@ public class JsonTwitterParserTest
     if (bi != null)
     {
       Assert.assertEquals("Expected equal values.", BigInteger.ZERO, bi);
+    }
+  }
+
+  @Test
+  public void testParse()
+  {
+    Assert.assertNull("Expected null result for null input.", JsonTwitterParser.parse(null));
+    Assert.assertNull("Expected null result for empty input.", JsonTwitterParser.parse(""));
+    Assert.assertNull("Expected null result for invalid input.", JsonTwitterParser.parse("{sdfsf"));
+    Assert.assertNull("Expected null result for non-object json input.", JsonTwitterParser.parse("[]"));
+    final TwitterStatus status = JsonTwitterParser.parse(JSON_MESSAGE);
+    Assert.assertNotNull("Expected non-null result for valid json input.", status);
+    if (status != null)
+    {
+      Assert.assertEquals("Expect identical id.", ID, status.getId());
+      final Date createdAt = status.getCreatedAt();
+      Assert.assertNotNull("Expected non-null created at timestamp for valid json input.", createdAt);
+      if (createdAt != null)
+      {
+        Assert.assertEquals("Expect identical created at.", CREATED_ID_MILLIS, createdAt.getTime());
+      }
     }
   }
 }
