@@ -27,7 +27,11 @@ public class JsonTwitterParserTest
   public static final BigInteger ID = BigInteger.TEN;
   public static final String CREATED_ID_TEXT = "Sun Jan 01 07:00:06 +0000 2012";
   public static final long CREATED_ID_MILLIS = 1325401206000L;
-  public static final String JSON_MESSAGE = "{\"created_at\":\"" + CREATED_ID_TEXT + "\",\"id\":" + ID.toString() + "}";
+  public static final String LANGUAGE = "en";
+  public static final String TEXT = "Just a message.";
+  public static final String DELETE_JSON_MESSAGE = "{\"delete\":{\"status\":{\"id\":12345},\"timestamp_ms\":\"1498959780679\"}}";
+  public static final String REGULAR_JSON_MESSAGE = "{\"created_at\":\"" + CREATED_ID_TEXT + "\",\"id\":"
+      + ID.toString() + ",\"lang\":\"" + LANGUAGE + "\",\"text\":\"" + TEXT + "\"}";
 
   @Test
   public void testAsString()
@@ -101,17 +105,31 @@ public class JsonTwitterParserTest
   }
 
   @Test
-  public void testParse()
+  public void testParseDelete()
+  {
+    final TwitterStatus status = JsonTwitterParser.parse(DELETE_JSON_MESSAGE);
+    Assert.assertNotNull("Expected non-null result for valid json input.", status);
+    if (status != null)
+    {
+      Assert.assertTrue("Expect delete to be true.", status.isDelete());
+    }
+  }
+
+  @Test
+  public void testParseRegular()
   {
     Assert.assertNull("Expected null result for null input.", JsonTwitterParser.parse(null));
     Assert.assertNull("Expected null result for empty input.", JsonTwitterParser.parse(""));
     Assert.assertNull("Expected null result for invalid input.", JsonTwitterParser.parse("{sdfsf"));
     Assert.assertNull("Expected null result for non-object json input.", JsonTwitterParser.parse("[]"));
-    final TwitterStatus status = JsonTwitterParser.parse(JSON_MESSAGE);
+    final TwitterStatus status = JsonTwitterParser.parse(REGULAR_JSON_MESSAGE);
     Assert.assertNotNull("Expected non-null result for valid json input.", status);
     if (status != null)
     {
+      Assert.assertFalse("Expect delete to be false.", status.isDelete());
       Assert.assertEquals("Expect identical id.", ID, status.getId());
+      Assert.assertEquals("Expect identical language.", LANGUAGE, status.getLanguage());
+      Assert.assertEquals("Expect identical text.", TEXT, status.getText());
       final Date createdAt = status.getCreatedAt();
       Assert.assertNotNull("Expected non-null created at timestamp for valid json input.", createdAt);
       if (createdAt != null)

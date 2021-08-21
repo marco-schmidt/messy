@@ -42,8 +42,11 @@ public class TwitterStatusTest
     ts.setId(id);
     final String text = "Hi all!";
     ts.setText(text);
+    final String lang = "en";
+    ts.setLanguage(lang);
     Assert.assertEquals("Expected equal values for createdAt.", createdAt, ts.getCreatedAt());
     Assert.assertEquals("Expected equal values for id.", id, ts.getId());
+    Assert.assertEquals("Expected equal values for language.", lang, ts.getLanguage());
     Assert.assertEquals("Expected equal values for text.", text, ts.getText());
   }
 }

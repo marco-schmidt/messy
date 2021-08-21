@@ -26,7 +26,9 @@ import java.util.Date;
 public class TwitterStatus
 {
   private Date createdAt;
+  private boolean delete;
   private BigInteger id;
+  private String language;
   private String text;
 
   public Date getCreatedAt()
@@ -39,6 +41,16 @@ public class TwitterStatus
     this.createdAt = createdAt == null ? null : new Date(createdAt.getTime());
   }
 
+  public boolean isDelete()
+  {
+    return delete;
+  }
+
+  public void setDelete(boolean delete)
+  {
+    this.delete = delete;
+  }
+
   public BigInteger getId()
   {
     return id;
@@ -47,6 +59,16 @@ public class TwitterStatus
   public void setId(BigInteger id)
   {
     this.id = id;
+  }
+
+  public String getLanguage()
+  {
+    return language;
+  }
+
+  public void setLanguage(String language)
+  {
+    this.language = language;
   }
 
   public String getText()

@@ -38,9 +38,17 @@ public final class JsonTwitterParser
    */
   public static final String CREATED_AT = "created_at";
   /**
+   * Field for deletion status.
+   */
+  public static final String DELETE = "delete";
+  /**
    * Tweet id number, positive integer.
    */
   public static final String ID = "id";
+  /**
+   * Tweet language.
+   */
+  public static final String LANGUAGE = "lang";
   /**
    * Tweet message text.
    */
@@ -72,7 +80,10 @@ public final class JsonTwitterParser
     final JSONObject j = (JSONObject) obj;
     final TwitterStatus result = new TwitterStatus();
     result.setCreatedAt(parseTimestamp(j.get(CREATED_AT)));
+    final Object delete = j.get(DELETE);
+    result.setDelete(delete != null);
     result.setId(parseBigInteger(j.get(ID)));
+    result.setLanguage(asString(j.get(LANGUAGE)));
     result.setText(asString(j.get(TEXT)));
     return result;
   }
