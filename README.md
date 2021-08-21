@@ -4,14 +4,21 @@ A tool suite for electronic messages.
 
 ## Features
 
-* Read mbox.
-* Write messy tar files (set of tar files with one file per message).
-* Parse A News.
+### Message and File Formats
+
+* Read [mbox](https://en.wikipedia.org/wiki/Mbox) and parse [Internet Message Format (IMF)](https://en.wikipedia.org/wiki/Email#Message_format) used with email and Usenet messages.
+* Parse [JSON tweets](https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/overview) distributed as a directory tree of [newline-delimited JSON (ndjson)](http://ndjson.org/) files, each compressed with bzip2, the directory tree then packed in a single tar archive file.
+* Parse [A News](https://en.wikipedia.org/wiki/A_News) messages, a 1980s format for Usenet messages.
+* Write ''messy tar files'' (tar files with one file per message) suitable for long-term archival.
+
+### Storage
+
+* Store messages in a [Lucene](https://lucene.apache.org/) search index directory.
 
 ## Status
 
 Created November 8th, 2020.
-As of 2020, a one-person hobby project.
+As of 2021, a one-person hobby project.
 
 ## Goals
 
@@ -32,7 +39,7 @@ As of 2020, a one-person hobby project.
 
 ## Technology Stack
 
-* Written in Java 8, using AdoptOpenJDK (but any JDK version 8 or higher should do).
+* Written in Java 8, using [Adoptium](https://adoptium.net) (but any JDK version 8 or higher should do).
 * Build tool gradle, as a multi-project build with the gradle wrapper.
 * Hosted in a public git repository at GitHub.
 * Continuous integration with GitHub Workflow Java CI.
@@ -60,4 +67,4 @@ As of 2020, a one-person hobby project.
 * Set environment variable JAVA_HOME to the JDK installation path, include its bin subdirectory in PATH variable. Run javac -version and possbily which java to make sure that the right Java compiler and virtual machine are available now.
 * Clone the messy git repository.
 * Navigate to cloned working copy and run ./gradlew check as an initial toolchain check.
-* Install Eclipse IDE, run ./gradlew eclipse, open Eclipse and import projects msg*.
+* Install Eclipse IDE, run ./gradlew eclipse in the cloned working copy, open Eclipse and import projects msg*.

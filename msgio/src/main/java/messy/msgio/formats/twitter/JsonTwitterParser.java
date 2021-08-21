@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Locale;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.twitter.TwitterStatus;
+import messy.msgdata.formats.twitter.TwitterUser;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 
@@ -62,7 +63,11 @@ public final class JsonTwitterParser
   {
   }
 
-  public static TwitterStatus parse(String s)
+  /**
+   * Parse a line containing a single JSON object and return a {@link TwitterStatus} object with some of its
+   * information.
+   */
+  public static TwitterStatus parseStatus(String s)
   {
     if (s == null)
     {
@@ -85,6 +90,7 @@ public final class JsonTwitterParser
     result.setId(parseBigInteger(j.get(ID)));
     result.setLanguage(asString(j.get(LANGUAGE)));
     result.setText(asString(j.get(TEXT)));
+    result.setUser(parseUser(j.get(JsonTwitterConstants.STATUS_USER)));
     return result;
   }
 
@@ -109,6 +115,20 @@ public final class JsonTwitterParser
     }
   }
 
+  public static boolean parseBoolean(Object o)
+  {
+    boolean result;
+    if (o == null)
+    {
+      result = false;
+    }
+    else
+    {
+      result = "true".equals(o.toString());
+    }
+    return result;
+  }
+
   public static Date parseTimestamp(Object obj)
   {
     if (obj == null)
@@ -128,6 +148,21 @@ public final class JsonTwitterParser
     }
   }
 
+  protected static TwitterUser parseUser(Object object)
+  {
+    if (object == null || !(object instanceof JSONObject))
+    {
+      return null;
+    }
+    final JSONObject j = (JSONObject) object;
+    final TwitterUser result = new TwitterUser();
+    result.setId(parseBigInteger(j.get(JsonTwitterConstants.USER_ID)));
+    result.setCreatedAt(parseTimestamp(j.get(JsonTwitterConstants.USER_CREATED_AT)));
+    result.setScreenName(asString(j.get(JsonTwitterConstants.USER_SCREEN_NAME)));
+    result.setVerified(parseBoolean(j.get(JsonTwitterConstants.USER_VERIFIED)));
+    return result;
+  }
+
   /**
    * Convert {@link TwitterStatus} to {@link Message}.
    *
@@ -140,6 +175,8 @@ public final class JsonTwitterParser
     final Message result = new Message();
     result.setFormat(FORMAT_JSON_TWEET);
     result.setMedium(Message.MEDIUM_TWITTER);
+    final TwitterUser user = msg.getUser();
+    result.setAuthorName(user == null ? null : user.getScreenName());
     final BigInteger id = msg.getId();
     result.setMessageId(id == null ? null : id.toString());
     result.setSent(msg.getCreatedAt());

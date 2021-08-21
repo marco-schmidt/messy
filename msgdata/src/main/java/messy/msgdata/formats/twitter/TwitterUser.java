@@ -19,18 +19,16 @@ import java.math.BigInteger;
 import java.util.Date;
 
 /**
- * Data class for a single Twitter message, called status in Twitter's API documentation, also known as a tweet.
+ * Data class for a Twitter account representing a person or institution.
  *
  * @author Marco Schmidt
  */
-public class TwitterStatus
+public class TwitterUser
 {
   private Date createdAt;
-  private boolean delete;
   private BigInteger id;
-  private String language;
-  private String text;
-  private TwitterUser user;
+  private String screenName;
+  private boolean verified;
 
   public Date getCreatedAt()
   {
@@ -40,16 +38,6 @@ public class TwitterStatus
   public void setCreatedAt(Date createdAt)
   {
     this.createdAt = createdAt == null ? null : new Date(createdAt.getTime());
-  }
-
-  public boolean isDelete()
-  {
-    return delete;
-  }
-
-  public void setDelete(boolean delete)
-  {
-    this.delete = delete;
   }
 
   public BigInteger getId()
@@ -62,33 +50,23 @@ public class TwitterStatus
     this.id = id;
   }
 
-  public String getLanguage()
+  public String getScreenName()
   {
-    return language;
+    return screenName;
   }
 
-  public void setLanguage(String language)
+  public void setScreenName(String screenName)
   {
-    this.language = language;
+    this.screenName = screenName;
   }
 
-  public String getText()
+  public boolean isVerified()
   {
-    return text;
+    return verified;
   }
 
-  public void setText(String text)
+  public void setVerified(boolean verified)
   {
-    this.text = text;
-  }
-
-  public TwitterUser getUser()
-  {
-    return user;
-  }
-
-  public void setUser(TwitterUser user)
-  {
-    this.user = user;
+    this.verified = verified;
   }
 }

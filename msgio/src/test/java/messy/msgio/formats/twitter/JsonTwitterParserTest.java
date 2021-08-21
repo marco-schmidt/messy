@@ -21,6 +21,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.twitter.TwitterStatus;
+import messy.msgdata.formats.twitter.TwitterUser;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONValue;
 
 public class JsonTwitterParserTest
 {
@@ -29,7 +32,11 @@ public class JsonTwitterParserTest
   public static final long CREATED_ID_MILLIS = 1325401206000L;
   public static final String LANGUAGE = "en";
   public static final String TEXT = "Just a message.";
+  public static final String SCREEN_NAME = "user_name";
+  public static final boolean VERIFIED = true;
   public static final String DELETE_JSON_MESSAGE = "{\"delete\":{\"status\":{\"id\":12345},\"timestamp_ms\":\"1498959780679\"}}";
+  public static final String USER = "{\"created_at\":\"" + CREATED_ID_TEXT + "\",\"id\":" + ID.toString()
+      + ",\"screen_name\":\"" + SCREEN_NAME + "\",\"verified\":\"" + VERIFIED + "\"}";
   public static final String REGULAR_JSON_MESSAGE = "{\"created_at\":\"" + CREATED_ID_TEXT + "\",\"id\":"
       + ID.toString() + ",\"lang\":\"" + LANGUAGE + "\",\"text\":\"" + TEXT + "\"}";
 
@@ -56,6 +63,7 @@ public class JsonTwitterParserTest
   {
     final TwitterStatus msg = new TwitterStatus();
     msg.setId(BigInteger.ONE);
+    msg.setUser(new TwitterUser());
     final Message message = JsonTwitterParser.toMessage(msg);
     Assert.assertNotNull("Converted message must not be null.", message);
   }
@@ -105,9 +113,15 @@ public class JsonTwitterParserTest
   }
 
   @Test
+  public void testParseBoolean()
+  {
+    Assert.assertFalse("Expected result false for null input.", JsonTwitterParser.parseBoolean(null));
+  }
+
+  @Test
   public void testParseDelete()
   {
-    final TwitterStatus status = JsonTwitterParser.parse(DELETE_JSON_MESSAGE);
+    final TwitterStatus status = JsonTwitterParser.parseStatus(DELETE_JSON_MESSAGE);
     Assert.assertNotNull("Expected non-null result for valid json input.", status);
     if (status != null)
     {
@@ -116,13 +130,13 @@ public class JsonTwitterParserTest
   }
 
   @Test
-  public void testParseRegular()
+  public void testParseRegularStatus()
   {
-    Assert.assertNull("Expected null result for null input.", JsonTwitterParser.parse(null));
-    Assert.assertNull("Expected null result for empty input.", JsonTwitterParser.parse(""));
-    Assert.assertNull("Expected null result for invalid input.", JsonTwitterParser.parse("{sdfsf"));
-    Assert.assertNull("Expected null result for non-object json input.", JsonTwitterParser.parse("[]"));
-    final TwitterStatus status = JsonTwitterParser.parse(REGULAR_JSON_MESSAGE);
+    Assert.assertNull("Expected null result for null input.", JsonTwitterParser.parseStatus(null));
+    Assert.assertNull("Expected null result for empty input.", JsonTwitterParser.parseStatus(""));
+    Assert.assertNull("Expected null result for invalid input.", JsonTwitterParser.parseStatus("{sdfsf"));
+    Assert.assertNull("Expected null result for non-object json input.", JsonTwitterParser.parseStatus("[]"));
+    final TwitterStatus status = JsonTwitterParser.parseStatus(REGULAR_JSON_MESSAGE);
     Assert.assertNotNull("Expected non-null result for valid json input.", status);
     if (status != null)
     {
@@ -136,6 +150,32 @@ public class JsonTwitterParserTest
       {
         Assert.assertEquals("Expect identical created at.", CREATED_ID_MILLIS, createdAt.getTime());
       }
+    }
+  }
+
+  @Test
+  public void testParseRegularUser()
+  {
+    Assert.assertNull("Expected null JSON objectto be parsed to null object.", JsonTwitterParser.parseUser(null));
+    Assert.assertNull("Expected non-object JSON to be parsed to null object.",
+        JsonTwitterParser.parseUser(new JSONArray()));
+    TwitterUser user = new TwitterUser();
+    user.setCreatedAt(null);
+    Assert.assertNull("Assigned null object remains null.", user.getCreatedAt());
+    final Object obj = JSONValue.parse(USER);
+    user = JsonTwitterParser.parseUser(obj);
+    Assert.assertNotNull("Expected valid user to be parsed to non-null object.", user);
+    if (user != null)
+    {
+      final Date createdAt = user.getCreatedAt();
+      Assert.assertNotNull("Expected non-null created at timestamp for valid json input.", createdAt);
+      if (createdAt != null)
+      {
+        Assert.assertEquals("Expect identical created at.", CREATED_ID_MILLIS, createdAt.getTime());
+      }
+      Assert.assertEquals("Expect identical id.", ID, user.getId());
+      Assert.assertEquals("Expect verified to be false.", VERIFIED, user.isVerified());
+      Assert.assertEquals("Expect identical screen name.", SCREEN_NAME, user.getScreenName());
     }
   }
 }
