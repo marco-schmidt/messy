@@ -219,7 +219,7 @@ artifactId=${project.name}
   }
 
   spotbugs {
-    toolVersion = '4.1.4'
+    toolVersion = '4.4.0'
     effort = 'max' // min, default, max
     reportLevel = 'low' // low, medium, high  
     ignoreFailures = false
@@ -235,7 +235,7 @@ artifactId=${project.name}
   }
 
   checkstyle {
-    toolVersion '8.37'
+    toolVersion '8.45.1'
     ignoreFailures false
     showViolations true
     configDirectory = file("${rootDir}/config/checkstyle")
