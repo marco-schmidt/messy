@@ -322,3 +322,16 @@ codeCoverageReport.dependsOn
 {
   subprojects*.test
 }
+
+task allJavadoc(type: Javadoc)
+{
+  source subprojects.collect { it.sourceSets.main.allJava }    											  
+  classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+  destinationDir = file("${buildDir}/docs/javadoc")
+  options
+  {
+    failOnError = true
+    addStringOption('Xdoclint:all')
+    outputLevel = JavadocOutputLevel.QUIET // VERBOSE
+  }
+}

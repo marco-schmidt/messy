@@ -66,6 +66,10 @@ public final class JsonTwitterParser
   /**
    * Parse a line containing a single JSON object and return a {@link TwitterStatus} object with some of its
    * information.
+   *
+   * @param s
+   *          JSON string to be parsed
+   * @return parsed {@link TwitterStatus} or null if parsing failed
    */
   public static TwitterStatus parseStatus(String s)
   {
