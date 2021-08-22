@@ -1,3 +1,4 @@
+include 'msgcli'
 include 'msgdata'
 include 'msgio'
 include 'msgsearch'

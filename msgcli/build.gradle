@@ -1,0 +1,10 @@
+apply plugin: 'application'
+
+description 'command-line application to read, convert and write electronic messages in various formats'
+mainClassName = 'messy.msgcli.app.App'
+
+dependencies {
+  implementation project(':msgdata')
+  implementation project(':msgio')
+  testImplementation vendorlibs.junit
+}

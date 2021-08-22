@@ -9,7 +9,7 @@ A tool suite for electronic messages.
 * Read [mbox](https://en.wikipedia.org/wiki/Mbox) and parse [Internet Message Format (IMF)](https://en.wikipedia.org/wiki/Email#Message_format) used with email and Usenet messages.
 * Parse [JSON tweets](https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/overview) distributed as a directory tree of [newline-delimited JSON (ndjson)](http://ndjson.org/) files, each compressed with bzip2, the directory tree then packed in a single tar archive file.
 * Parse [A News](https://en.wikipedia.org/wiki/A_News) messages, a 1980s format for Usenet messages.
-* Write ''messy tar files'' (tar files with one file per message) suitable for long-term archival.
+* Write *messy tar files* (tar files with one file per message) suitable for long-term archival.
 
 ### Storage
 
@@ -36,6 +36,22 @@ As of 2021, a one-person hobby project.
 * Handle extraction of attachments and references to external information.
 * Create a message database with full text search and reporting.
 * Analyze messages to allow more fine-grained search, separate public from private ones.
+
+## Command-line Application
+
+Command-line application ``msgcli`` reads messages from standard input, converts them and prints a summary of each message to standard output.
+
+Clone the git repository and install msgcli locally:
+```
+./gradlew :msgcli:install
+```
+Then the ``/path/to/installed/msgcli/bin/msgcli`` placeholder in the following example can be replaced with ``msgcli/build/install/msgcli/bin/msgcli``.
+
+This makes tar copy all the .json.bz2 files contained in a typical twitter stream archive to standard output,
+lets bzip2 decompress that .bz2 data and send the resulting newline-delimited JSON text lines to msgcli, which will then convert them and print them to standard output:
+```
+tar -xOf /path/to/twitter-stream-2017-07-01.tar|bzip2 -d|/path/to/installed/msgcli/bin/msgcli
+```
 
 ## Technology Stack
 
