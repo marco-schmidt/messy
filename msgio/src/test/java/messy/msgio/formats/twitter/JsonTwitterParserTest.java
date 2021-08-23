@@ -64,8 +64,11 @@ public class JsonTwitterParserTest
     final TwitterStatus msg = new TwitterStatus();
     msg.setId(BigInteger.ONE);
     msg.setUser(new TwitterUser());
-    final Message message = JsonTwitterParser.toMessage(msg);
+    Message message = JsonTwitterParser.toMessage(msg);
     Assert.assertNotNull("Converted message must not be null.", message);
+    msg.getUser().setId(BigInteger.ONE);
+    message = JsonTwitterParser.toMessage(msg);
+    Assert.assertNotNull("Converted message author id must not be null.", message.getAuthorId());
   }
 
   @Test

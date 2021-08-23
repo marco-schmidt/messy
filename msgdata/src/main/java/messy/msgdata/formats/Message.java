@@ -32,12 +32,25 @@ public class Message
    * Constant for medium Twitter.
    */
   public static final String MEDIUM_TWITTER = "twitter";
+  private String authorId;
   private String authorName;
+  private String countryCode;
   private String format;
+  private String languageCode;
   private String medium;
   private String messageId;
   private Date sent;
   private String subject;
+
+  public String getAuthorId()
+  {
+    return authorId;
+  }
+
+  public void setAuthorId(String authorId)
+  {
+    this.authorId = authorId;
+  }
 
   public String getAuthorName()
   {
@@ -49,6 +62,16 @@ public class Message
     this.authorName = authorName;
   }
 
+  public String getCountryCode()
+  {
+    return countryCode;
+  }
+
+  public void setCountryCode(String countryCode)
+  {
+    this.countryCode = countryCode;
+  }
+
   public String getFormat()
   {
     return format;
@@ -57,6 +80,16 @@ public class Message
   public void setFormat(String format)
   {
     this.format = format;
+  }
+
+  public String getLanguageCode()
+  {
+    return languageCode;
+  }
+
+  public void setLanguageCode(String languageCode)
+  {
+    this.languageCode = languageCode;
   }
 
   public String getMedium()

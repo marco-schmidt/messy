@@ -180,10 +180,18 @@ public final class JsonTwitterParser
     result.setFormat(FORMAT_JSON_TWEET);
     result.setMedium(Message.MEDIUM_TWITTER);
     final TwitterUser user = msg.getUser();
-    result.setAuthorName(user == null ? null : user.getScreenName());
+    if (user != null)
+    {
+      final BigInteger id = user.getId();
+      result.setAuthorId(id == null ? null : id.toString());
+      result.setAuthorName(user.getScreenName());
+    }
+    result.setCountryCode("");
+    result.setLanguageCode(msg.getLanguage());
     final BigInteger id = msg.getId();
     result.setMessageId(id == null ? null : id.toString());
     result.setSent(msg.getCreatedAt());
+    result.setSubject(msg.getText());
     return result;
   }
 }

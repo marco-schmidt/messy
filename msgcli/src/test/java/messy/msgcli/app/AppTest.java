@@ -19,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,10 +36,27 @@ public final class AppTest
   }
 
   @Test
+  public void testEscape()
+  {
+    Assert.assertNull("Null input leads to null output.", App.escape(null));
+    Assert.assertEquals("Empty input leads to empty output.", "", App.escape(""));
+    Assert.assertEquals("LF input leads to space output.", " ", App.escape("\n"));
+    Assert.assertEquals("CR input leads to space output.", " ", App.escape("\r"));
+    Assert.assertEquals("TAB input leads to space output.", " ", App.escape("\t"));
+    Assert.assertEquals("ASCII input leads to identical output.", "ABC", App.escape("ABC"));
+  }
+
+  @Test
+  public void testFormat()
+  {
+    Assert.assertEquals("Null date leads to empty result.", "", App.format(App.createFormatter(), null));
+  }
+
+  @Test
   public void testMainReadFailure()
   {
-    InputStream tmp = System.in;
-    InputStream in = new FailingInputStream();
+    final InputStream tmp = System.in;
+    final InputStream in = new FailingInputStream();
     System.setIn(in);
     messy.msgcli.app.App.main(new String[]
     {});
@@ -51,8 +67,8 @@ public final class AppTest
   @Test
   public void testMainWorking()
   {
-    InputStream tmp = System.in;
-    ByteArrayInputStream in = new ByteArrayInputStream(REGULAR_STATUS.getBytes(StandardCharsets.US_ASCII));
+    final InputStream tmp = System.in;
+    final ByteArrayInputStream in = new ByteArrayInputStream(REGULAR_STATUS.getBytes(StandardCharsets.US_ASCII));
     System.setIn(in);
     messy.msgcli.app.App.main(new String[]
     {});

@@ -19,7 +19,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.twitter.TwitterStatus;
 import messy.msgio.formats.twitter.JsonTwitterParser;
@@ -34,24 +37,101 @@ public final class App
     // prevent instantiation
   }
 
-  private static void dump(Message msg)
+  protected static DateFormat createFormatter()
   {
-    System.out.println(msg.getSent() + "\t" + msg.getMessageId() + "\t" + msg.getAuthorName());
+    return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
+  }
+
+  protected static String escape(String s)
+  {
+    String result;
+    if (s == null)
+    {
+      result = null;
+    }
+    else
+    {
+      if (s.isEmpty())
+      {
+        result = s;
+      }
+      else
+      {
+        boolean modified = false;
+        final char[] a = s.toCharArray();
+        for (int i = 0; i < a.length; i++)
+        {
+          final char c = a[i];
+          if (c == 9 || c == 10 || c == 13)
+          {
+            a[i] = ' ';
+            modified = true;
+          }
+        }
+        if (modified)
+        {
+          result = new String(a);
+        }
+        else
+        {
+          result = s;
+        }
+      }
+    }
+    return result;
+  }
+
+  protected static String format(String s)
+  {
+    return s == null ? "" : s;
+  }
+
+  protected static String format(DateFormat formatter, Date d)
+  {
+    return d == null ? "" : formatter.format(d);
+  }
+
+  protected static String format(Message msg, DateFormat formatter)
+  {
+    final StringBuilder sb = new StringBuilder();
+    final String sep = "\t";
+
+    sb.append(format(formatter, msg.getSent()));
+    sb.append(sep);
+    sb.append(format(msg.getLanguageCode()));
+    sb.append(sep);
+    sb.append(format(msg.getCountryCode()));
+    sb.append(sep);
+    sb.append(format(msg.getMessageId()));
+    sb.append(sep);
+    sb.append(format(msg.getAuthorId()));
+    sb.append(sep);
+    sb.append(format(msg.getAuthorName()));
+    sb.append(sep);
+    sb.append(format(escape(msg.getSubject())));
+
+    return sb.toString();
+  }
+
+  private static void dump(Message msg, DateFormat formatter)
+  {
+    System.out.println(format(msg, formatter));
   }
 
   private static void processStandardInput()
   {
+    final DateFormat formatter = createFormatter();
     try (BufferedReader in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8)))
     {
       String line;
       while ((line = in.readLine()) != null)
       {
-        TwitterStatus status = JsonTwitterParser.parseStatus(line);
-        Message msg = JsonTwitterParser.toMessage(status);
-        dump(msg);
+        final TwitterStatus status = JsonTwitterParser.parseStatus(line);
+        final Message msg = JsonTwitterParser.toMessage(status);
+        dump(msg, formatter);
       }
     }
-    catch (IOException ioe)
+    catch (final IOException ioe)
     {
       ioe.printStackTrace();
     }
