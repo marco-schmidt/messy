@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import org.junit.Test;
@@ -67,14 +68,14 @@ public final class AppTest
   }
 
   @Test
-  public void testMainWorking()
+  public void testMainWorking() throws UnsupportedEncodingException
   {
     final InputStream tmpIn = System.in;
     final PrintStream tmpOut = System.out;
     final ByteArrayInputStream in = new ByteArrayInputStream(REGULAR_STATUS.getBytes(StandardCharsets.US_ASCII));
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     System.setIn(in);
-    System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
+    System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8.name()));
     messy.msgcli.app.App.main(new String[]
     {});
     System.setIn(tmpIn);
