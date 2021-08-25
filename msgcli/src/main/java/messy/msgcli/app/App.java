@@ -23,6 +23,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.twitter.TwitterStatus;
 import messy.msgio.formats.twitter.JsonTwitterParser;
@@ -39,7 +40,9 @@ public final class App
 
   protected static DateFormat createFormatter()
   {
-    return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
+    final SimpleDateFormat result = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
+    result.setTimeZone(TimeZone.getTimeZone("UTC"));
+    return result;
   }
 
   protected static String escape(String s)
