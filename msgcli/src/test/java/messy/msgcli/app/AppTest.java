@@ -16,8 +16,10 @@
 package messy.msgcli.app;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import org.junit.Test;
@@ -67,12 +69,18 @@ public final class AppTest
   @Test
   public void testMainWorking()
   {
-    final InputStream tmp = System.in;
+    final InputStream tmpIn = System.in;
+    final PrintStream tmpOut = System.out;
     final ByteArrayInputStream in = new ByteArrayInputStream(REGULAR_STATUS.getBytes(StandardCharsets.US_ASCII));
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
     System.setIn(in);
+    System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
     messy.msgcli.app.App.main(new String[]
     {});
-    System.setIn(tmp);
-    Assert.assertEquals("System input now back to original value.", tmp, System.in);
+    System.setIn(tmpIn);
+    System.setOut(tmpOut);
+    final String result = out.toString(StandardCharsets.UTF_8);
+    Assert.assertEquals("Application output identical to expected output.",
+        "2012-01-01T08:00:06+0100\ten\t\t10\t\t\tJust a message." + System.lineSeparator(), result);
   }
 }
