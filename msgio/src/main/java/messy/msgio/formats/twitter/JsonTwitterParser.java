@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import messy.msgdata.formats.Message;
+import messy.msgdata.formats.twitter.TwitterPlace;
 import messy.msgdata.formats.twitter.TwitterStatus;
 import messy.msgdata.formats.twitter.TwitterUser;
 import net.minidev.json.JSONObject;
@@ -93,6 +94,7 @@ public final class JsonTwitterParser
     result.setDelete(delete != null);
     result.setId(parseBigInteger(j.get(ID)));
     result.setLanguage(asString(j.get(LANGUAGE)));
+    result.setPlace(parsePlace(j.get(JsonTwitterConstants.STATUS_PLACE)));
     result.setText(asString(j.get(TEXT)));
     result.setUser(parseUser(j.get(JsonTwitterConstants.STATUS_USER)));
     return result;
@@ -130,6 +132,25 @@ public final class JsonTwitterParser
     {
       result = "true".equals(o.toString());
     }
+    return result;
+  }
+
+  public static TwitterPlace parsePlace(Object object)
+  {
+    if (object == null || !(object instanceof JSONObject))
+    {
+      return null;
+    }
+    final JSONObject j = (JSONObject) object;
+
+    final TwitterPlace result = new TwitterPlace();
+    result.setCountry(asString(j.get(JsonTwitterConstants.PLACE_COUNTRY)));
+    result.setCountryCode(asString(j.get(JsonTwitterConstants.PLACE_COUNTRY_CODE)));
+    result.setId(asString(j.get(JsonTwitterConstants.PLACE_ID)));
+    result.setFullName(asString(j.get(JsonTwitterConstants.PLACE_FULL_NAME)));
+    result.setName(asString(j.get(JsonTwitterConstants.PLACE_NAME)));
+    result.setType(asString(j.get(JsonTwitterConstants.PLACE_TYPE)));
+
     return result;
   }
 
@@ -186,7 +207,11 @@ public final class JsonTwitterParser
       result.setAuthorId(id == null ? null : id.toString());
       result.setAuthorName(user.getScreenName());
     }
-    result.setCountryCode("");
+    final TwitterPlace place = msg.getPlace();
+    if (place != null)
+    {
+      result.setCountryCode(place.getCountryCode());
+    }
     result.setLanguageCode(msg.getLanguage());
     final BigInteger id = msg.getId();
     result.setMessageId(id == null ? null : id.toString());

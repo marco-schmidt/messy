@@ -23,6 +23,34 @@ package messy.msgio.formats.twitter;
 public final class JsonTwitterConstants
 {
   /**
+   * Place country.
+   */
+  public static final String PLACE_COUNTRY = "country";
+  /**
+   * Place country code.
+   */
+  public static final String PLACE_COUNTRY_CODE = "country_code";
+  /**
+   * Place full name.
+   */
+  public static final String PLACE_FULL_NAME = "full_name";
+  /**
+   * Place id.
+   */
+  public static final String PLACE_ID = "id";
+  /**
+   * Place name.
+   */
+  public static final String PLACE_NAME = "name";
+  /**
+   * Place type.
+   */
+  public static final String PLACE_TYPE = "place_type";
+  /**
+   * Status field place.
+   */
+  public static final String STATUS_PLACE = "place";
+  /**
    * Status field user.
    */
   public static final String STATUS_USER = "user";

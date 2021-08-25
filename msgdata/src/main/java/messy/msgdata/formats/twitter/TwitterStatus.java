@@ -29,6 +29,7 @@ public class TwitterStatus
   private boolean delete;
   private BigInteger id;
   private String language;
+  private TwitterPlace place;
   private String text;
   private TwitterUser user;
 
@@ -70,6 +71,16 @@ public class TwitterStatus
   public void setLanguage(String language)
   {
     this.language = language;
+  }
+
+  public TwitterPlace getPlace()
+  {
+    return place;
+  }
+
+  public void setPlace(TwitterPlace place)
+  {
+    this.place = place;
   }
 
   public String getText()

@@ -20,6 +20,7 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import messy.msgdata.formats.Message;
+import messy.msgdata.formats.twitter.TwitterPlace;
 import messy.msgdata.formats.twitter.TwitterStatus;
 import messy.msgdata.formats.twitter.TwitterUser;
 import net.minidev.json.JSONArray;
@@ -34,11 +35,24 @@ public class JsonTwitterParserTest
   public static final String TEXT = "Just a message.";
   public static final String SCREEN_NAME = "user_name";
   public static final boolean VERIFIED = true;
+  public static final String COUNTRY_CODE = "US";
   public static final String DELETE_JSON_MESSAGE = "{\"delete\":{\"status\":{\"id\":12345},\"timestamp_ms\":\"1498959780679\"}}";
   public static final String USER = "{\"created_at\":\"" + CREATED_ID_TEXT + "\",\"id\":" + ID.toString()
       + ",\"screen_name\":\"" + SCREEN_NAME + "\",\"verified\":\"" + VERIFIED + "\"}";
   public static final String REGULAR_JSON_MESSAGE = "{\"created_at\":\"" + CREATED_ID_TEXT + "\",\"id\":"
-      + ID.toString() + ",\"lang\":\"" + LANGUAGE + "\",\"text\":\"" + TEXT + "\"}";
+      + ID.toString() + ",\"lang\":\"" + LANGUAGE + "\",\"text\":\"" + TEXT + "\",place:{\"country_code\":\""
+      + COUNTRY_CODE + "\"}}";
+
+  public static final String PLACE_COUNTRY = "United States";
+  public static final String PLACE_COUNTRY_CODE = "US";
+  public static final String PLACE_ID = "01c060cf466c6ce3";
+  public static final String PLACE_FULL_NAME = "Long Beach, CA";
+  public static final String PLACE_NAME = "Long Beach";
+  public static final String PLACE_TYPE = "city";
+
+  public static final String REGULAR_PLACE = "{\"id\":\"" + PLACE_ID + "\",\"place_type\":\"" + PLACE_TYPE
+      + "\",\"full_name\":\"" + PLACE_FULL_NAME + "\",\"name\":\"" + PLACE_NAME + "\",\"country_code\":\""
+      + PLACE_COUNTRY_CODE + "\",\"country\":\"" + PLACE_COUNTRY + "\"}";
 
   @Test
   public void testAsString()
@@ -64,6 +78,9 @@ public class JsonTwitterParserTest
     final TwitterStatus msg = new TwitterStatus();
     msg.setId(BigInteger.ONE);
     msg.setUser(new TwitterUser());
+    final TwitterPlace place = new TwitterPlace();
+    place.setCountryCode(PLACE_COUNTRY_CODE);
+    msg.setPlace(place);
     Message message = JsonTwitterParser.toMessage(msg);
     Assert.assertNotNull("Converted message must not be null.", message);
     msg.getUser().setId(BigInteger.ONE);
@@ -130,6 +147,27 @@ public class JsonTwitterParserTest
     {
       Assert.assertTrue("Expect delete to be true.", status.isDelete());
     }
+  }
+
+  @Test
+  public void testParseNonJsonObjectPlace()
+  {
+    final TwitterPlace place = JsonTwitterParser.parsePlace(new JSONArray());
+    Assert.assertNull("Object other than JSONObjects leads to null object", place);
+  }
+
+  @Test
+  public void testParseRegularPlace()
+  {
+    final Object object = JSONValue.parse(REGULAR_PLACE);
+    final TwitterPlace place = JsonTwitterParser.parsePlace(object);
+    Assert.assertNotNull("Regular place string parsed to non null object", place);
+    Assert.assertEquals("Expect identical id.", PLACE_ID, place.getId());
+    Assert.assertEquals("Expect identical country.", PLACE_COUNTRY, place.getCountry());
+    Assert.assertEquals("Expect identical country code.", PLACE_COUNTRY_CODE, place.getCountryCode());
+    Assert.assertEquals("Expect identical name.", PLACE_NAME, place.getName());
+    Assert.assertEquals("Expect identical full name.", PLACE_FULL_NAME, place.getFullName());
+    Assert.assertEquals("Expect identical type.", PLACE_TYPE, place.getType());
   }
 
   @Test
