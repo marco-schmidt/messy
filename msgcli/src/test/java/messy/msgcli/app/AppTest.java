@@ -61,7 +61,7 @@ public final class AppTest
     final InputStream tmp = System.in;
     final InputStream in = new FailingInputStream();
     System.setIn(in);
-    messy.msgcli.app.App.main(new String[]
+    App.main(new String[]
     {});
     System.setIn(tmp);
     Assert.assertEquals("System input now back to original value.", tmp, System.in);
@@ -76,7 +76,7 @@ public final class AppTest
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     System.setIn(in);
     System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8.name()));
-    messy.msgcli.app.App.main(new String[]
+    App.main(new String[]
     {});
     System.setIn(tmpIn);
     System.setOut(tmpOut);
