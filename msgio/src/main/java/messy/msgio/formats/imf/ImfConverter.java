@@ -158,7 +158,7 @@ public class ImfConverter
   {
     try
     {
-      return MimeUtility.decodeText(input);
+      return input == null ? null : MimeUtility.decodeText(input);
     }
     catch (final UnsupportedEncodingException e)
     {

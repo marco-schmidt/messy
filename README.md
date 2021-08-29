@@ -52,6 +52,10 @@ lets bzip2 decompress that .bz2 data and send the resulting newline-delimited JS
 ```
 tar -xOf /path/to/twitter-stream-2017-07-01.tar|bzip2 -d|/path/to/installed/msgcli/bin/msgcli
 ```
+More recently zip has become the format of choice:
+```
+unzip -p /path/to/twitter-stream-2021-01-01.zip|/path/to/installed/msgcli/bin/msgcli
+```
 
 ## Technology Stack
 
