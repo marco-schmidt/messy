@@ -31,8 +31,11 @@ public final class AppTest
   private static final String TWEET_CORRUPTED = "{\"crea";
   private static final String MESSAGE_ID = "<msgid-1@example.org>";
   private static final String NEWAGROUP_1 = "comp.tools";
-  private static final String REGULAR_MBOX = "From <guestœexample.org> Sun Oct 17 12:03:20 2004\n" + "Message-ID: "
-      + MESSAGE_ID + "\n" + "Newsgroups: " + NEWAGROUP_1 + "\n" + "\n" + "Body.";
+  private static final String MAIL_ADSRESS = "name@example.org";
+  private static final String AUTHOR_NAME = "Person B. Name";
+  private static final String REGULAR_MBOX = "From <" + MAIL_ADSRESS + "> Sun Oct 17 12:03:20 2004\n" + "Message-ID: "
+      + MESSAGE_ID + "\n" + "From: \"" + AUTHOR_NAME + "\" <" + MAIL_ADSRESS + ">\n" + "Newsgroups: " + NEWAGROUP_1
+      + "\n" + "\n" + "Body.";
   private static final String MBOX_MISSING = "From <guestœexample.org> Sun Oct 17 12:03:20 2004\n" + "Message-ID: "
       + MESSAGE_ID + "\n" + "\n" + "Body.";
 

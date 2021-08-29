@@ -18,10 +18,14 @@ package messy.msgio.formats.imf;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import jakarta.mail.internet.MimeUtility;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.imf.ImfHeaderField;
@@ -44,6 +48,9 @@ public class ImfConverter
    */
   public static final String FORMAT_IMF_NETNEWS_PRE_RFC_850 = "imf-netnews-pre-rfc850";
 
+  // shared header field names
+  private static final String FIELD_FROM = "from";
+
   // header field names B News before RFC850
   private static final String FIELD_ARTICLE_ID = "article-i.d.";
   private static final String FIELD_TITLE = "title";
@@ -60,6 +67,15 @@ public class ImfConverter
       "EEE, dd MMM yyyy HH:mm:ss", "yyyy/MM/dd", "dd MMM yyyy HH:mm z", "dd MMM yyyy HH:mm:ss",
       "EEE, dd MMM yy HH:mm z", "EEE, dd MMM yy HH:mm:ss Z", "dd MMM yyyy HH:mm z", "EEE, dd MMM yyyy HH:mm",
   };
+  private static final Set<Character> UNWANTED_MAIL_CHARS = new HashSet<>();
+  static
+  {
+    UNWANTED_MAIL_CHARS.add(Character.valueOf('<'));
+    UNWANTED_MAIL_CHARS.add(Character.valueOf('>'));
+    UNWANTED_MAIL_CHARS.add(Character.valueOf('"'));
+    UNWANTED_MAIL_CHARS.add(Character.valueOf('('));
+    UNWANTED_MAIL_CHARS.add(Character.valueOf(')'));
+  }
 
   private Map<String, String> createLookup(ImfHeaderList list)
   {
@@ -166,9 +182,104 @@ public class ImfConverter
     }
   }
 
-  private Message convertPreRfc850(Map<String, String> lookup, ImfMessage message)
+  private Message convertShared(Map<String, String> lookup, ImfMessage message)
   {
     final Message result = new Message();
+    parseFrom(result, lookup);
+    return result;
+  }
+
+  private void parseFrom(Message result, Map<String, String> lookup)
+  {
+    String from = lookup.get(FIELD_FROM);
+    if (from == null)
+    {
+      return;
+    }
+    from = decodeText(from);
+    extractAuthor(result, from);
+  }
+
+  protected String removeUnwantedFirst(String s, Set<Character> unwanted)
+  {
+    if (s == null || s.isEmpty())
+    {
+      return s;
+    }
+    if (unwanted.contains(s.charAt(0)))
+    {
+      s = s.substring(1);
+    }
+    return s;
+  }
+
+  protected String removeUnwantedLast(String s, Set<Character> unwanted)
+  {
+    if (s == null || s.isEmpty())
+    {
+      return s;
+    }
+    final int lastIndex = s.length() - 1;
+    if (unwanted.contains(s.charAt(lastIndex)))
+    {
+      s = s.substring(0, lastIndex);
+    }
+    return s;
+  }
+
+  protected String concatItems(List<String> elems)
+  {
+    final StringBuilder sb = new StringBuilder();
+    boolean later = false;
+    for (final String elem : elems)
+    {
+      if (later)
+      {
+        sb.append(' ');
+      }
+      else
+      {
+        later = true;
+      }
+      sb.append(elem);
+    }
+    return sb.toString();
+  }
+
+  protected void extractAuthor(Message result, String from)
+  {
+    if (from == null)
+    {
+      return;
+    }
+    final String[] items = from.split(" ");
+    final ArrayList<String> nameElements = new ArrayList<>();
+    String mailAddress = null;
+    for (final String s : items)
+    {
+      String item = s.trim();
+      item = removeUnwantedFirst(item, UNWANTED_MAIL_CHARS);
+      item = removeUnwantedLast(item, UNWANTED_MAIL_CHARS);
+
+      if (item.contains("@"))
+      {
+        mailAddress = item;
+        continue;
+      }
+
+      if (!item.isEmpty())
+      {
+        nameElements.add(item);
+      }
+    }
+
+    result.setAuthorId(mailAddress);
+    result.setAuthorName(concatItems(nameElements));
+  }
+
+  private Message convertPreRfc850(Map<String, String> lookup, ImfMessage message)
+  {
+    final Message result = convertShared(lookup, message);
     result.setMedium(Message.MEDIUM_USENET);
     result.setFormat(ImfMessage.FORMAT_INTERNET_MESSAGE_FORMAT);
     result.setSubject(lookup.get(FIELD_TITLE));
@@ -179,7 +290,7 @@ public class ImfConverter
 
   private Message convertRfc850(Map<String, String> lookup, ImfMessage message)
   {
-    final Message result = new Message();
+    final Message result = convertShared(lookup, message);
     result.setMedium(Message.MEDIUM_USENET);
     result.setFormat(ImfMessage.FORMAT_INTERNET_MESSAGE_FORMAT);
     result.setSubject(decodeText(lookup.get(FIELD_SUBJECT)));

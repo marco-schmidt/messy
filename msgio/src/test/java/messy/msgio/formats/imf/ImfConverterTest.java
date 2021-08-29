@@ -17,6 +17,8 @@ package messy.msgio.formats.imf;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import messy.msgdata.formats.Message;
@@ -111,5 +113,34 @@ public class ImfConverterTest
     final Message output = converter.convert(input);
     Assert.assertNotNull("Expect non-null result.", output);
     Assert.assertEquals("Expect identical subject.", subject, output.getSubject());
+  }
+
+  @Test
+  public void testExtractAuthorNull()
+  {
+    final Message msg = new Message();
+    new ImfConverter().extractAuthor(msg, null);
+    Assert.assertNull("Null input leads to null author id.", msg.getAuthorId());
+    Assert.assertNull("Null input leads to null author name.", msg.getAuthorName());
+  }
+
+  @Test
+  public void testExtractEmptyAuthor()
+  {
+    final Message msg = new Message();
+    new ImfConverter().extractAuthor(msg, "<>");
+    Assert.assertNull("Empty input leads to null author id.", msg.getAuthorId());
+    Assert.assertEquals("Empty input leads to empty author name.", "", msg.getAuthorName());
+  }
+
+  @Test
+  public void testRemoveUnwanted()
+  {
+    final Set<Character> unwanted = new HashSet<>();
+    final ImfConverter conv = new ImfConverter();
+    Assert.assertNull("Null input leads to null result.", conv.removeUnwantedFirst(null, unwanted));
+    Assert.assertEquals("Empty input leads to empty result.", "", conv.removeUnwantedFirst("", unwanted));
+    Assert.assertNull("Null input leads to null result.", conv.removeUnwantedLast(null, unwanted));
+    Assert.assertEquals("Empty input leads to empty result.", "", conv.removeUnwantedLast("", unwanted));
   }
 }
