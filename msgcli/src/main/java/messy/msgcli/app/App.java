@@ -125,6 +125,8 @@ public final class App
     sb.append(format(msg.getAuthorName()));
     sb.append(sep);
     sb.append(format(escape(msg.getSubject())));
+    sb.append(sep);
+    sb.append(format(escape(msg.getText())));
 
     return sb.toString();
   }

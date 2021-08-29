@@ -113,7 +113,7 @@ public final class AppTest
     System.setOut(tmpOut);
     final String result = out.toString(StandardCharsets.UTF_8.name());
     Assert.assertEquals("Application output identical to expected output.",
-        "2012-01-01T07:00:06+0000\ten\t\t10\t\t\tJust a message." + System.lineSeparator(), result);
+        "2012-01-01T07:00:06+0000\ten\t\t10\t\t\t\tJust a message." + System.lineSeparator(), result);
   }
 
   @Test

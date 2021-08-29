@@ -41,6 +41,7 @@ public class Message
   private String messageId;
   private Date sent;
   private String subject;
+  private String text;
 
   public String getAuthorId()
   {
@@ -130,5 +131,15 @@ public class Message
   public void setSubject(String subject)
   {
     this.subject = subject;
+  }
+
+  public String getText()
+  {
+    return text;
+  }
+
+  public void setText(String text)
+  {
+    this.text = text;
   }
 }

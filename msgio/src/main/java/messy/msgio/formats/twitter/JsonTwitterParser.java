@@ -216,7 +216,7 @@ public final class JsonTwitterParser
     final BigInteger id = msg.getId();
     result.setMessageId(id == null ? null : id.toString());
     result.setSent(msg.getCreatedAt());
-    result.setSubject(msg.getText());
+    result.setText(msg.getText());
     return result;
   }
 }
