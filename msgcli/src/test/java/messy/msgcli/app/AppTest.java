@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import org.junit.Test;
+import messy.msgcli.app.App.OutputFormat;
 
 public final class AppTest
 {
@@ -114,6 +115,26 @@ public final class AppTest
     final String result = out.toString(StandardCharsets.UTF_8.name());
     Assert.assertEquals("Application output identical to expected output.",
         "2012-01-01T07:00:06+0000\ten\t\t10\t\t\t\tJust a message." + System.lineSeparator(), result);
+  }
+
+  @Test
+  public void testMainJsonInputJsonOutputWorking() throws UnsupportedEncodingException
+  {
+    final InputStream tmpIn = System.in;
+    final PrintStream tmpOut = System.out;
+    final ByteArrayInputStream in = new ByteArrayInputStream(REGULAR_STATUS.getBytes(StandardCharsets.US_ASCII));
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    System.setIn(in);
+    System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8.name()));
+    final App.OutputFormat saveOutputFormat = App.getOutputFormat();
+    App.setOutputFormat(OutputFormat.JSON);
+    App.main(new String[]
+    {});
+    System.setIn(tmpIn);
+    System.setOut(tmpOut);
+    App.setOutputFormat(saveOutputFormat);
+    final String result = out.toString(StandardCharsets.UTF_8.name());
+    Assert.assertTrue("Application output stars with.", result.startsWith("{"));
   }
 
   @Test

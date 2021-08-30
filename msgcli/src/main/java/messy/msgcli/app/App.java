@@ -35,6 +35,8 @@ import messy.msgio.formats.imf.ImfConverter;
 import messy.msgio.formats.imf.ImfParser;
 import messy.msgio.formats.mbox.MboxReader;
 import messy.msgio.formats.twitter.JsonTwitterParser;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
 
 /**
  * Command-line application to provide messy conversion functionality.
@@ -50,6 +52,23 @@ public final class App
   {
     JSON, MBOX, UNKNOWN
   };
+
+  protected enum OutputFormat
+  {
+    JSON, TSV
+  };
+
+  private static OutputFormat outputFormat = OutputFormat.TSV;
+
+  public static OutputFormat getOutputFormat()
+  {
+    return outputFormat;
+  }
+
+  public static void setOutputFormat(OutputFormat outputFormat)
+  {
+    App.outputFormat = outputFormat;
+  }
 
   protected static DateFormat createFormatter()
   {
@@ -108,6 +127,32 @@ public final class App
   }
 
   protected static String format(Message msg, DateFormat formatter)
+  {
+    if (outputFormat == OutputFormat.TSV)
+    {
+      return formatTsv(msg, formatter);
+    }
+    else
+    {
+      return formatJson(msg, formatter);
+    }
+  }
+
+  protected static String formatJson(Message msg, DateFormat formatter)
+  {
+    final JSONObject res = new JSONObject();
+
+    res.put("sent", format(formatter, msg.getSent()));
+    res.put("msg_id", format(msg.getMessageId()));
+    res.put("author_id", format(msg.getAuthorId()));
+    res.put("author_name", format(msg.getAuthorName()));
+    res.put("subj", format(escape(msg.getSubject())));
+    res.put("text", format(escape(msg.getText())));
+
+    return JSONValue.toJSONString(res, JSONValue.COMPRESSION);
+  }
+
+  protected static String formatTsv(Message msg, DateFormat formatter)
   {
     final StringBuilder sb = new StringBuilder();
     final String sep = "\t";
