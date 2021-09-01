@@ -231,7 +231,8 @@ public final class App
       System.err.println("Could not identify input to be in a supported format.");
       return;
     }
-    try (BufferedReader in = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8)))
+    try (BufferedReader in = new BufferedReader(
+        new InputStreamReader(input, fileType == FileType.JSON ? StandardCharsets.UTF_8 : StandardCharsets.ISO_8859_1)))
     {
       if (fileType == FileType.JSON)
       {

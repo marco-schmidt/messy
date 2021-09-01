@@ -186,7 +186,15 @@ public class ImfConverter
   {
     final Message result = new Message();
     parseFrom(result, lookup);
+    decodeBody(message, result, lookup);
     return result;
+  }
+
+  private void decodeBody(ImfMessage message, Message result, Map<String, String> lookup)
+  {
+    final List<String> lines = ImfBodyDecoder.decodeText(message, lookup);
+    final String text = concatItems(lines, "\n");
+    result.setText(text);
   }
 
   private void parseFrom(Message result, Map<String, String> lookup)
@@ -229,13 +237,18 @@ public class ImfConverter
 
   protected String concatItems(List<String> elems)
   {
+    return concatItems(elems, " ");
+  }
+
+  protected String concatItems(List<String> elems, String delimiter)
+  {
     final StringBuilder sb = new StringBuilder();
     boolean later = false;
     for (final String elem : elems)
     {
       if (later)
       {
-        sb.append(' ');
+        sb.append(delimiter);
       }
       else
       {
