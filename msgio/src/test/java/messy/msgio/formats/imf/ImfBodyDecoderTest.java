@@ -121,7 +121,7 @@ public class ImfBodyDecoderTest
     final Map<String, String> attr = new HashMap<>();
     attr.put("charset", "utf-8");
 
-    final String cte = ImfBodyDecoder.CONTENT_TYPE_ENCODING_8_BIT;
+    final String cte = ImfBodyDecoder.CONTENT_TRANSFER_ENCODING_8_BIT;
     final String ct = ImfBodyDecoder.DEFAULT_CONTENT_TYPE;
 
     final List<String> list = ImfBodyDecoder.decodeLines(input, cte, ct, attr);
@@ -133,7 +133,7 @@ public class ImfBodyDecoderTest
   }
 
   @Test
-  public void testDecodeLinesUnknwonCharset()
+  public void testDecodeLinesUnknownCharset()
   {
     final List<String> input = new ArrayList<>();
     final String expected = "test 123";
@@ -142,7 +142,7 @@ public class ImfBodyDecoderTest
     final Map<String, String> attr = new HashMap<>();
     attr.put("charset", "this is not a correct charset name");
 
-    final String cte = ImfBodyDecoder.CONTENT_TYPE_ENCODING_8_BIT;
+    final String cte = ImfBodyDecoder.CONTENT_TRANSFER_ENCODING_8_BIT;
     final String ct = ImfBodyDecoder.DEFAULT_CONTENT_TYPE;
 
     final List<String> list = ImfBodyDecoder.decodeLines(input, cte, ct, attr);
@@ -151,5 +151,38 @@ public class ImfBodyDecoderTest
     Assert.assertEquals("Expect list size 1.", 1, list.size());
     final String actual = list.get(0);
     Assert.assertEquals("Expect identical input line.", expected, actual);
+  }
+
+  @Test
+  public void testDecodeLinesBase64()
+  {
+    final List<String> input = new ArrayList<>();
+    input.add("SGksDQoNCnRoaXMgaXMgYSBzYW1wbGUgdGV4dCB0byBiZSBlbmNvZGVkIGluIGJhc2U2NCBz");
+    input.add("byB0aGF0IGl0IGNhbiBiZQ0KZGVjb2RlZCBhZ2FpbiBpbiBhIHVuaXQgdGVzdC4gV2hhdCBl");
+    input.add("bHNlIGlzIHRoZXJlIHRvIHNheT8NCg0KS2luZCByZWdhcmRzLA0KLS0gdGhlIGF1dGhvcg0K");
+
+    final List<String> expected = new ArrayList<>();
+    expected.add("Hi,");
+    expected.add("");
+    expected.add("this is a sample text to be encoded in base64 so that it can be");
+    expected.add("decoded again in a unit test. What else is there to say?");
+    expected.add("");
+    expected.add("Kind regards,");
+    expected.add("-- the author");
+
+    final Map<String, String> attr = new HashMap<>();
+    attr.put("charset", "us-ascii");
+
+    final String cte = ImfBodyDecoder.CONTENT_TRANSFER_ENCODING_BASE_64;
+    final String ct = ImfBodyDecoder.DEFAULT_CONTENT_TYPE;
+
+    final List<String> list = ImfBodyDecoder.decodeLines(input, cte, ct, attr);
+
+    Assert.assertNotNull("Expect non-null result.", list);
+    Assert.assertEquals("Expect certain list size.", expected.size(), list.size());
+    for (int i = 0; i < expected.size(); i++)
+    {
+      Assert.assertEquals("Expect identical line #" + i, expected.get(i), list.get(i));
+    }
   }
 }

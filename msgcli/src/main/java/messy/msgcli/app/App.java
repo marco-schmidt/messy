@@ -146,7 +146,7 @@ public final class App
     res.put("msg_id", format(msg.getMessageId()));
     res.put("author_id", format(msg.getAuthorId()));
     res.put("author_name", format(msg.getAuthorName()));
-    res.put("subj", format(escape(msg.getSubject())));
+    res.put("subject", format(escape(msg.getSubject())));
     res.put("text", format(escape(msg.getText())));
 
     return JSONValue.toJSONString(res, JSONValue.COMPRESSION);
