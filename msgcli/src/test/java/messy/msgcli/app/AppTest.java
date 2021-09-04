@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import messy.msgcli.app.App.OutputFormat;
@@ -188,6 +190,16 @@ public final class AppTest
     final String result = out.toString(StandardCharsets.UTF_8.name());
     Assert.assertEquals("Application output identical to expected output.",
         "Could not identify input to be in a supported format." + System.lineSeparator(), result);
+  }
+
+  @Test
+  public void testFormatStringList()
+  {
+    final List<String> input = new ArrayList<>();
+    final String value = "comp.os";
+    input.add(value);
+    final Object output = App.format(input);
+    Assert.assertEquals("Formatted value as expected.", "[\"" + value + "\"]", output.toString());
   }
 
   @Test

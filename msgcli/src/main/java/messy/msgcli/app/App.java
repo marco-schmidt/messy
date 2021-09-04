@@ -156,7 +156,7 @@ public final class App
     return JSONValue.toJSONString(res, JSONValue.COMPRESSION);
   }
 
-  private static Object format(List<String> items)
+  protected static Object format(List<String> items)
   {
     final JSONArray result = new JSONArray();
     if (items != null)
