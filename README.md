@@ -60,8 +60,8 @@ unzip -p /path/to/twitter-stream-2021-01-01.zip|/path/to/installed/msgcli/bin/ms
 ## Technology Stack
 
 * Written in Java 8, using [Adoptium](https://adoptium.net) (but any JDK version 8 or higher should do).
-* Build tool gradle, as a multi-project build with the gradle wrapper.
-* Hosted in a public git repository at GitHub.
+* Build tool [gradle](https://gradle.org/), as a multi-project build with the gradle wrapper.
+* Hosted in a public git repository at [GitHub](https://github.com/).
 * Continuous integration with GitHub Workflow Java CI.
 * Dependencies:
     * JUnit for unit tests,
@@ -84,7 +84,7 @@ unzip -p /path/to/twitter-stream-2021-01-01.zip|/path/to/installed/msgcli/bin/ms
 ## Development Setup
 
 * Install JDK 8 or higher on the system.
-* Set environment variable JAVA_HOME to the JDK installation path, include its bin subdirectory in PATH variable. Run javac -version and possbily which java to make sure that the right Java compiler and virtual machine are available now.
+* Set environment variable JAVA_HOME to the JDK installation path, include its bin subdirectory in PATH variable. Run ``javac -version`` and possibly ``which java`` to make sure that the right Java compiler and virtual machine are available now.
 * Clone the messy git repository.
-* Navigate to cloned working copy and run ./gradlew check as an initial toolchain check.
-* Install Eclipse IDE, run ./gradlew eclipse in the cloned working copy, open Eclipse and import projects msg*.
+* Navigate to cloned working copy and run ``./gradlew check`` as an initial toolchain check.
+* Install Eclipse IDE, run ``./gradlew eclipse`` in the cloned working copy, open Eclipse and import projects msg*.
