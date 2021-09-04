@@ -37,6 +37,7 @@ import messy.msgio.formats.imf.ImfParser;
 import messy.msgio.formats.mbox.MboxReader;
 import messy.msgio.formats.twitter.JsonTwitterParser;
 import messy.msgio.utils.StringUtils;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 
@@ -157,7 +158,15 @@ public final class App
 
   private static Object format(List<String> items)
   {
-    return StringUtils.concatItems(items, ",");
+    final JSONArray result = new JSONArray();
+    if (items != null)
+    {
+      for (final String item : items)
+      {
+        result.add(item);
+      }
+    }
+    return result;
   }
 
   protected static String formatTsv(Message msg, DateFormat formatter)
