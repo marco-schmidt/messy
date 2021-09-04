@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import messy.msgdata.formats.Message;
@@ -35,6 +36,7 @@ import messy.msgio.formats.imf.ImfConverter;
 import messy.msgio.formats.imf.ImfParser;
 import messy.msgio.formats.mbox.MboxReader;
 import messy.msgio.formats.twitter.JsonTwitterParser;
+import messy.msgio.utils.StringUtils;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 
@@ -148,8 +150,14 @@ public final class App
     res.put("author_name", format(msg.getAuthorName()));
     res.put("subject", format(escape(msg.getSubject())));
     res.put("text", format(escape(msg.getText())));
+    res.put("groups", format(msg.getGroups()));
 
     return JSONValue.toJSONString(res, JSONValue.COMPRESSION);
+  }
+
+  private static Object format(List<String> items)
+  {
+    return StringUtils.concatItems(items, ",");
   }
 
   protected static String formatTsv(Message msg, DateFormat formatter)
@@ -168,6 +176,8 @@ public final class App
     sb.append(format(msg.getAuthorId()));
     sb.append(sep);
     sb.append(format(msg.getAuthorName()));
+    sb.append(sep);
+    sb.append(format(escape(StringUtils.concatItems(msg.getGroups(), ","))));
     sb.append(sep);
     sb.append(format(escape(msg.getSubject())));
     sb.append(sep);

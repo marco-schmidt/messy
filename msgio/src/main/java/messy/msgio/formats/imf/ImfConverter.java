@@ -31,6 +31,7 @@ import messy.msgdata.formats.Message;
 import messy.msgdata.formats.imf.ImfHeaderField;
 import messy.msgdata.formats.imf.ImfHeaderList;
 import messy.msgdata.formats.imf.ImfMessage;
+import messy.msgio.utils.StringUtils;
 
 /**
  * Convert {@link ImfMessage} to {@link Message} objects.
@@ -186,6 +187,7 @@ public class ImfConverter
   {
     final Message result = new Message();
     parseFrom(result, lookup);
+    result.setGroups(StringUtils.splitAndClean(lookup.get("newsgroups"), ","));
     decodeBody(message, result, lookup);
     return result;
   }
@@ -193,7 +195,7 @@ public class ImfConverter
   private void decodeBody(ImfMessage message, Message result, Map<String, String> lookup)
   {
     final List<String> lines = ImfBodyDecoder.decodeText(message, lookup);
-    final String text = concatItems(lines, "\n");
+    final String text = StringUtils.concatItems(lines, "\n");
     result.setText(text);
   }
 
@@ -235,30 +237,6 @@ public class ImfConverter
     return s;
   }
 
-  protected String concatItems(List<String> elems)
-  {
-    return concatItems(elems, " ");
-  }
-
-  protected String concatItems(List<String> elems, String delimiter)
-  {
-    final StringBuilder sb = new StringBuilder();
-    boolean later = false;
-    for (final String elem : elems)
-    {
-      if (later)
-      {
-        sb.append(delimiter);
-      }
-      else
-      {
-        later = true;
-      }
-      sb.append(elem);
-    }
-    return sb.toString();
-  }
-
   protected void extractAuthor(Message result, String from)
   {
     if (from == null)
@@ -287,7 +265,7 @@ public class ImfConverter
     }
 
     result.setAuthorId(mailAddress);
-    result.setAuthorName(concatItems(nameElements));
+    result.setAuthorName(StringUtils.concatItems(nameElements));
   }
 
   private Message convertPreRfc850(Map<String, String> lookup, ImfMessage message)

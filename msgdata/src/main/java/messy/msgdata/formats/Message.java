@@ -16,6 +16,7 @@
 package messy.msgdata.formats;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * General message data class.
@@ -36,6 +37,7 @@ public class Message
   private String authorName;
   private String countryCode;
   private String format;
+  private List<String> groups;
   private String languageCode;
   private String medium;
   private String messageId;
@@ -81,6 +83,16 @@ public class Message
   public void setFormat(String format)
   {
     this.format = format;
+  }
+
+  public List<String> getGroups()
+  {
+    return groups;
+  }
+
+  public void setGroups(List<String> groups)
+  {
+    this.groups = groups;
   }
 
   public String getLanguageCode()

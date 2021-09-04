@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.anews.ANewsMessage;
+import messy.msgio.utils.StringUtils;
 
 /**
  * Converts between {@link messy.msgdata.formats.anews.ANewsMessage} and other message representations.
@@ -97,6 +98,7 @@ public final class ANewsMessageConverter
     result.setFormat(FORMAT_A_NEWS_NETNEWS);
     result.setMedium(Message.MEDIUM_USENET);
     result.setMessageId(msg.getMessageId());
+    result.setGroups(StringUtils.splitAndClean(msg.getNewsgroups(), ","));
     result.setSent(msg.getDate());
     result.setSubject(msg.getSubject());
     return result;

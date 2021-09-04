@@ -18,6 +18,7 @@ package messy.msgio.formats.imf;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
@@ -60,6 +61,10 @@ public class ImfConverterTest
     final Message output = converter.convert(input);
     Assert.assertNotNull("Expect non-null result.", output);
     Assert.assertEquals("Expect identical subject.", title, output.getSubject());
+    final List<String> groups = output.getGroups();
+    Assert.assertNotNull("Expect non-null groups.", groups);
+    Assert.assertEquals("Expect one group.", 1, groups.size());
+    Assert.assertEquals("Expect certain group.", newsgroups, groups.get(0));
   }
 
   @Test

@@ -31,11 +31,11 @@ public final class AppTest
   private static final String REGULAR_STATUS = "{\"created_at\":\"Sun Jan 01 07:00:06 +0000 2012\",\"id\":10,\"lang\":\"en\",\"text\":\"Just a message.\"}";
   private static final String TWEET_CORRUPTED = "{\"crea";
   private static final String MESSAGE_ID = "<msgid-1@example.org>";
-  private static final String NEWAGROUP_1 = "comp.tools";
-  private static final String MAIL_ADSRESS = "name@example.org";
+  private static final String NEWSGROUP_1 = "comp.tools";
+  private static final String MAIL_ADDRESS = "name@example.org";
   private static final String AUTHOR_NAME = "Person B. Name";
-  private static final String REGULAR_MBOX = "From <" + MAIL_ADSRESS + "> Sun Oct 17 12:03:20 2004\n" + "Message-ID: "
-      + MESSAGE_ID + "\n" + "From: \"" + AUTHOR_NAME + "\" <" + MAIL_ADSRESS + ">\n" + "Newsgroups: " + NEWAGROUP_1
+  private static final String REGULAR_MBOX = "From <" + MAIL_ADDRESS + "> Sun Oct 17 12:03:20 2004\n" + "Message-ID: "
+      + MESSAGE_ID + "\n" + "From: \"" + AUTHOR_NAME + "\" <" + MAIL_ADDRESS + ">\n" + "Newsgroups: " + NEWSGROUP_1
       + "\n" + "\n" + "Body.";
   private static final String MBOX_MISSING = "From <guestœexample.org> Sun Oct 17 12:03:20 2004\n" + "Message-ID: "
       + MESSAGE_ID + "\n" + "\n" + "Body.";
@@ -114,7 +114,7 @@ public final class AppTest
     System.setOut(tmpOut);
     final String result = out.toString(StandardCharsets.UTF_8.name());
     Assert.assertEquals("Application output identical to expected output.",
-        "2012-01-01T07:00:06+0000\ten\t\t10\t\t\t\tJust a message." + System.lineSeparator(), result);
+        "2012-01-01T07:00:06+0000\ten\t\t10\t\t\t\t\tJust a message." + System.lineSeparator(), result);
   }
 
   @Test
