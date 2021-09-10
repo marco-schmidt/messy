@@ -17,8 +17,10 @@ package messy.msgio.formats.imf;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
@@ -147,5 +149,19 @@ public class ImfConverterTest
     Assert.assertEquals("Empty input leads to empty result.", "", conv.removeUnwantedFirst("", unwanted));
     Assert.assertNull("Null input leads to null result.", conv.removeUnwantedLast(null, unwanted));
     Assert.assertEquals("Empty input leads to empty result.", "", conv.removeUnwantedLast("", unwanted));
+  }
+
+  @Test
+  public void testDecodeBodyNoTextPlain()
+  {
+    final ImfConverter conv = new ImfConverter();
+    final ImfHeaderList headerList = new ImfHeaderList();
+    final ImfMessage inMsg = new ImfMessage(headerList, new ArrayList<>());
+    final Message outMsg = new Message();
+    final Map<String, String> headers = new HashMap<>();
+    headers.put("content-transfer-encoding", "7bit");
+    headers.put("content-type", "text/other");
+    conv.decodeBody(inMsg, outMsg, headers);
+    Assert.assertEquals("Empty message text.", "", outMsg.getText());
   }
 }

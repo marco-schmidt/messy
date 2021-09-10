@@ -15,6 +15,8 @@
  */
 package messy.msgdata.formats.imf;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import messy.msgdata.formats.RawMessage;
 
@@ -32,6 +34,7 @@ public class ImfMessage
 
   private ImfHeaderList headerList;
   private List<String> bodyLines;
+  private List<ImfBodySection> bodySections;
   private RawMessage rawMessage;
 
   public ImfMessage(ImfHeaderList headers, List<String> body, RawMessage msg)
@@ -39,6 +42,7 @@ public class ImfMessage
     setHeaderList(headers);
     setBodyLines(body);
     setRawMessage(msg);
+    setBodySections(new ArrayList<>());
   }
 
   public ImfMessage(ImfHeaderList headers, List<String> body)
@@ -61,6 +65,16 @@ public class ImfMessage
     bodyLines = body;
   }
 
+  public List<ImfBodySection> getBodySections()
+  {
+    return bodySections;
+  }
+
+  public void setBodySections(List<ImfBodySection> bodySections)
+  {
+    this.bodySections = bodySections;
+  }
+
   private void setHeaderList(ImfHeaderList headers)
   {
     headerList = headers;
@@ -74,5 +88,27 @@ public class ImfMessage
   private void setRawMessage(RawMessage msg)
   {
     rawMessage = msg;
+  }
+
+  /**
+   * Find first {@link ImfBodySection} in list of body sections with the argument content type.
+   *
+   * @param contentType
+   *          type for which to search
+   * @return first matching body section or null
+   */
+  public ImfBodySection findSectionByContentType(String contentType)
+  {
+    final Iterator<ImfBodySection> iter = bodySections.iterator();
+    while (iter.hasNext())
+    {
+      final ImfBodySection section = iter.next();
+      final String sectionContentType = section.getContentType();
+      if (sectionContentType.equals(contentType))
+      {
+        return section;
+      }
+    }
+    return null;
   }
 }

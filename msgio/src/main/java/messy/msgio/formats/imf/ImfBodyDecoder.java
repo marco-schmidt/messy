@@ -24,11 +24,13 @@ import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
+import messy.msgdata.formats.imf.ImfBodySection;
+import messy.msgdata.formats.imf.ImfHeaderList;
 import messy.msgdata.formats.imf.ImfMessage;
 
 /**
@@ -38,6 +40,10 @@ import messy.msgdata.formats.imf.ImfMessage;
  */
 public final class ImfBodyDecoder
 {
+  /**
+   * Normalized IMF header name for content transfer encoding.
+   */
+  public static final String CONTENT_TRANSFER_ENCODING = "content-transfer-encoding";
   /**
    * IMF content transfer encoding 7 bit.
    */
@@ -51,13 +57,31 @@ public final class ImfBodyDecoder
    */
   public static final String CONTENT_TRANSFER_ENCODING_BASE_64 = "base64";
   /**
+   * Content type prefix for multiple parts (used with MIME).
+   */
+  public static final String CONTENT_TYPE_MULTIPART_PREFIX = "multipart";
+  /**
+   * Content type text / plain.
+   */
+  public static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
+  /**
    * Default content type for IMF, text/plain.
    */
-  public static final String DEFAULT_CONTENT_TYPE = "text/plain";
+  public static final String DEFAULT_CONTENT_TYPE = CONTENT_TYPE_TEXT_PLAIN;
+  /**
+   * Content type attribute boundary (used with MIME).
+   */
+  public static final String CONTENT_TYPE_ATTR_BOUNDARY = "boundary";
+  /**
+   * Content type attribute character set (used with MIME).
+   */
+  public static final String CONTENT_TYPE_ATTR_CHARSET = "charset";
+
   private static final Map<String, Charset> CHARSET_MAP = new HashMap<>();
   private static final Set<String> KNOWN_CONTENT_TRANSFER_ENCODINGS = new HashSet<>();
   static
   {
+    // this could be Set.of in Java 9+
     KNOWN_CONTENT_TRANSFER_ENCODINGS.add(CONTENT_TRANSFER_ENCODING_7_BIT);
     KNOWN_CONTENT_TRANSFER_ENCODINGS.add(CONTENT_TRANSFER_ENCODING_8_BIT);
     KNOWN_CONTENT_TRANSFER_ENCODINGS.add(CONTENT_TRANSFER_ENCODING_BASE_64);
@@ -71,8 +95,7 @@ public final class ImfBodyDecoder
   private static void populateCharsetMap(Map<String, Charset> charsetMap)
   {
     CHARSET_MAP.clear();
-    final SortedMap<String, Charset> availableCharsets = Charset.availableCharsets();
-    for (final Map.Entry<String, Charset> entry : availableCharsets.entrySet())
+    for (final Map.Entry<String, Charset> entry : Charset.availableCharsets().entrySet())
     {
       final Charset charset = entry.getValue();
       final String normName = entry.getKey().toLowerCase(Locale.ROOT);
@@ -155,7 +178,7 @@ public final class ImfBodyDecoder
   protected static List<String> decodeLines(List<String> bodyLines, String contentTransferEncoding, String contentType,
       Map<String, String> contentTypeAttr)
   {
-    String charsetName = contentTypeAttr.get("charset");
+    String charsetName = contentTypeAttr.get(CONTENT_TYPE_ATTR_CHARSET);
     if (charsetName == null)
     {
       return bodyLines;
@@ -197,19 +220,24 @@ public final class ImfBodyDecoder
     return Arrays.asList(strings);
   }
 
-  public static List<String> decodeText(ImfMessage message, Map<String, String> headers)
+  public static void decode(ImfMessage message, Map<String, String> headers)
   {
-    // make sure content type encoding is supported
-    String cte = headers.get("content-transfer-encoding");
-    if (cte == null)
+    final ImfBodySection section = decodeSection(message, headers, message.getBodyLines());
+    final String contentType = section.getContentType();
+    final boolean mime = contentType.startsWith(CONTENT_TYPE_MULTIPART_PREFIX + "/");
+    if (mime)
     {
-      cte = CONTENT_TRANSFER_ENCODING_8_BIT;
+      decodeMime(message, headers, section);
     }
-    cte = cte.trim().toLowerCase(Locale.ROOT);
-    if (!KNOWN_CONTENT_TRANSFER_ENCODINGS.contains(cte))
+    else
     {
-      return new ArrayList<>();
+      message.getBodySections().add(section);
     }
+  }
+
+  private static ImfBodySection decodeSection(ImfMessage message, Map<String, String> headers, List<String> textLines)
+  {
+    final ImfBodySection result = new ImfBodySection();
 
     // extract content type
     final StringBuilder contentTypeBuilder = new StringBuilder();
@@ -224,7 +252,88 @@ public final class ImfBodyDecoder
     {
       contentType = contentTypeBuilder.toString();
     }
+    result.setContentType(contentType);
+    result.setContentTypeAttributes(contentTypeAttr);
 
-    return decodeLines(message.getBodyLines(), cte, contentType, contentTypeAttr);
+    // make sure content type encoding is supported
+    String cte = headers.get(CONTENT_TRANSFER_ENCODING);
+    if (cte == null)
+    {
+      cte = CONTENT_TRANSFER_ENCODING_8_BIT;
+    }
+    cte = cte.trim().toLowerCase(Locale.ROOT);
+    if (!KNOWN_CONTENT_TRANSFER_ENCODINGS.contains(cte))
+    {
+      result.setLines(new ArrayList<>());
+      return result;
+    }
+
+    if (!contentType.startsWith(CONTENT_TYPE_MULTIPART_PREFIX))
+    {
+      final List<String> decodedLines = decodeLines(textLines, cte, contentType, contentTypeAttr);
+      result.setLines(decodedLines);
+    }
+    return result;
+  }
+
+  private static void decodeMime(ImfMessage message, Map<String, String> headers, ImfBodySection section)
+  {
+    final Map<String, String> contentTypeAttr = section.getContentTypeAttributes();
+    final String boundary = contentTypeAttr.get(CONTENT_TYPE_ATTR_BOUNDARY);
+    if (boundary == null)
+    {
+      return;
+    }
+    final List<List<String>> stringLists = new ArrayList<>();
+    final List<String> bodyLines = message.getBodyLines();
+    List<String> currentList = null;
+    final Iterator<String> iter = bodyLines.iterator();
+    while (iter.hasNext())
+    {
+      final String line = iter.next();
+      if (boundary.equals(line))
+      {
+        currentList = new ArrayList<>();
+        stringLists.add(currentList);
+      }
+      else
+      {
+        if (currentList != null)
+        {
+          currentList.add(line);
+        }
+      }
+    }
+    decodeMultipartSections(message, stringLists);
+  }
+
+  private static void decodeMultipartSections(ImfMessage message, List<List<String>> stringLists)
+  {
+    final List<ImfBodySection> bodySections = message.getBodySections();
+    for (final List<String> list : stringLists)
+    {
+      final ImfBodySection section = decodeMultipartSection(message, list);
+      bodySections.add(section);
+    }
+  }
+
+  private static ImfBodySection decodeMultipartSection(ImfMessage message, List<String> list)
+  {
+    final List<String> headerLines = new ArrayList<>();
+    final Iterator<String> iter = list.iterator();
+    while (iter.hasNext())
+    {
+      final String line = iter.next();
+      iter.remove();
+      if (line.isEmpty())
+      {
+        break;
+      }
+      headerLines.add(line);
+    }
+
+    final ImfHeaderList headerList = new ImfParser().createMessageHeaderList(headerLines);
+    final Map<String, String> lookup = new ImfConverter().createLookup(headerList);
+    return decodeSection(message, lookup, list);
   }
 }

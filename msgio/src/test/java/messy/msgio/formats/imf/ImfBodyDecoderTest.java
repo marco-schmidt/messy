@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
+import messy.msgdata.formats.imf.ImfBodySection;
 import messy.msgdata.formats.imf.ImfMessage;
 
 /**
@@ -89,25 +90,25 @@ public class ImfBodyDecoderTest
     Assert.assertNull("Expect null charset.", attrCharset);
   }
 
-  @Test
-  public void testDecodeTextNoContentTypeEncoding()
-  {
-    final Map<String, String> headers = new HashMap<>();
-    headers.put("content-type", "text/plain");
-    final List<String> list = ImfBodyDecoder.decodeText(new ImfMessage(null, new ArrayList<>()), headers);
-    Assert.assertNotNull("Expect non-null result.", list);
-    Assert.assertTrue("Expect empty result.", list.isEmpty());
-  }
-
-  @Test
-  public void testDecodeTextUnknownContentTypeEncoding()
-  {
-    final Map<String, String> headers = new HashMap<>();
-    headers.put("content-transfer-encoding", "unknown encoding");
-    final List<String> list = ImfBodyDecoder.decodeText(new ImfMessage(null, new ArrayList<>()), headers);
-    Assert.assertNotNull("Expect non-null result.", list);
-    Assert.assertTrue("Expect empty result.", list.isEmpty());
-  }
+  // @Test
+  // public void testDecodeTextNoContentTypeEncoding()
+  // {
+  // final Map<String, String> headers = new HashMap<>();
+  // headers.put("content-type", "text/plain");
+  // final List<String> list = ImfBodyDecoder.decodeText(new ImfMessage(null, new ArrayList<>()), headers);
+  // Assert.assertNotNull("Expect non-null result.", list);
+  // Assert.assertTrue("Expect empty result.", list.isEmpty());
+  // }
+  //
+  // @Test
+  // public void testDecodeTextUnknownContentTypeEncoding()
+  // {
+  // final Map<String, String> headers = new HashMap<>();
+  // headers.put("content-transfer-encoding", "unknown encoding");
+  // final List<String> list = ImfBodyDecoder.decodeText(new ImfMessage(null, new ArrayList<>()), headers);
+  // Assert.assertNotNull("Expect non-null result.", list);
+  // Assert.assertTrue("Expect empty result.", list.isEmpty());
+  // }
 
   @Test
   public void testDecodeLinesCorrectlyUtf8()
@@ -184,5 +185,85 @@ public class ImfBodyDecoderTest
     {
       Assert.assertEquals("Expect identical line #" + i, expected.get(i), list.get(i));
     }
+  }
+
+  @Test
+  public void testDecodeMimeNoBoundary()
+  {
+    final Map<String, String> headers = new HashMap<>();
+    headers.put("content-type", "multipart/mixed");
+    final ImfMessage msg = new ImfMessage(null, null);
+    ImfBodyDecoder.decode(msg, headers);
+    Assert.assertEquals("Expect one body section.", 0, msg.getBodySections().size());
+  }
+
+  @Test
+  public void testDecodeMime()
+  {
+    final Map<String, String> headers = new HashMap<>();
+    final String bound = "----bound";
+    final String msgText = "Hi, this is the only plain text line.";
+    headers.put("content-type", "multipart/mixed; boundary=\"" + bound + "\"");
+    final List<String> body = new ArrayList<>();
+    body.add("");
+    body.add(bound);
+    body.add("Content-Type: text/plain; charset=us-ascii");
+    body.add("Content-Transfer-Encoding: 7bit");
+    body.add("");
+    body.add(msgText);
+    body.add(bound);
+    body.add("Content-Type: text/html; charset=us-ascii");
+    body.add("Content-Transfer-Encoding: 7bit");
+    body.add("");
+    body.add("<html><body>" + msgText + "</body></html");
+
+    final ImfMessage msg = new ImfMessage(null, body);
+    ImfBodyDecoder.decode(msg, headers);
+    Assert.assertEquals("Expect two body sections.", 2, msg.getBodySections().size());
+    final ImfBodySection nonExisting = msg.findSectionByContentType("invalid/type");
+    Assert.assertNull("Expect to not find non-existing body section.", nonExisting);
+    final ImfBodySection section = msg.findSectionByContentType(ImfBodyDecoder.CONTENT_TYPE_TEXT_PLAIN);
+    Assert.assertNotNull("Expect plain text body section.", section);
+    final List<String> lines = section.getLines();
+    Assert.assertEquals("Expect one line in plain text body section.", 1, lines.size());
+    Assert.assertEquals("Expect original message.", msgText, lines.get(0));
+  }
+
+  @Test
+  public void testDecodeMimeEmptyPart()
+  {
+    final Map<String, String> headers = new HashMap<>();
+    final String bound = "----bound";
+    final String msgText = "<html><body>This is HTML.</body></html";
+    headers.put("content-type", "multipart/mixed; boundary=\"" + bound + "\"");
+    final List<String> body = new ArrayList<>();
+    body.add("");
+    body.add(bound);
+    body.add(bound);
+    body.add("Content-Type: text/html; charset=us-ascii");
+    body.add("Content-Transfer-Encoding: 7bit");
+    body.add("");
+    body.add(msgText);
+
+    final ImfMessage msg = new ImfMessage(null, body);
+    ImfBodyDecoder.decode(msg, headers);
+    Assert.assertEquals("Expect two body sections.", 2, msg.getBodySections().size());
+    final ImfBodySection section = msg.findSectionByContentType("text/html");
+    Assert.assertNotNull("Expect html text body section.", section);
+    final List<String> lines = section.getLines();
+    Assert.assertEquals("Expect one line in plain text body section.", 1, lines.size());
+    Assert.assertEquals("Expect original message.", msgText, lines.get(0));
+  }
+
+  @Test
+  public void testDecodeUnknownContentTransferEncoding()
+  {
+    final Map<String, String> headers = new HashMap<>();
+    headers.put("content-transfer-encoding", "invalid-encoding-name");
+    headers.put("content-type", "text/plain");
+    final List<String> body = new ArrayList<>();
+    final ImfMessage msg = new ImfMessage(null, body);
+    ImfBodyDecoder.decode(msg, headers);
+    Assert.assertEquals("Expect one body section.", 1, msg.getBodySections().size());
   }
 }

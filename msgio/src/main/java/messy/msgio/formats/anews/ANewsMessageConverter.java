@@ -98,7 +98,7 @@ public final class ANewsMessageConverter
     result.setFormat(FORMAT_A_NEWS_NETNEWS);
     result.setMedium(Message.MEDIUM_USENET);
     result.setMessageId(msg.getMessageId());
-    result.setGroups(StringUtils.splitAndClean(msg.getNewsgroups(), ","));
+    result.setGroups(StringUtils.splitAndNormalize(msg.getNewsgroups(), ","));
     result.setSent(msg.getDate());
     result.setSubject(msg.getSubject());
     return result;

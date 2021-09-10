@@ -24,7 +24,7 @@ public class StringUtilsTest
   @Test
   public void testSplitAndCleanNull()
   {
-    final List<String> result = StringUtils.splitAndClean(null, ",");
+    final List<String> result = StringUtils.splitAndNormalize(null, ",");
     Assert.assertNotNull("Null input leads to non-null output.", result);
     Assert.assertTrue("Result is empty.", result.isEmpty());
   }
@@ -32,7 +32,7 @@ public class StringUtilsTest
   @Test
   public void testSplitAndCleanEmpty()
   {
-    final List<String> result = StringUtils.splitAndClean("a,, ,", ",");
+    final List<String> result = StringUtils.splitAndNormalize("a,, ,", ",");
     Assert.assertNotNull("Non-null input leads to null output.", result);
     Assert.assertEquals("Result has one element.", 1, result.size());
     Assert.assertEquals("Result element is 'a'.", "a", result.get(0));

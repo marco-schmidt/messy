@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import jakarta.mail.internet.MimeUtility;
 import messy.msgdata.formats.Message;
+import messy.msgdata.formats.imf.ImfBodySection;
 import messy.msgdata.formats.imf.ImfHeaderField;
 import messy.msgdata.formats.imf.ImfHeaderList;
 import messy.msgdata.formats.imf.ImfMessage;
@@ -78,7 +79,7 @@ public class ImfConverter
     UNWANTED_MAIL_CHARS.add(Character.valueOf(')'));
   }
 
-  private Map<String, String> createLookup(ImfHeaderList list)
+  protected Map<String, String> createLookup(ImfHeaderList list)
   {
     final Map<String, String> result = new HashMap<>();
     for (int i = 0; i < list.size(); i++)
@@ -187,14 +188,16 @@ public class ImfConverter
   {
     final Message result = new Message();
     parseFrom(result, lookup);
-    result.setGroups(StringUtils.splitAndClean(lookup.get("newsgroups"), ","));
+    result.setGroups(StringUtils.splitAndNormalize(lookup.get("newsgroups"), ","));
     decodeBody(message, result, lookup);
     return result;
   }
 
-  private void decodeBody(ImfMessage message, Message result, Map<String, String> lookup)
+  protected void decodeBody(ImfMessage message, Message result, Map<String, String> lookup)
   {
-    final List<String> lines = ImfBodyDecoder.decodeText(message, lookup);
+    ImfBodyDecoder.decode(message, lookup);
+    final ImfBodySection section = message.findSectionByContentType(ImfBodyDecoder.CONTENT_TYPE_TEXT_PLAIN);
+    final List<String> lines = section == null ? new ArrayList<>() : section.getLines();
     final String text = StringUtils.concatItems(lines, "\n");
     result.setText(text);
   }

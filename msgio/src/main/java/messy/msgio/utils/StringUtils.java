@@ -52,7 +52,7 @@ public final class StringUtils
     return sb.toString();
   }
 
-  public static List<String> splitAndClean(String s, String delimiter)
+  public static List<String> splitAndNormalize(String s, String delimiter)
   {
     final List<String> result = new ArrayList<>();
     if (s == null)
