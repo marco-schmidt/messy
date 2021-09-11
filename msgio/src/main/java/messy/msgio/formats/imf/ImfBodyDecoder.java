@@ -15,6 +15,7 @@
  */
 package messy.msgio.formats.imf;
 
+import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -56,6 +57,10 @@ public final class ImfBodyDecoder
    * IMF content transfer encoding Base64.
    */
   public static final String CONTENT_TRANSFER_ENCODING_BASE_64 = "base64";
+  /**
+   * IMF content transfer encoding <em>quoted printable</em>.
+   */
+  public static final String CONTENT_TRANSFER_ENCODING_QUOTED_PRINTABLE = "quoted-printable";
   /**
    * Content type prefix for multiple parts (used with MIME).
    */
@@ -194,6 +199,10 @@ public final class ImfBodyDecoder
     {
       return decodeLinesBase64(bodyLines, charset);
     }
+    if (CONTENT_TRANSFER_ENCODING_QUOTED_PRINTABLE.equals(contentTransferEncoding))
+    {
+      return decodeLinesQuotedPrintable(bodyLines, charset);
+    }
 
     final List<String> result = new ArrayList<>(bodyLines.size());
     for (final String line : bodyLines)
@@ -218,6 +227,83 @@ public final class ImfBodyDecoder
     final String text = out.toString();
     final String[] strings = text.split("\r\n");
     return Arrays.asList(strings);
+  }
+
+  protected static byte[] decodeQuotedPrintable(String s)
+  {
+    if (s == null || s.isEmpty())
+    {
+      return new byte[0];
+    }
+    final int length = s.length();
+    final ByteArrayOutputStream out = new ByteArrayOutputStream(s.length());
+    int currentOffset = 0;
+    do
+    {
+      final char c = s.charAt(currentOffset++);
+      if (c == '=')
+      {
+        if (currentOffset + 1 >= length)
+        {
+          break;
+        }
+        final char c1 = s.charAt(currentOffset++);
+        final char c2 = s.charAt(currentOffset++);
+        final int value = Character.digit(c1, 16) * 16 + Character.digit(c2, 16);
+        out.write(value);
+      }
+      else
+      {
+        if (c == '_')
+        {
+          out.write(' ');
+        }
+        else
+        {
+          out.write(c & 0xff);
+        }
+      }
+    }
+    while (currentOffset < length);
+    return out.toByteArray();
+  }
+
+  protected static List<String> decodeLinesQuotedPrintable(List<String> bodyLines, Charset charset)
+  {
+    final List<String> result = new ArrayList<>();
+    byte[] buffer = null;
+    for (final String line : bodyLines)
+    {
+      final byte[] bytes = decodeQuotedPrintable(line);
+      buffer = concat(buffer, bytes);
+      final boolean spanned = line.endsWith("=");
+      if (!spanned)
+      {
+        final String outputLine = new String(buffer, charset);
+        result.add(outputLine);
+        buffer = null;
+      }
+    }
+    if (buffer != null)
+    {
+      result.add(new String(buffer, charset));
+    }
+    return result;
+  }
+
+  private static byte[] concat(byte[] buffer, byte[] bytes)
+  {
+    if (buffer == null)
+    {
+      return bytes;
+    }
+    else
+    {
+      final byte[] tmp = new byte[buffer.length + bytes.length];
+      System.arraycopy(buffer, 0, tmp, 0, buffer.length);
+      System.arraycopy(bytes, 0, tmp, buffer.length, bytes.length);
+      return tmp;
+    }
   }
 
   public static void decode(ImfMessage message, Map<String, String> headers)

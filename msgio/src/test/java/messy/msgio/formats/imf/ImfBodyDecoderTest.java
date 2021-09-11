@@ -266,4 +266,81 @@ public class ImfBodyDecoderTest
     ImfBodyDecoder.decode(msg, headers);
     Assert.assertEquals("Expect one body section.", 1, msg.getBodySections().size());
   }
+
+  @Test
+  public void testDecodeQuotedPrintable()
+  {
+    byte[] a = ImfBodyDecoder.decodeQuotedPrintable(null);
+    Assert.assertNotNull("Expect null input to lead to non-null output.", a);
+    Assert.assertEquals("Expect output length 0.", 0, a.length);
+    a = ImfBodyDecoder.decodeQuotedPrintable("");
+    Assert.assertNotNull("Expect empty input to lead to non-null output.", a);
+    Assert.assertEquals("Expect output length 0.", 0, a.length);
+    a = ImfBodyDecoder.decodeQuotedPrintable("=FC");
+    Assert.assertEquals("Expect output length 1.", 1, a.length);
+    Assert.assertEquals("Expect input character.", (byte) 0xfc, a[0]);
+    a = ImfBodyDecoder.decodeQuotedPrintable("=F");
+    Assert.assertEquals("Expect output length 0 for broken input.", 0, a.length);
+    a = ImfBodyDecoder.decodeQuotedPrintable("_");
+    Assert.assertEquals("Expect output length 1.", 1, a.length);
+    Assert.assertEquals("Expect input character.", (byte) 32, a[0]);
+    a = ImfBodyDecoder.decodeQuotedPrintable("AB");
+    Assert.assertEquals("Expect output length 2.", 2, a.length);
+    Assert.assertEquals("Expect input character.", (byte) 65, a[0]);
+    Assert.assertEquals("Expect input character.", (byte) 66, a[1]);
+  }
+
+  @Test
+  public void testDecodeLinesQuotedPrintableRegular()
+  {
+    final List<String> input = new ArrayList<>();
+    input.add("> > ich habe das Programm zwar nicht ausgef=FChrt, jedoch ist das meiner =");
+    input.add("Meinung");
+
+    final List<String> expected = new ArrayList<>();
+    expected.add("> > ich habe das Programm zwar nicht ausgeführt, jedoch ist das meiner Meinung");
+
+    final Map<String, String> attr = new HashMap<>();
+    attr.put("charset", "iso-8859-1");
+
+    final String cte = ImfBodyDecoder.CONTENT_TRANSFER_ENCODING_QUOTED_PRINTABLE;
+    final String ct = ImfBodyDecoder.DEFAULT_CONTENT_TYPE;
+
+    final List<String> list = ImfBodyDecoder.decodeLines(input, cte, ct, attr);
+
+    Assert.assertNotNull("Expect non-null result.", list);
+    Assert.assertEquals("Expect certain list size.", expected.size(), list.size());
+    for (int i = 0; i < expected.size(); i++)
+    {
+      Assert.assertEquals("Expect identical line #" + i, expected.get(i), list.get(i));
+    }
+  }
+
+  @Test
+  public void testDecodeLinesQuotedPrintableLastLineSpanned()
+  {
+    final List<String> input = new ArrayList<>();
+    input.add("> > ich habe das Programm zwar nicht ausgef=FChrt, jedoch ist das meiner =");
+    input.add("Meinung");
+    input.add("> > ich habe das Programm zwar nicht ausgef=FChrt, jedoch ist das meiner =");
+
+    final List<String> expected = new ArrayList<>();
+    expected.add("> > ich habe das Programm zwar nicht ausgeführt, jedoch ist das meiner Meinung");
+    expected.add("> > ich habe das Programm zwar nicht ausgeführt, jedoch ist das meiner ");
+
+    final Map<String, String> attr = new HashMap<>();
+    attr.put("charset", "iso-8859-1");
+
+    final String cte = ImfBodyDecoder.CONTENT_TRANSFER_ENCODING_QUOTED_PRINTABLE;
+    final String ct = ImfBodyDecoder.DEFAULT_CONTENT_TYPE;
+
+    final List<String> list = ImfBodyDecoder.decodeLines(input, cte, ct, attr);
+
+    Assert.assertNotNull("Expect non-null result.", list);
+    Assert.assertEquals("Expect certain list size.", expected.size(), list.size());
+    for (int i = 0; i < expected.size(); i++)
+    {
+      Assert.assertEquals("Expect identical line #" + i, expected.get(i), list.get(i));
+    }
+  }
 }
