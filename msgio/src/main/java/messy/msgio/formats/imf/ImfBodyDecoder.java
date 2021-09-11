@@ -92,14 +92,14 @@ public final class ImfBodyDecoder
   {
   }
 
-  private static void populateCharsetMap(Map<String, Charset> charsetMap)
+  private static void populateCharsetMap(final Map<String, Charset> charsetMap)
   {
-    CHARSET_MAP.clear();
+    charsetMap.clear();
     for (final Map.Entry<String, Charset> entry : Charset.availableCharsets().entrySet())
     {
       final Charset charset = entry.getValue();
       final String normName = entry.getKey().toLowerCase(Locale.ROOT);
-      CHARSET_MAP.put(normName, charset);
+      charsetMap.put(normName, charset);
     }
   }
 

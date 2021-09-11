@@ -52,6 +52,7 @@ public class ImfConverter
 
   // shared header field names
   private static final String FIELD_FROM = "from";
+  private static final String FIELD_NEWSGROUPS = "newsgroups";
 
   // header field names B News before RFC850
   private static final String FIELD_ARTICLE_ID = "article-i.d.";
@@ -72,6 +73,7 @@ public class ImfConverter
   private static final Set<Character> UNWANTED_MAIL_CHARS = new HashSet<>();
   static
   {
+    // with Java 9+ this should be Set.of
     UNWANTED_MAIL_CHARS.add(Character.valueOf('<'));
     UNWANTED_MAIL_CHARS.add(Character.valueOf('>'));
     UNWANTED_MAIL_CHARS.add(Character.valueOf('"'));
@@ -95,7 +97,7 @@ public class ImfConverter
   public Message convert(ImfMessage message)
   {
     final Map<String, String> lookup = createLookup(message.getHeaderList());
-    final String newsgroups = lookup.get("newsgroups");
+    final String newsgroups = lookup.get(FIELD_NEWSGROUPS);
     if (newsgroups == null)
     {
       return null;

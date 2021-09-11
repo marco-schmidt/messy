@@ -235,7 +235,7 @@ artifactId=${project.name}
   }
 
   checkstyle {
-    toolVersion '8.45.1'
+    toolVersion '9.0'
     ignoreFailures false
     showViolations true
     configDirectory = file("${rootDir}/config/checkstyle")
