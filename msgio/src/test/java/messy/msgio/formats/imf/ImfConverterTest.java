@@ -164,4 +164,61 @@ public class ImfConverterTest
     conv.decodeBody(inMsg, outMsg, headers);
     Assert.assertEquals("Empty message text.", "", outMsg.getText());
   }
+
+  @Test
+  public void testExtractArchive()
+  {
+    final ImfConverter conv = new ImfConverter();
+    final Message msg = new Message();
+    final List<String> lines = new ArrayList<>();
+    final Map<String, String> headers = new HashMap<>();
+    conv.parseArchiveStatus(msg, headers, lines);
+    Assert.assertNull("No headers or body lines, null output.", msg.getArchive());
+
+    msg.setArchive(null);
+    lines.add("something unrelated.");
+    conv.parseArchiveStatus(msg, headers, lines);
+    Assert.assertNull("No headers and unrelated first body line, null output.", msg.getArchive());
+
+    msg.setArchive(null);
+    lines.clear();
+    lines.add("x-no-archive: yes");
+    conv.parseArchiveStatus(msg, headers, lines);
+    Assert.assertEquals("No headers and XNAY first body line, output false.", Boolean.FALSE, msg.getArchive());
+
+    msg.setArchive(null);
+    lines.clear();
+    headers.put("x-no-archive", "yes");
+    conv.parseArchiveStatus(msg, headers, lines);
+    Assert.assertEquals("XNAY header and empty body line, output false.", Boolean.FALSE, msg.getArchive());
+
+    msg.setArchive(null);
+    lines.clear();
+    headers.clear();
+    headers.put("x-no-archive", "nonsense");
+    conv.parseArchiveStatus(msg, headers, lines);
+    Assert.assertNull("XNA header with value other than 'yes' and empty body line, output null.", msg.getArchive());
+
+    msg.setArchive(null);
+    lines.clear();
+    headers.clear();
+    headers.put("archive", "nonsense");
+    conv.parseArchiveStatus(msg, headers, lines);
+    Assert.assertNull("Archive header with value other than 'yes' or 'no' and empty body line, output null.",
+        msg.getArchive());
+
+    msg.setArchive(null);
+    lines.clear();
+    headers.clear();
+    headers.put("archive", "yes");
+    conv.parseArchiveStatus(msg, headers, lines);
+    Assert.assertEquals("Archive header with value 'yes', output true.", Boolean.TRUE, msg.getArchive());
+
+    msg.setArchive(null);
+    lines.clear();
+    headers.clear();
+    headers.put("archive", "no");
+    conv.parseArchiveStatus(msg, headers, lines);
+    Assert.assertEquals("Archive header with value 'no', output false.", Boolean.FALSE, msg.getArchive());
+  }
 }

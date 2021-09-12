@@ -145,6 +145,11 @@ public final class App
   {
     final JSONObject res = new JSONObject();
 
+    final Boolean archive = msg.getArchive();
+    if (archive != null)
+    {
+      res.put("archive", archive);
+    }
     res.put("sent", format(formatter, msg.getSent()));
     res.put("msg_id", format(msg.getMessageId()));
     res.put("author_id", format(msg.getAuthorId()));

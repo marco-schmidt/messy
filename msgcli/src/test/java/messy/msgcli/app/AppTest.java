@@ -27,6 +27,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import messy.msgcli.app.App.OutputFormat;
+import messy.msgdata.formats.Message;
 
 public final class AppTest
 {
@@ -248,5 +249,14 @@ public final class AppTest
     {});
     System.setIn(tmpIn);
     System.setOut(tmpOut);
+  }
+
+  @Test
+  public void testFormatJson() throws UnsupportedEncodingException
+  {
+    final Message msg = new Message();
+    msg.setArchive(Boolean.FALSE);
+    final String json = App.formatJson(msg, null);
+    Assert.assertTrue("Result contains archive false.", json.contains("\"archive\":false"));
   }
 }

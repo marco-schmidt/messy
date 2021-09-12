@@ -33,6 +33,7 @@ public class Message
    * Constant for medium Twitter.
    */
   public static final String MEDIUM_TWITTER = "twitter";
+  private Boolean archive;
   private String authorId;
   private String authorName;
   private String countryCode;
@@ -44,6 +45,16 @@ public class Message
   private Date sent;
   private String subject;
   private String text;
+
+  public Boolean getArchive()
+  {
+    return archive;
+  }
+
+  public void setArchive(Boolean archive)
+  {
+    this.archive = archive;
+  }
 
   public String getAuthorId()
   {

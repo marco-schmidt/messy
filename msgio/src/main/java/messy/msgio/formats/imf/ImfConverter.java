@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,8 +52,10 @@ public class ImfConverter
   public static final String FORMAT_IMF_NETNEWS_PRE_RFC_850 = "imf-netnews-pre-rfc850";
 
   // shared header field names
+  private static final String FIELD_ARCHIVE = "archive";
   private static final String FIELD_FROM = "from";
   private static final String FIELD_NEWSGROUPS = "newsgroups";
+  private static final String FIELD_X_NO_ARCHIVE = "x-no-archive";
 
   // header field names B News before RFC850
   private static final String FIELD_ARTICLE_ID = "article-i.d.";
@@ -202,6 +205,75 @@ public class ImfConverter
     final List<String> lines = section == null ? new ArrayList<>() : section.getLines();
     final String text = StringUtils.concatItems(lines, "\n");
     result.setText(text);
+    parseArchiveStatus(result, lookup, lines);
+  }
+
+  /**
+   * Parse <em>Archive:</em> header.
+   *
+   * @param value
+   *          value for that header
+   * @see https://datatracker.ietf.org/doc/html/rfc5536#section-3.2.2
+   * @return Boolean, possibly null
+   */
+  private Boolean parseArchiveHeader(String value)
+  {
+    if (value == null)
+    {
+      return null;
+    }
+    value = value.toLowerCase(Locale.ROOT);
+    if ("yes".equals(value))
+    {
+      return Boolean.TRUE;
+    }
+    if ("no".equals(value))
+    {
+      return Boolean.FALSE;
+    }
+    return null;
+  }
+
+  /**
+   * Parse <em>X-No-Archive</em> as header and in first line of body.
+   *
+   * @param value
+   *          possibly null value of X-No-Archive header
+   * @param lines
+   *          body lines
+   * @see https://en.wikipedia.org/wiki/X-No-Archive
+   * @return Boolean, either null or Boolean.FALSE
+   */
+  private Boolean parseXNoArchive(String value, List<String> lines)
+  {
+    if (value != null)
+    {
+      value = value.toLowerCase(Locale.ROOT);
+      if ("yes".equals(value))
+      {
+        return Boolean.FALSE;
+      }
+    }
+    final Iterator<String> iter = lines.iterator();
+    if (iter.hasNext())
+    {
+      final String line = iter.next().toLowerCase(Locale.ROOT).trim();
+      if (line.startsWith("x-no-archive: yes"))
+      {
+        return Boolean.FALSE;
+      }
+    }
+    return null;
+  }
+
+  protected void parseArchiveStatus(Message message, Map<String, String> lookup, List<String> lines)
+  {
+    Boolean result = parseArchiveHeader(lookup.get(FIELD_ARCHIVE));
+    if (result == null)
+    {
+      result = parseXNoArchive(lookup.get(FIELD_X_NO_ARCHIVE), lines);
+    }
+    message.setArchive(result);
   }
 
   private void parseFrom(Message result, Map<String, String> lookup)
