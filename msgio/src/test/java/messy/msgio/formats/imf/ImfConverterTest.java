@@ -221,4 +221,41 @@ public class ImfConverterTest
     conv.parseArchiveStatus(msg, headers, lines);
     Assert.assertEquals("Archive header with value 'no', output false.", Boolean.FALSE, msg.getArchive());
   }
+
+  @Test
+  public void testExtractOrigin()
+  {
+    final ImfConverter conv = new ImfConverter();
+    final Map<String, String> headers = new HashMap<>();
+
+    Message msg = new Message();
+    headers.clear();
+    headers.put("nntp-posting-host", "server.de");
+    conv.extractOrigin(msg, headers);
+    Assert.assertEquals("Extract correct language.", "de", msg.getCountryCode());
+
+    msg = new Message();
+    headers.clear();
+    String host = "example.org";
+    headers.put("nntp-posting-host", host);
+    conv.extractOrigin(msg, headers);
+    Assert.assertNull("Extract no language.", msg.getCountryCode());
+    Assert.assertEquals("Extract correct host.", host, msg.getPostingHost());
+
+    msg = new Message();
+    headers.clear();
+    host = "!invalid.org";
+    headers.put("nntp-posting-host", host);
+    conv.extractOrigin(msg, headers);
+    Assert.assertNull("Extract no language.", msg.getCountryCode());
+    Assert.assertNull("Extract no host.", msg.getPostingHost());
+
+    msg = new Message();
+    headers.clear();
+    final String ip = "127.0.0.1";
+    headers.put("nntp-posting-host", ip);
+    conv.extractOrigin(msg, headers);
+    Assert.assertEquals("Extract correct numerical IP.", Long.valueOf((127L << 24) + 1L), msg.getPostingIpv4Address());
+    Assert.assertEquals("Extract correct  IP.", ip, msg.getPostingIpAddress());
+  }
 }

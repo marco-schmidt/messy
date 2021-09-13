@@ -33,6 +33,7 @@ import messy.msgdata.formats.imf.ImfBodySection;
 import messy.msgdata.formats.imf.ImfHeaderField;
 import messy.msgdata.formats.imf.ImfHeaderList;
 import messy.msgdata.formats.imf.ImfMessage;
+import messy.msgio.utils.NetUtils;
 import messy.msgio.utils.StringUtils;
 
 /**
@@ -54,6 +55,10 @@ public class ImfConverter
   // shared header field names
   private static final String FIELD_ARCHIVE = "archive";
   private static final String FIELD_FROM = "from";
+  private static final String[] FIELDS_HOST = new String[]
+  {
+      "nntp-posting-host", "x-nntp-posting-host", "x-original-nntp-posting-host"
+  };
   private static final String FIELD_NEWSGROUPS = "newsgroups";
   private static final String FIELD_X_NO_ARCHIVE = "x-no-archive";
 
@@ -193,6 +198,7 @@ public class ImfConverter
   {
     final Message result = new Message();
     parseFrom(result, lookup);
+    extractOrigin(result, lookup);
     result.setGroups(StringUtils.splitAndNormalize(lookup.get("newsgroups"), ","));
     decodeBody(message, result, lookup);
     return result;
@@ -312,6 +318,47 @@ public class ImfConverter
       s = s.substring(0, lastIndex);
     }
     return s;
+  }
+
+  private void extractOrigin(Message msg, String headerValue)
+  {
+    if (headerValue == null)
+    {
+      return;
+    }
+    final String[] items = headerValue.split(" ");
+    for (final String item : items)
+    {
+      String cand = removeUnwantedFirst(item, UNWANTED_MAIL_CHARS);
+      cand = removeUnwantedLast(cand, UNWANTED_MAIL_CHARS);
+      final List<String> parts = StringUtils.splitAndNormalize(cand, "\\.");
+      final Long ipv4 = NetUtils.parseDottedQuadsIpv4(parts);
+      if (ipv4 == null)
+      {
+        if (NetUtils.isValidHostname(parts))
+        {
+          final String lastPart = parts.get(parts.size() - 1);
+          if (NetUtils.isCountryCode(lastPart))
+          {
+            msg.setCountryCode(lastPart);
+          }
+          msg.setPostingHost(cand);
+        }
+      }
+      else
+      {
+        msg.setPostingIpv4Address(ipv4);
+        msg.setPostingIpAddress(cand);
+      }
+    }
+  }
+
+  protected void extractOrigin(Message result, Map<String, String> lookup)
+  {
+    for (final String header : FIELDS_HOST)
+    {
+      extractOrigin(result, lookup.get(header));
+    }
   }
 
   protected void extractAuthor(Message result, String from)

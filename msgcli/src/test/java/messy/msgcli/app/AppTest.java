@@ -256,7 +256,14 @@ public final class AppTest
   {
     final Message msg = new Message();
     msg.setArchive(Boolean.FALSE);
+    msg.setPostingHost("example.org");
+    msg.setPostingIpAddress("117.0.0.3");
+    msg.setCountryCode("uk");
+    msg.setPostingIpv4Address(Long.valueOf(117 << 24L | 3));
     final String json = App.formatJson(msg, null);
     Assert.assertTrue("Result contains archive false.", json.contains("\"archive\":false"));
+    Assert.assertTrue("Result contains posting host.", json.contains("\"host\":\"example.org\""));
+    Assert.assertTrue("Result contains ip address.", json.contains("\"ip_addr\":\"117.0.0.3\""));
+    Assert.assertTrue("Result contains country code.", json.contains("\"country_code\":\"uk\""));
   }
 }

@@ -150,6 +150,21 @@ public final class App
     {
       res.put("archive", archive);
     }
+    final String ip = msg.getPostingIpAddress();
+    if (ip != null)
+    {
+      res.put("ip_addr", ip);
+    }
+    final String host = msg.getPostingHost();
+    if (host != null)
+    {
+      res.put("host", host);
+    }
+    final String cc = msg.getCountryCode();
+    if (cc != null)
+    {
+      res.put("country_code", cc);
+    }
     res.put("sent", format(formatter, msg.getSent()));
     res.put("msg_id", format(msg.getMessageId()));
     res.put("author_id", format(msg.getAuthorId()));

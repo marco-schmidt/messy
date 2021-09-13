@@ -42,6 +42,9 @@ public class Message
   private String languageCode;
   private String medium;
   private String messageId;
+  private String postingHost;
+  private String postingIpAddress;
+  private Long postingIpv4Address;
   private Date sent;
   private String subject;
   private String text;
@@ -134,6 +137,36 @@ public class Message
   public void setMessageId(String messageId)
   {
     this.messageId = messageId;
+  }
+
+  public String getPostingHost()
+  {
+    return postingHost;
+  }
+
+  public void setPostingHost(String postingHost)
+  {
+    this.postingHost = postingHost;
+  }
+
+  public Long getPostingIpv4Address()
+  {
+    return postingIpv4Address;
+  }
+
+  public void setPostingIpv4Address(Long postingIpv4Address)
+  {
+    this.postingIpv4Address = postingIpv4Address;
+  }
+
+  public String getPostingIpAddress()
+  {
+    return postingIpAddress;
+  }
+
+  public void setPostingIpAddress(String postingIpAddress)
+  {
+    this.postingIpAddress = postingIpAddress;
   }
 
   public Date getSent()
