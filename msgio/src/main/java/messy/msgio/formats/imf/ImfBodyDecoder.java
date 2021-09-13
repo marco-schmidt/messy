@@ -337,7 +337,7 @@ public final class ImfBodyDecoder
     }
     else
     {
-      contentType = contentTypeBuilder.toString();
+      contentType = contentTypeBuilder.toString().toLowerCase(Locale.ROOT);
     }
     result.setContentType(contentType);
     result.setContentTypeAttributes(contentTypeAttr);
