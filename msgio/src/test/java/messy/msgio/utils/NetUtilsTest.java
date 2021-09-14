@@ -59,6 +59,13 @@ public class NetUtilsTest
     list.add("xy");
     list.add("");
     Assert.assertFalse("Empty label hostname is invalid.", NetUtils.isValidHostname(list));
+    list.clear();
+    list.add("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij");
+    list.add("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij");
+    list.add("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij");
+    list.add("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij");
+    list.add("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij");
+    Assert.assertFalse("Hostname exceeding maximum length is invalid.", NetUtils.isValidHostname(list));
   }
 
   @Test

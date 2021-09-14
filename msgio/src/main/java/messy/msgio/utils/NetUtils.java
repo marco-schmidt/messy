@@ -45,14 +45,20 @@ public final class NetUtils
     {
       return false;
     }
+    int length = 0;
     for (final String item : labels)
     {
       if (!isValidLabel(item))
       {
         return false;
       }
+      if (length != 0)
+      {
+        length++; // dot
+      }
+      length += item.length();
     }
-    return true;
+    return length <= MAX_HOSTNAME_LENGTH;
   }
 
   public static boolean isValidLabelChar(char c)
