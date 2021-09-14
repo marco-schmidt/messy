@@ -257,5 +257,29 @@ public class ImfConverterTest
     conv.extractOrigin(msg, headers);
     Assert.assertEquals("Extract correct numerical IP.", Long.valueOf((127L << 24) + 1L), msg.getPostingIpv4Address());
     Assert.assertEquals("Extract correct  IP.", ip, msg.getPostingIpAddress());
+
+    msg = new Message();
+    headers.clear();
+    headers.put("x-trace", "example.org 988790624 15308891 " + ip + " (2 May 2021 07:44:23 GMT)");
+    conv.extractOrigin(msg, headers);
+    Assert.assertEquals("Extract correct numerical IP.", Long.valueOf((127L << 24) + 1L), msg.getPostingIpv4Address());
+    Assert.assertEquals("Extract correct  IP.", ip, msg.getPostingIpAddress());
+
+    msg = new Message();
+    headers.clear();
+    headers.put("x-trace", "example.org 988790624 15308891 " + ip);
+    conv.extractOrigin(msg, headers);
+    Assert.assertEquals("Extract correct numerical IP.", Long.valueOf((127L << 24) + 1L), msg.getPostingIpv4Address());
+    Assert.assertEquals("Extract correct  IP.", ip, msg.getPostingIpAddress());
+  }
+
+  @Test
+  public void testExtractIpv4()
+  {
+    final Message msg = new Message();
+    final String[] items = new String[0];
+    final ImfConverter conv = new ImfConverter();
+    conv.extractIpv4(msg, items);
+    Assert.assertNull("Extract from empty array.", msg.getPostingIpv4Address());
   }
 }

@@ -64,7 +64,7 @@ public class NetUtilsTest
   @Test
   public void testParseDottedQuads()
   {
-    Assert.assertNull("Null list leads to null result.", NetUtils.parseDottedQuadsIpv4(null));
+    Assert.assertNull("Null list leads to null result.", NetUtils.parseDottedQuadsIpv4((List<String>) null));
 
     final List<String> list = new ArrayList<>();
     list.add("1a");
@@ -81,5 +81,12 @@ public class NetUtilsTest
     list.add("1234");
     Assert.assertNull("Last part too long.", NetUtils.parseDottedQuadsIpv4(list));
 
+    Assert.assertNull("Null input leads to null output.", NetUtils.parseDottedQuadsIpv4((String) null));
+    Assert.assertNull("Input too short.", NetUtils.parseDottedQuadsIpv4("1.1.1"));
+    Assert.assertNull("Input too long.", NetUtils.parseDottedQuadsIpv4("1000.100.100.100"));
+    Assert.assertNull("Not four parts.", NetUtils.parseDottedQuadsIpv4("100.100.100"));
+    final Long ipv4 = NetUtils.parseDottedQuadsIpv4("0.1.2.3");
+    Assert.assertNotNull("Expect not null on correct input.", ipv4);
+    Assert.assertEquals("Expect correct value.", 1L << 16 | 2L << 8 | 3, ipv4.longValue());
   }
 }

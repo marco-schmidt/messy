@@ -15,6 +15,7 @@
  */
 package messy.msgio.utils;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -164,5 +165,25 @@ public final class NetUtils
       value = parseDottedQuadsIpv4(parts, 16);
     }
     return value;
+  }
+
+  public static Long parseDottedQuadsIpv4(String addr)
+  {
+    if (addr == null)
+    {
+      return null;
+    }
+    final int length = addr.length();
+    if (length < 7 || length > 15)
+    {
+      // min/max length: "1.1.1.1", "100.100.100.100"
+      return null;
+    }
+    final String[] items = addr.split("\\.");
+    if (items.length != 4)
+    {
+      return null;
+    }
+    return parseDottedQuadsIpv4(Arrays.asList(items));
   }
 }

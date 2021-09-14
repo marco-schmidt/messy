@@ -61,6 +61,7 @@ public class ImfConverter
   };
   private static final String FIELD_NEWSGROUPS = "newsgroups";
   private static final String FIELD_X_NO_ARCHIVE = "x-no-archive";
+  private static final String FIELD_X_TRACE = "x-trace";
 
   // header field names B News before RFC850
   private static final String FIELD_ARTICLE_ID = "article-i.d.";
@@ -353,11 +354,40 @@ public class ImfConverter
     }
   }
 
-  protected void extractOrigin(Message result, Map<String, String> lookup)
+  protected void extractIpv4(Message msg, String[] items)
+  {
+    for (final String item : items)
+    {
+      final Long ipv4 = NetUtils.parseDottedQuadsIpv4(item);
+      if (ipv4 != null)
+      {
+        msg.setPostingIpAddress(item);
+        msg.setPostingIpv4Address(ipv4);
+        break;
+      }
+    }
+  }
+
+  protected void extractOrigin(Message msg, Map<String, String> headers)
   {
     for (final String header : FIELDS_HOST)
     {
-      extractOrigin(result, lookup.get(header));
+      extractOrigin(msg, headers.get(header));
+    }
+    // if no IP address was found try "X-Trace:"
+    if (msg.getPostingIpAddress() == null)
+    {
+      String trace = headers.get(FIELD_X_TRACE);
+      if (trace != null)
+      {
+        final int index = trace.indexOf('(');
+        if (index > 0)
+        {
+          trace = trace.substring(0, index);
+        }
+        final String[] items = trace.split(" ");
+        extractIpv4(msg, items);
+      }
     }
   }
 
