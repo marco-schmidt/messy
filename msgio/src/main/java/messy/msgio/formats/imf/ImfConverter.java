@@ -200,7 +200,7 @@ public class ImfConverter
     final Message result = new Message();
     parseFrom(result, lookup);
     extractOrigin(result, lookup);
-    result.setGroups(StringUtils.splitAndNormalize(lookup.get("newsgroups"), ","));
+    result.setGroups(StringUtils.splitAndNormalize(lookup.get(FIELD_NEWSGROUPS), ","));
     decodeBody(message, result, lookup);
     return result;
   }
@@ -265,7 +265,7 @@ public class ImfConverter
     if (iter.hasNext())
     {
       final String line = iter.next().toLowerCase(Locale.ROOT).trim();
-      if (line.startsWith("x-no-archive: yes"))
+      if (line.startsWith(FIELD_X_NO_ARCHIVE + ": yes"))
       {
         return Boolean.FALSE;
       }
