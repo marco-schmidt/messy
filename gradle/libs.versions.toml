@@ -1,0 +1,22 @@
+[versions]
+checkstyle = "9.0"
+jacoco = "0.8.7"
+lucene = "8.9.0"
+spotbugs = "4.4.1"
+
+[libraries]
+lucene-analyzerscommon = { module = "org.apache.lucene:lucene-analyzers-common", version.ref = "lucene" }
+lucene-core = { module = "org.apache.lucene:lucene-core", version.ref = "lucene" }
+lucene-queries = { module = "org.apache.lucene:lucene-queries", version.ref = "lucene" }
+lucene-queryparser = { module = "org.apache.lucene:lucene-queryparser", version.ref = "lucene" }
+
+[bundles]
+lucene = ["lucene-analyzerscommon", "lucene-core", "lucene-queries", "lucene-queryparser"]
+
+[plugins]
+dependencycheck = { id = "org.owasp.dependencycheck", version = "6.3.1" }
+dependencylicensereport = { id = "com.github.jk1.dependency-license-report", version = "2.0" }
+forbiddenapis = { id = "de.thetaphi.forbiddenapis", version = "3.2" }
+spotbugs = { id = "com.github.spotbugs", version = "4.7.5" }
+spotless = { id = "com.diffplug.spotless", version = "5.15.1" }
+ver = { id = "com.github.ben-manes.versions", version = "0.39.0" }

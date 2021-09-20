@@ -5,13 +5,13 @@ buildscript {
 }
 
 plugins {
-  id 'com.diffplug.spotless' version '5.15.0'
-  id "com.github.ben-manes.versions" version '0.39.0'
-  id 'com.github.jk1.dependency-license-report' version '2.0'
-  id 'com.github.spotbugs' version '4.7.5'
-  id 'de.thetaphi.forbiddenapis' version '3.2'
+  alias(libs.plugins.dependencylicensereport)
+  alias(libs.plugins.dependencycheck)
+  alias(libs.plugins.forbiddenapis)
+  alias(libs.plugins.spotbugs)
+  alias(libs.plugins.spotless)
+  alias(libs.plugins.ver)
   id 'jacoco'
-  id 'org.owasp.dependencycheck' version '6.3.1'
 }
 
 repositories {
@@ -25,10 +25,6 @@ ext.vendorlibs = [
   json_smart: 'net.minidev:json-smart:2.4.7',
   junit: 'junit:junit:4.13.2',
   logback_classic: "ch.qos.logback:logback-classic:1.2.6",
-  lucene_analyzers_common: "org.apache.lucene:lucene-analyzers-common:${luceneVersion}",
-  lucene_core: "org.apache.lucene:lucene-core:${luceneVersion}",
-  lucene_queries: "org.apache.lucene:lucene-queries:${luceneVersion}",
-  lucene_queryparsers: "org.apache.lucene:lucene-queryparser:${luceneVersion}",
   slf4j_api: "org.slf4j:slf4j-api:1.7.32"
 ]
 
@@ -192,7 +188,7 @@ artifactId=${project.name}
   }
 
   jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = libs.versions.jacoco.get()
   }
 
   jacocoTestReport {
@@ -220,7 +216,7 @@ artifactId=${project.name}
   }
 
   spotbugs {
-    toolVersion = '4.4.0'
+    toolVersion = libs.versions.spotbugs.get()
     effort = 'max' // min, default, max
     reportLevel = 'low' // low, medium, high  
     ignoreFailures = false
@@ -236,7 +232,7 @@ artifactId=${project.name}
   }
 
   checkstyle {
-    toolVersion '9.0'
+    toolVersion libs.versions.checkstyle.get()
     ignoreFailures false
     showViolations true
     configDirectory = file("${rootDir}/config/checkstyle")
