@@ -17,6 +17,7 @@ package messy.msgdata.formats;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * General message data class.
@@ -47,6 +48,7 @@ public class Message
   private Long postingIpv4Address;
   private Date sent;
   private String subject;
+  private Set<String> tags;
   private String text;
 
   public Boolean getArchive()
@@ -187,6 +189,16 @@ public class Message
   public void setSubject(String subject)
   {
     this.subject = subject;
+  }
+
+  public Set<String> getTags()
+  {
+    return tags;
+  }
+
+  public void setTags(Set<String> tags)
+  {
+    this.tags = tags;
   }
 
   public String getText()

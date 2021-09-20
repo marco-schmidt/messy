@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import jakarta.mail.internet.MimeUtility;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.imf.ImfBodySection;
@@ -422,12 +423,43 @@ public class ImfConverter
     result.setAuthorName(StringUtils.concatItems(nameElements));
   }
 
+  protected Set<String> extractTags(String s)
+  {
+    final Set<String> result = new TreeSet<>();
+    if (s == null)
+    {
+      return result;
+    }
+    int index2 = 0;
+    do
+    {
+      final int index1 = s.indexOf('[', index2);
+      if (index1 < 0)
+      {
+        break;
+      }
+      index2 = s.indexOf(']', index1 + 1);
+      if (index2 < 0)
+      {
+        break;
+      }
+      final String tag = s.substring(index1 + 1, index2).trim().toLowerCase(Locale.ROOT);
+      if (!tag.isEmpty())
+      {
+        result.add(tag);
+      }
+    }
+    while (true);
+    return result;
+  }
+
   private Message convertPreRfc850(Map<String, String> lookup, ImfMessage message)
   {
     final Message result = convertShared(lookup, message);
     result.setMedium(Message.MEDIUM_USENET);
     result.setFormat(ImfMessage.FORMAT_INTERNET_MESSAGE_FORMAT);
     result.setSubject(lookup.get(FIELD_TITLE));
+    result.setTags(extractTags(result.getSubject()));
     result.setMessageId(lookup.get(FIELD_ARTICLE_ID));
     result.setSent(decodeDate(lookup.get(FIELD_POSTED)));
     return result;
@@ -439,6 +471,7 @@ public class ImfConverter
     result.setMedium(Message.MEDIUM_USENET);
     result.setFormat(ImfMessage.FORMAT_INTERNET_MESSAGE_FORMAT);
     result.setSubject(decodeText(lookup.get(FIELD_SUBJECT)));
+    result.setTags(extractTags(result.getSubject()));
     result.setMessageId(normalizeMessageId(lookup.get(FIELD_MESSAGE_ID)));
     result.setSent(decodeDate(lookup.get(FIELD_DATE)));
     return result;

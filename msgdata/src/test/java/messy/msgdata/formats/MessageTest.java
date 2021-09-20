@@ -36,12 +36,14 @@ public class MessageTest
     msg.setMessageId(null);
     msg.setSent(null);
     msg.setSubject(null);
+    msg.setTags(null);
     Assert.assertNull("Expect author name to remain null.", msg.getAuthorName());
     Assert.assertNull("Expect format name to remain null.", msg.getFormat());
     Assert.assertNull("Expect message id to remain null.", msg.getMessageId());
     Assert.assertNull("Expect medium name to remain null.", msg.getMedium());
     Assert.assertNull("Expect sent timestamp to remain null.", msg.getSent());
     Assert.assertNull("Expect subject to remain null.", msg.getSubject());
+    Assert.assertNull("Expect tags to remain null.", msg.getTags());
   }
 
   @Test

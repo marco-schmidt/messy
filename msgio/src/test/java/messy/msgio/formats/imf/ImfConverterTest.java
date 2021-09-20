@@ -282,4 +282,18 @@ public class ImfConverterTest
     conv.extractIpv4(msg, items);
     Assert.assertNull("Extract from empty array.", msg.getPostingIpv4Address());
   }
+
+  @Test
+  public void testExtractTags()
+  {
+    final ImfConverter conv = new ImfConverter();
+    Assert.assertTrue("Extract from null input.", conv.extractTags(null).isEmpty());
+    Assert.assertTrue("Extract from empty input.", conv.extractTags("").isEmpty());
+    Assert.assertTrue("Extract from invalid input.", conv.extractTags("[").isEmpty());
+    final Set<String> extractTags = conv.extractTags("[]");
+    Assert.assertTrue("Extract from empty bracket pair.", extractTags.isEmpty());
+    final Set<String> set = conv.extractTags("[a]");
+    Assert.assertEquals("Size 1.", 1, set.size());
+    Assert.assertEquals("Extract from empty input.", "a", set.iterator().next());
+  }
 }

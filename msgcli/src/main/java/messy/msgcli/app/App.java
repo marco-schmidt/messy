@@ -23,9 +23,10 @@ import java.io.PushbackInputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.imf.ImfHeaderList;
@@ -172,11 +173,16 @@ public final class App
     res.put("subject", format(escape(msg.getSubject())));
     res.put("text", format(escape(msg.getText())));
     res.put("groups", format(msg.getGroups()));
+    final Set<String> tags = msg.getTags();
+    if (tags != null && !tags.isEmpty())
+    {
+      res.put("tags", format(tags));
+    }
 
     return JSONValue.toJSONString(res, JSONValue.COMPRESSION);
   }
 
-  protected static Object format(List<String> items)
+  protected static Object format(Collection<String> items)
   {
     final JSONArray result = new JSONArray();
     if (items != null)
