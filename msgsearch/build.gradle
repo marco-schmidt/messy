@@ -4,8 +4,8 @@ description 'message full text search index'
 
 dependencies {
   implementation project(':msgdata')
-  implementation vendorlibs.logback_classic
-  implementation vendorlibs.slf4j_api
+  implementation libs.logback.classic
+  implementation libs.slf4j.api
   implementation libs.bundles.lucene
-  testImplementation vendorlibs.junit
+  testImplementation libs.junit
 }

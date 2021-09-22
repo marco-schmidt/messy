@@ -3,7 +3,7 @@ apply plugin: 'java-library'
 description 'library with data classes for various electronic message formats'
 
 dependencies {
-  implementation vendorlibs.slf4j_api
-  implementation vendorlibs.logback_classic
-  testImplementation vendorlibs.junit
+  implementation libs.slf4j.api
+  implementation libs.logback.classic
+  testImplementation libs.junit
 }

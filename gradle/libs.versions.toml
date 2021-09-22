@@ -5,10 +5,16 @@ lucene = "8.9.0"
 spotbugs = "4.4.1"
 
 [libraries]
+commons-compress = { module = "org.apache.commons:commons-compress", version = { strictly = "1.21" } }
+jakarta-mail = { module = "com.sun.mail:jakarta.mail", version = { strictly = "2.0.1" } }
+json-smart = { module = "net.minidev:json-smart", version = { strictly = "2.4.7" } }
+junit = { module = "junit:junit", version = { strictly = "4.13.2" } }
+logback-classic = { module = "ch.qos.logback:logback-classic", version = { strictly = "1.2.6" } }
 lucene-analyzerscommon = { module = "org.apache.lucene:lucene-analyzers-common", version.ref = "lucene" }
 lucene-core = { module = "org.apache.lucene:lucene-core", version.ref = "lucene" }
 lucene-queries = { module = "org.apache.lucene:lucene-queries", version.ref = "lucene" }
 lucene-queryparser = { module = "org.apache.lucene:lucene-queryparser", version.ref = "lucene" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version = { strictly = "1.7.32" } }
 
 [bundles]
 lucene = ["lucene-analyzerscommon", "lucene-core", "lucene-queries", "lucene-queryparser"]
