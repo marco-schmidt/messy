@@ -99,12 +99,15 @@ public class ImfConverterTest
     // https://en.wikipedia.org/wiki/Base64#Examples
     list.add(new ImfHeaderField("Subject", "=?iso-8859-1?B?TWFu?="));
     list.add(new ImfHeaderField("Date", dateString));
+    list.add(new ImfHeaderField("References", "<abc@example.org>"));
     final ImfMessage input = new ImfMessage(list, new ArrayList<String>());
     final ImfConverter converter = new ImfConverter();
     final Message output = converter.convert(input);
     Assert.assertNotNull("Expect non-null result.", output);
     Assert.assertEquals("Expect identical subject.", subject, output.getSubject());
     Assert.assertEquals("Expect identical date.", date, output.getSent());
+    Assert.assertNotNull("Expect non-null references.", output.getReferences());
+    Assert.assertFalse("Expect non-empty references.", output.getReferences().isEmpty());
   }
 
   @Test
@@ -295,5 +298,30 @@ public class ImfConverterTest
     final Set<String> set = conv.extractTags("[a]");
     Assert.assertEquals("Size 1.", 1, set.size());
     Assert.assertEquals("Extract from empty input.", "a", set.iterator().next());
+  }
+
+  @Test
+  public void testExtractReferences()
+  {
+    Assert.assertTrue("Extract from null input.", ImfConverter.extractReferences(null).isEmpty());
+    Assert.assertTrue("Extract from empty input.", ImfConverter.extractReferences("").isEmpty());
+    Assert.assertTrue("Extract from input too short.", ImfConverter.extractReferences("abcdef").isEmpty());
+    Assert.assertTrue("Extract from non-finished.", ImfConverter.extractReferences("<abcde").isEmpty());
+
+    final String mid1 = "<ab@example.org>";
+    final String mid2 = "<cd@example.org>";
+    final String in = mid1 + " " + mid2;
+    final List<String> out = ImfConverter.extractReferences(in);
+    Assert.assertEquals("Expect correct size.", 2, out.size());
+    Assert.assertEquals("Expect correct first.", mid1, out.get(0));
+    Assert.assertEquals("Expect correct second.", mid2, out.get(1));
+
+    final ImfConverter conv = new ImfConverter();
+    final Message msg = new Message();
+    final List<String> lines = new ArrayList<>();
+    final Map<String, String> headers = new HashMap<>();
+    conv.parseArchiveStatus(msg, headers, lines);
+    Assert.assertNull("No headers or body lines, null output.", msg.getArchive());
+
   }
 }

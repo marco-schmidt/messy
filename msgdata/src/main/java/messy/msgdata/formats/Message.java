@@ -46,6 +46,7 @@ public class Message
   private String postingHost;
   private String postingIpAddress;
   private Long postingIpv4Address;
+  private List<String> references;
   private Date sent;
   private String subject;
   private Set<String> tags;
@@ -169,6 +170,16 @@ public class Message
   public void setPostingIpAddress(String postingIpAddress)
   {
     this.postingIpAddress = postingIpAddress;
+  }
+
+  public List<String> getReferences()
+  {
+    return references;
+  }
+
+  public void setReferences(List<String> references)
+  {
+    this.references = references;
   }
 
   public Date getSent()

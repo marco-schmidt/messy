@@ -70,9 +70,10 @@ public class ImfConverter
   private static final String FIELD_POSTED = "posted";
 
   // header field names RFC850 and later
-  private static final String FIELD_SUBJECT = "subject";
-  private static final String FIELD_MESSAGE_ID = "message-id";
   private static final String FIELD_DATE = "date";
+  private static final String FIELD_MESSAGE_ID = "message-id";
+  private static final String FIELD_REFERENCES = "references";
+  private static final String FIELD_SUBJECT = "subject";
 
   private static final String[] DATE_PATTERNS =
   {
@@ -154,6 +155,41 @@ public class ImfConverter
     return mid;
   }
 
+  public static List<String> extractMessageIdValues(String s, int initialIndex)
+  {
+    final List<String> result = new ArrayList<>();
+    if (s == null)
+    {
+      return result;
+    }
+    final int maxIndex = s.length() - 3;
+
+    int fromIndex = Math.max(0, initialIndex);
+    while (fromIndex < maxIndex)
+    {
+      final int angleLeft = s.indexOf('<', fromIndex);
+      if (angleLeft < 0)
+      {
+        break;
+      }
+      fromIndex = angleLeft + 1;
+      final int angleRight = s.indexOf('>', fromIndex);
+      if (angleRight < 0)
+      {
+        break;
+      }
+      fromIndex = angleRight + 1;
+      final String mid = s.substring(angleLeft, fromIndex);
+      result.add(mid);
+    }
+    return result;
+  }
+
+  public static List<String> extractReferences(String s)
+  {
+    return extractMessageIdValues(s, 0);
+  }
+
   private Date decodeDate(String s, String pattern)
   {
     final SimpleDateFormat parser = new SimpleDateFormat(pattern, Locale.ROOT);
@@ -202,6 +238,7 @@ public class ImfConverter
     parseFrom(result, lookup);
     extractOrigin(result, lookup);
     result.setGroups(StringUtils.splitAndNormalize(lookup.get(FIELD_NEWSGROUPS), ","));
+    result.setReferences(extractReferences(lookup.get(FIELD_REFERENCES)));
     decodeBody(message, result, lookup);
     return result;
   }
