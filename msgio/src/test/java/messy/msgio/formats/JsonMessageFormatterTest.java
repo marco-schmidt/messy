@@ -1,0 +1,42 @@
+/*
+ * Copyright 2020, 2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package messy.msgio.formats;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
+import net.minidev.json.JSONObject;
+
+public class JsonMessageFormatterTest
+{
+  @Test
+  public void testAppend()
+  {
+    final JsonMessageFormatter mf = new JsonMessageFormatter();
+    final JSONObject jo = new JSONObject();
+    final List<String> list = new ArrayList<>();
+    list.add("a");
+    list.add("b");
+    final String key = "test";
+    mf.append(jo, key, list);
+    Assert.assertNotNull("Adding non-null list works.", jo.get(key));
+    //
+    // jo = new JSONObject();
+    // mf.append(jo, key, (List<?>) null);
+    // Assert.assertTrue("Adding null list makes no changes.", jo.isEmpty());
+  }
+}

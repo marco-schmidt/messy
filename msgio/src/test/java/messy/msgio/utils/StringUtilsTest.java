@@ -37,4 +37,10 @@ public class StringUtilsTest
     Assert.assertEquals("Result has one element.", 1, result.size());
     Assert.assertEquals("Result element is 'a'.", "a", result.get(0));
   }
+
+  @Test
+  public void testConcatItems()
+  {
+    Assert.assertEquals("Result is empty.", "", StringUtils.concatItems(null, ","));
+  }
 }

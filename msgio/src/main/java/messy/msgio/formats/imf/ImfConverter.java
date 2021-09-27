@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import jakarta.mail.internet.MimeUtility;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.imf.ImfBodySection;
@@ -460,9 +459,9 @@ public class ImfConverter
     result.setAuthorName(StringUtils.concatItems(nameElements));
   }
 
-  protected Set<String> extractTags(String s)
+  protected List<String> extractTags(String s)
   {
-    final Set<String> result = new TreeSet<>();
+    final List<String> result = new ArrayList<>();
     if (s == null)
     {
       return result;

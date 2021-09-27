@@ -70,4 +70,43 @@ public final class StringUtils
     }
     return result;
   }
+
+  public static String escape(String s)
+  {
+    String result;
+    if (s == null)
+    {
+      result = null;
+    }
+    else
+    {
+      if (s.isEmpty())
+      {
+        result = s;
+      }
+      else
+      {
+        boolean modified = false;
+        final char[] a = s.toCharArray();
+        for (int i = 0; i < a.length; i++)
+        {
+          final char c = a[i];
+          if (c == 9 || c == 10 || c == 13)
+          {
+            a[i] = ' ';
+            modified = true;
+          }
+        }
+        if (modified)
+        {
+          result = new String(a);
+        }
+        else
+        {
+          result = s;
+        }
+      }
+    }
+    return result;
+  }
 }

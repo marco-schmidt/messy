@@ -23,24 +23,23 @@ import java.io.PushbackInputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.TimeZone;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.imf.ImfHeaderList;
 import messy.msgdata.formats.imf.ImfMessage;
 import messy.msgdata.formats.mbox.MboxMessage;
 import messy.msgdata.formats.twitter.TwitterStatus;
+import messy.msgio.formats.AbstractMessageFormatter;
+import messy.msgio.formats.JsonMessageFormatter;
+import messy.msgio.formats.TsvMessageFormatter;
 import messy.msgio.formats.imf.ImfConverter;
 import messy.msgio.formats.imf.ImfParser;
 import messy.msgio.formats.mbox.MboxReader;
 import messy.msgio.formats.twitter.JsonTwitterParser;
-import messy.msgio.utils.StringUtils;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
 
 /**
  * Command-line application to provide messy conversion functionality.
@@ -62,6 +61,7 @@ public final class App
     JSON, TSV
   };
 
+  private static List<Message.Item> outputItems;
   private static OutputFormat outputFormat = OutputFormat.TSV;
 
   public static OutputFormat getOutputFormat()
@@ -74,159 +74,32 @@ public final class App
     App.outputFormat = outputFormat;
   }
 
-  protected static DateFormat createFormatter()
+  public static List<Message.Item> getOutputItems()
+  {
+    final List<Message.Item> result = new ArrayList<>();
+    result.addAll(outputItems);
+    return result;
+  }
+
+  public static void setOutputItems(List<Message.Item> outputItems)
+  {
+    App.outputItems = new ArrayList<>();
+    App.outputItems.addAll(outputItems);
+  }
+
+  protected static DateFormat createDateFormatter()
   {
     final SimpleDateFormat result = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
     result.setTimeZone(TimeZone.getTimeZone("UTC"));
     return result;
   }
 
-  protected static String escape(String s)
+  private static void dump(Message msg, AbstractMessageFormatter formatter)
   {
-    String result;
-    if (s == null)
-    {
-      result = null;
-    }
-    else
-    {
-      if (s.isEmpty())
-      {
-        result = s;
-      }
-      else
-      {
-        boolean modified = false;
-        final char[] a = s.toCharArray();
-        for (int i = 0; i < a.length; i++)
-        {
-          final char c = a[i];
-          if (c == 9 || c == 10 || c == 13)
-          {
-            a[i] = ' ';
-            modified = true;
-          }
-        }
-        if (modified)
-        {
-          result = new String(a);
-        }
-        else
-        {
-          result = s;
-        }
-      }
-    }
-    return result;
+    System.out.println(formatter.format(msg));
   }
 
-  protected static String format(String s)
-  {
-    return s == null ? "" : s;
-  }
-
-  protected static String format(DateFormat formatter, Date d)
-  {
-    return d == null ? "" : formatter.format(d);
-  }
-
-  protected static String format(Message msg, DateFormat formatter)
-  {
-    if (outputFormat == OutputFormat.TSV)
-    {
-      return formatTsv(msg, formatter);
-    }
-    else
-    {
-      return formatJson(msg, formatter);
-    }
-  }
-
-  protected static String formatJson(Message msg, DateFormat formatter)
-  {
-    final JSONObject res = new JSONObject();
-
-    final Boolean archive = msg.getArchive();
-    if (archive != null)
-    {
-      res.put("archive", archive);
-    }
-    final String ip = msg.getPostingIpAddress();
-    if (ip != null)
-    {
-      res.put("ip_addr", ip);
-    }
-    final String host = msg.getPostingHost();
-    if (host != null)
-    {
-      res.put("host", host);
-    }
-    final String cc = msg.getCountryCode();
-    if (cc != null)
-    {
-      res.put("country_code", cc);
-    }
-    res.put("sent", format(formatter, msg.getSent()));
-    res.put("msg_id", format(msg.getMessageId()));
-    res.put("author_id", format(msg.getAuthorId()));
-    res.put("author_name", format(msg.getAuthorName()));
-    res.put("subject", format(escape(msg.getSubject())));
-    res.put("text", format(escape(msg.getText())));
-    res.put("groups", format(msg.getGroups()));
-    final Set<String> tags = msg.getTags();
-    if (tags != null && !tags.isEmpty())
-    {
-      res.put("tags", format(tags));
-    }
-
-    return JSONValue.toJSONString(res, JSONValue.COMPRESSION);
-  }
-
-  protected static Object format(Collection<String> items)
-  {
-    final JSONArray result = new JSONArray();
-    if (items != null)
-    {
-      for (final String item : items)
-      {
-        result.add(item);
-      }
-    }
-    return result;
-  }
-
-  protected static String formatTsv(Message msg, DateFormat formatter)
-  {
-    final StringBuilder sb = new StringBuilder();
-    final String sep = "\t";
-
-    sb.append(format(formatter, msg.getSent()));
-    sb.append(sep);
-    sb.append(format(msg.getLanguageCode()));
-    sb.append(sep);
-    sb.append(format(msg.getCountryCode()));
-    sb.append(sep);
-    sb.append(format(msg.getMessageId()));
-    sb.append(sep);
-    sb.append(format(msg.getAuthorId()));
-    sb.append(sep);
-    sb.append(format(msg.getAuthorName()));
-    sb.append(sep);
-    sb.append(format(escape(StringUtils.concatItems(msg.getGroups(), ","))));
-    sb.append(sep);
-    sb.append(format(escape(msg.getSubject())));
-    sb.append(sep);
-    sb.append(format(escape(msg.getText())));
-
-    return sb.toString();
-  }
-
-  private static void dump(Message msg, DateFormat formatter)
-  {
-    System.out.println(format(msg, formatter));
-  }
-
-  private static void processJson(BufferedReader in, DateFormat formatter) throws IOException
+  private static void processJson(BufferedReader in, AbstractMessageFormatter formatter) throws IOException
   {
     String line;
     while ((line = in.readLine()) != null)
@@ -244,7 +117,7 @@ public final class App
     }
   }
 
-  private static void processMbox(BufferedReader in, DateFormat formatter) throws IOException
+  private static void processMbox(BufferedReader in, AbstractMessageFormatter formatter) throws IOException
   {
     MboxMessage mboxMsg;
     final MboxReader reader = new MboxReader(in);
@@ -267,7 +140,10 @@ public final class App
 
   private static void processStandardInput()
   {
-    final DateFormat formatter = createFormatter();
+    final DateFormat dateFormatter = createDateFormatter();
+    final AbstractMessageFormatter messageFormatter = createMessageFormatter();
+    messageFormatter.setDateFormatter(dateFormatter);
+    messageFormatter.setItems(getOutputItems());
     final InputStream is = System.in;
     final PushbackInputStream input = new PushbackInputStream(is, 1024 * 1024);
     final FileType fileType = identify(input);
@@ -281,16 +157,27 @@ public final class App
     {
       if (fileType == FileType.JSON)
       {
-        processJson(in, formatter);
+        processJson(in, messageFormatter);
       }
       else
       {
-        processMbox(in, formatter);
+        processMbox(in, messageFormatter);
       }
     }
     catch (final IOException ioe)
     {
       ioe.printStackTrace();
+    }
+  }
+
+  private static AbstractMessageFormatter createMessageFormatter()
+  {
+    switch (outputFormat)
+    {
+    case TSV:
+      return new TsvMessageFormatter();
+    default:
+      return new JsonMessageFormatter();
     }
   }
 
@@ -319,6 +206,7 @@ public final class App
 
   public static void main(String[] args)
   {
+    setOutputItems(Arrays.asList(Message.Item.values()));
     processStandardInput();
   }
 }

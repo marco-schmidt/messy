@@ -17,15 +17,93 @@ package messy.msgdata.formats;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
+import messy.msgdata.formats.imf.ImfMessage;
 
 /**
  * General message data class.
+ *
+ * Objects of this class typically are the result of a conversion process from some format-specific message class like
+ * {@link ImfMessage}.
  *
  * @author Marco Schmidt
  */
 public class Message
 {
+  /**
+   * A property of a message. Use as parameter in {@link Message#get(Item)}.
+   */
+  public enum Item
+  {
+    /**
+     * Statement of author about willingness to include message in archive.
+     */
+    ARCHIVE,
+    /**
+     * Address to identify an author, e.g. Twitter's numerical user ID or an e-mail address.
+     */
+    AUTHOR_ID,
+    /**
+     * Name of author, either real-life name, pseudonym or screen name.
+     */
+    AUTHOR_NAME,
+    /**
+     * Code of country from which message originated.
+     */
+    COUNTRY_CODE,
+    /**
+     * Format of message.
+     */
+    FORMAT,
+    /**
+     * Discussion forums, newsgroups to which message got sent.
+     */
+    GROUPS,
+    /**
+     * Code of natural language used to write message.
+     */
+    LANG_CODE,
+    /**
+     * The message got sent to which discussion medium (like Usenet or Twitter).
+     */
+    MEDIUM,
+    /**
+     * Value to identify a particular message.
+     */
+    MESSAGE_ID,
+    /**
+     * Hostname of system from which message got sent.
+     */
+    POSTING_HOST,
+    /**
+     * IP address of system from which message got sent.
+     */
+    POSTING_IP_ADDRESS,
+    /**
+     * IPv4 address of system from which message got sent.
+     */
+    POSTING_IPV4_ADDRESS,
+    /**
+     * Message ID values of ancestor messages in a thread.
+     */
+    REFERENCES,
+    /**
+     * Date and time when message got sent.
+     */
+    SENT,
+    /**
+     * Subject line of message, summarizing its purpose.
+     */
+    SUBJECT,
+    /**
+     * List of tags, short strings relevant to this message.
+     */
+    TAGS,
+    /**
+     * Main text of message.
+     */
+    TEXT
+  };
+
   /**
    * Constant for medium Usenet.
    */
@@ -34,6 +112,7 @@ public class Message
    * Constant for medium Twitter.
    */
   public static final String MEDIUM_TWITTER = "twitter";
+
   private Boolean archive;
   private String authorId;
   private String authorName;
@@ -49,7 +128,7 @@ public class Message
   private List<String> references;
   private Date sent;
   private String subject;
-  private Set<String> tags;
+  private List<String> tags;
   private String text;
 
   public Boolean getArchive()
@@ -202,12 +281,12 @@ public class Message
     this.subject = subject;
   }
 
-  public Set<String> getTags()
+  public List<String> getTags()
   {
     return tags;
   }
 
-  public void setTags(Set<String> tags)
+  public void setTags(List<String> tags)
   {
     this.tags = tags;
   }
@@ -220,5 +299,46 @@ public class Message
   public void setText(String text)
   {
     this.text = text;
+  }
+
+  public Object get(Item item)
+  {
+    switch (item)
+    {
+    case ARCHIVE:
+      return getArchive();
+    case AUTHOR_ID:
+      return getAuthorId();
+    case AUTHOR_NAME:
+      return getAuthorName();
+    case COUNTRY_CODE:
+      return getCountryCode();
+    case FORMAT:
+      return getFormat();
+    case GROUPS:
+      return getGroups();
+    case LANG_CODE:
+      return getLanguageCode();
+    case MEDIUM:
+      return getMedium();
+    case MESSAGE_ID:
+      return getMessageId();
+    case POSTING_HOST:
+      return getPostingHost();
+    case POSTING_IP_ADDRESS:
+      return getPostingIpAddress();
+    case POSTING_IPV4_ADDRESS:
+      return getPostingIpv4Address();
+    case REFERENCES:
+      return getReferences();
+    case SENT:
+      return getSent();
+    case SUBJECT:
+      return getSubject();
+    case TAGS:
+      return getTags();
+    default:
+      return getText();
+    }
   }
 }
