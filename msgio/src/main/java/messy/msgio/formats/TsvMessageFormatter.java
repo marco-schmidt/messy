@@ -24,7 +24,8 @@ import messy.msgdata.formats.Message.Item;
 import messy.msgio.utils.StringUtils;
 
 /**
- * Format {@link Message} objects in TSV format.
+ * Format {@link Message} objects in <a href="https://en.wikipedia.org/wiki/Tab-separated_values">tab-separated values
+ * (TSV)</a> format.
  *
  * @author Marco Schmidt
  */

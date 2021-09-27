@@ -83,12 +83,6 @@ public final class AppTest
     Assert.assertEquals("ASCII input leads to identical output.", "ABC", StringUtils.escape("ABC"));
   }
 
-  // @Test
-  // public void testFormat()
-  // {
-  // Assert.assertEquals("Null date leads to empty result.", "", App.format(App.createDateFormatter(), null));
-  // }
-
   @Test
   public void testMainReadFailure()
   {
@@ -194,16 +188,6 @@ public final class AppTest
         "Could not identify input to be in a supported format." + System.lineSeparator(), result);
   }
 
-  // @Test
-  // public void testFormatStringList()
-  // {
-  // final List<String> input = new ArrayList<>();
-  // final String value = "comp.os";
-  // input.add(value);
-  // final Object output = App.format(input);
-  // Assert.assertEquals("Formatted value as expected.", "[\"" + value + "\"]", output.toString());
-  // }
-
   @Test
   public void testFailingInput() throws UnsupportedEncodingException
   {
@@ -251,32 +235,4 @@ public final class AppTest
     System.setIn(tmpIn);
     System.setOut(tmpOut);
   }
-
-  // @Test
-  // public void testFormatJson() throws UnsupportedEncodingException
-  // {
-  // final Message msg = new Message();
-  // msg.setArchive(Boolean.FALSE);
-  // msg.setPostingHost("example.org");
-  // msg.setPostingIpAddress("117.0.0.3");
-  // msg.setCountryCode("uk");
-  // msg.setPostingIpv4Address(Long.valueOf(117 << 24L | 3));
-  // final List<String> tags = new ArrayList<>();
-  // tags.add("tag");
-  // msg.setTags(tags);
-  // String json = App.formatJson(msg, null);
-  // Assert.assertTrue("Result contains archive false.", json.contains("\"archive\":false"));
-  // Assert.assertTrue("Result contains posting host.", json.contains("\"host\":\"example.org\""));
-  // Assert.assertTrue("Result contains ip address.", json.contains("\"ip_addr\":\"117.0.0.3\""));
-  // Assert.assertTrue("Result contains country code.", json.contains("\"country_code\":\"uk\""));
-  // Assert.assertTrue("Result contains tags.", json.contains("\"tags\":[\"tag\""));
-  // tags.clear();
-  // msg.setTags(tags);
-  // final OutputFormat outputFormat = App.getOutputFormat();
-  // App.setOutputFormat(OutputFormat.JSON);
-  // json = App.formatJson(msg, null);
-  // App.setOutputFormat(outputFormat);
-  // Assert.assertFalse("Result contains tags.", json.contains("\"tags\""));
-  // }
-  //
 }

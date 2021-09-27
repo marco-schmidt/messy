@@ -33,5 +33,4 @@ public class TsvMessageFormatterTest
     mf.appendList(sb, list);
     Assert.assertEquals("Concatenating list.", "a,b", sb.toString());
   }
-
 }

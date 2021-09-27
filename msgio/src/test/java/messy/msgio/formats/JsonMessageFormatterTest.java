@@ -34,9 +34,5 @@ public class JsonMessageFormatterTest
     final String key = "test";
     mf.append(jo, key, list);
     Assert.assertNotNull("Adding non-null list works.", jo.get(key));
-    //
-    // jo = new JSONObject();
-    // mf.append(jo, key, (List<?>) null);
-    // Assert.assertTrue("Adding null list makes no changes.", jo.isEmpty());
   }
 }

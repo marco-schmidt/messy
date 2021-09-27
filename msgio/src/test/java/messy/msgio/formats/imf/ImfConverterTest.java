@@ -322,6 +322,5 @@ public class ImfConverterTest
     final Map<String, String> headers = new HashMap<>();
     conv.parseArchiveStatus(msg, headers, lines);
     Assert.assertNull("No headers or body lines, null output.", msg.getArchive());
-
   }
 }
