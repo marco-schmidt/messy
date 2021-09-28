@@ -25,8 +25,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.imf.ImfHeaderList;
@@ -40,6 +42,7 @@ import messy.msgio.formats.imf.ImfConverter;
 import messy.msgio.formats.imf.ImfParser;
 import messy.msgio.formats.mbox.MboxReader;
 import messy.msgio.formats.twitter.JsonTwitterParser;
+import messy.msgio.utils.StringUtils;
 
 /**
  * Command-line application to provide messy conversion functionality.
@@ -51,6 +54,15 @@ public final class App
     // prevent instantiation
   }
 
+  /**
+   * Environment variable to specify the output format.
+   */
+  public static final String MESSY_OUTPUT_FORMAT = "MESSY_OUTPUT_FORMAT";
+  /**
+   * Environment variable to specify message items to be included in output.
+   */
+  public static final String MESSY_OUTPUT_ITEMS = "MESSY_OUTPUT_ITEMS";
+
   private enum FileType
   {
     JSON, MBOX, UNKNOWN
@@ -61,6 +73,7 @@ public final class App
     JSON, TSV
   };
 
+  private static volatile Map<String, String> environment;
   private static List<Message.Item> outputItems;
   private static OutputFormat outputFormat = OutputFormat.TSV;
 
@@ -85,6 +98,11 @@ public final class App
   {
     App.outputItems = new ArrayList<>();
     App.outputItems.addAll(outputItems);
+  }
+
+  public static void setEnvironment(Map<String, String> newEnv)
+  {
+    environment = new HashMap<>(newEnv);
   }
 
   protected static DateFormat createDateFormatter()
@@ -204,9 +222,51 @@ public final class App
     return result;
   }
 
+  private static String getEnv(String key, String defaultValue)
+  {
+    String result = environment.get(key);
+    if (result == null)
+    {
+      result = defaultValue;
+    }
+    return result;
+  }
+
+  protected static List<Message.Item> initConfigurationOutputItems(String outputItems)
+  {
+    List<Message.Item> result;
+    if (outputItems == null)
+    {
+      result = Arrays.asList(Message.Item.values());
+    }
+    else
+    {
+      result = new ArrayList<>();
+      final List<String> itemNames = StringUtils.splitAndNormalize(outputItems, ",");
+      for (final String name : itemNames)
+      {
+        result.add(Message.Item.valueOf(name.toUpperCase(Locale.ROOT)));
+      }
+    }
+    return result;
+  }
+
+  private static void initConfiguration()
+  {
+    // initialize environment map from environment unless someone (like a unit test setup method)
+    // has done so already before explicitly calling main
+    if (environment == null)
+    {
+      environment = System.getenv();
+    }
+
+    setOutputFormat(OutputFormat.valueOf(getEnv(MESSY_OUTPUT_FORMAT, OutputFormat.TSV.name())));
+    setOutputItems(initConfigurationOutputItems(getEnv(MESSY_OUTPUT_ITEMS, null)));
+  }
+
   public static void main(String[] args)
   {
-    setOutputItems(Arrays.asList(Message.Item.values()));
+    initConfiguration();
     processStandardInput();
   }
 }

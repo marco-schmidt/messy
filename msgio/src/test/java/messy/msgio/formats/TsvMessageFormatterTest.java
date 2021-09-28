@@ -23,6 +23,18 @@ import org.junit.Test;
 public class TsvMessageFormatterTest
 {
   @Test
+  public void testAppend()
+  {
+    final TsvMessageFormatter mf = new TsvMessageFormatter();
+    final StringBuilder sb = new StringBuilder();
+    final List<String> list = new ArrayList<>();
+    list.add("a");
+    list.add("b");
+    mf.append(sb, list);
+    Assert.assertEquals("Concatenating list.", "a,b", sb.toString());
+  }
+
+  @Test
   public void testAppendList()
   {
     final TsvMessageFormatter mf = new TsvMessageFormatter();

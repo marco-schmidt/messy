@@ -53,7 +53,7 @@ public class TsvMessageFormatter extends AbstractMessageFormatter
     }
   }
 
-  private void append(StringBuilder sb, Object obj)
+  protected void append(StringBuilder sb, Object obj)
   {
     if (obj instanceof List<?>)
     {

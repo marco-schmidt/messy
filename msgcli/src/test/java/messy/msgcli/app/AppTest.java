@@ -22,9 +22,12 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import messy.msgcli.app.App.OutputFormat;
+import messy.msgdata.formats.Message;
 import messy.msgio.utils.StringUtils;
 
 public final class AppTest
@@ -104,6 +107,9 @@ public final class AppTest
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     System.setIn(in);
     System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8.name()));
+    final Map<String, String> env = new HashMap<>();
+    env.put(App.MESSY_OUTPUT_FORMAT, OutputFormat.TSV.name());
+    App.setEnvironment(env);
     App.main(new String[]
     {});
     System.setIn(tmpIn);
@@ -116,6 +122,27 @@ public final class AppTest
   }
 
   @Test
+  public void testMainJsonToTsvWorking() throws UnsupportedEncodingException
+  {
+    final InputStream tmpIn = System.in;
+    final PrintStream tmpOut = System.out;
+    final ByteArrayInputStream in = new ByteArrayInputStream(REGULAR_STATUS.getBytes(StandardCharsets.US_ASCII));
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    System.setIn(in);
+    System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8.name()));
+    final Map<String, String> env = new HashMap<>();
+    env.put(App.MESSY_OUTPUT_FORMAT, OutputFormat.TSV.name());
+    env.put(App.MESSY_OUTPUT_ITEMS, Message.Item.LANG_CODE.name());
+    App.setEnvironment(env);
+    App.main(new String[]
+    {});
+    System.setIn(tmpIn);
+    System.setOut(tmpOut);
+    final String result = out.toString(StandardCharsets.UTF_8.name());
+    Assert.assertEquals("Application output identical to expected output.", "en" + System.lineSeparator(), result);
+  }
+
+  @Test
   public void testMainJsonInputJsonOutputWorking() throws UnsupportedEncodingException
   {
     final InputStream tmpIn = System.in;
@@ -125,14 +152,16 @@ public final class AppTest
     System.setIn(in);
     System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8.name()));
     final App.OutputFormat saveOutputFormat = App.getOutputFormat();
-    App.setOutputFormat(OutputFormat.JSON);
+    final Map<String, String> env = new HashMap<>();
+    env.put(App.MESSY_OUTPUT_FORMAT, OutputFormat.JSON.name());
+    App.setEnvironment(env);
     App.main(new String[]
     {});
     System.setIn(tmpIn);
     System.setOut(tmpOut);
     App.setOutputFormat(saveOutputFormat);
     final String result = out.toString(StandardCharsets.UTF_8.name());
-    Assert.assertTrue("Application output stars with.", result.startsWith("{"));
+    Assert.assertTrue("Application output stars with '{'.", result.startsWith("{"));
   }
 
   @Test
