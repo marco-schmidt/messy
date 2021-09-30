@@ -34,6 +34,25 @@ import messy.msgdata.formats.mbox.MboxMessage;
 public class MboxReader implements AutoCloseable
 {
   /**
+   * Mbox subtypes, identified from envelope lines.
+   */
+  public enum MboxType
+  {
+    /**
+     * Full UseNet backup mbox files, 'From ' not quoted.
+     */
+    FUNBACKUP_TRAILER,
+    /**
+     * Usenet Historical Collection mbox files, envelope lines with a large integer number, 'From ' not quoted.
+     */
+    LARGE_INTEGER,
+    /**
+     * Mbox with quoted 'From '.
+     */
+    REGULAR
+  };
+
+  /**
    * Is high level unquoting enabled by default?
    */
   public static final boolean DEFAULT_HIGH_LEVEL_FROM_UNQUOTING = true;
@@ -41,6 +60,7 @@ public class MboxReader implements AutoCloseable
   private LineNumberReader in;
   private boolean unquoteHighLevelFroms = DEFAULT_HIGH_LEVEL_FROM_UNQUOTING;
   private String envelopeLine;
+  private MboxType mboxType;
 
   public MboxReader(Reader reader)
   {
@@ -51,6 +71,52 @@ public class MboxReader implements AutoCloseable
   {
     in = new LineNumberReader(reader);
     unquoteHighLevelFroms = unquoteHigh;
+  }
+
+  public static boolean identifyEnvelopeFunbackup(String line)
+  {
+    return line.endsWith(" FUNBACKUP");
+  }
+
+  public static boolean identifyEnvelopeLargeInteger(String line)
+  {
+    if (line == null || line.length() < FROM.length() + 1)
+    {
+      return false;
+    }
+    final String s = line.substring(FROM.length());
+    final char[] array = s.toCharArray();
+    int index = 0;
+    if (array[0] == '-')
+    {
+      index++;
+    }
+    while (index < array.length)
+    {
+      final char c = array[index++];
+      if (c < '0' || c > '9')
+      {
+        break;
+      }
+    }
+    return index == array.length;
+  }
+
+  public static MboxType identifyEnvelope(String line)
+  {
+    if (line == null || !line.startsWith(FROM))
+    {
+      return null;
+    }
+    if (identifyEnvelopeLargeInteger(line))
+    {
+      return MboxType.LARGE_INTEGER;
+    }
+    if (identifyEnvelopeFunbackup(line))
+    {
+      return MboxType.FUNBACKUP_TRAILER;
+    }
+    return MboxType.REGULAR;
   }
 
   @Override
@@ -74,16 +140,35 @@ public class MboxReader implements AutoCloseable
     {
       return false;
     }
-    final String[] parts = line.split(" ");
-    final String year = parts[parts.length - 1];
-    try
+
+    // first call to this method, identify mbox type
+    if (mboxType == null)
     {
-      final int yearNumber = Integer.parseInt(year);
-      return yearNumber >= 1970 && yearNumber < 10000;
+      mboxType = identifyEnvelope(line);
+      if (mboxType != MboxType.REGULAR)
+      {
+        unquoteHighLevelFroms = false;
+      }
     }
-    catch (final NumberFormatException nfe)
+
+    switch (mboxType)
     {
-      return false;
+    case FUNBACKUP_TRAILER:
+      return identifyEnvelopeFunbackup(line);
+    case LARGE_INTEGER:
+      return identifyEnvelopeLargeInteger(line);
+    default:
+      final String[] parts = line.split(" ");
+      final String year = parts[parts.length - 1];
+      try
+      {
+        final int yearNumber = Integer.parseInt(year);
+        return yearNumber >= 1970 && yearNumber < 10000;
+      }
+      catch (final NumberFormatException nfe)
+      {
+        return false;
+      }
     }
   }
 

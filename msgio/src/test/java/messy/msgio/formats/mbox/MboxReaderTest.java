@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import org.junit.Test;
@@ -170,5 +171,41 @@ public final class MboxReaderTest
   {
     final MboxMessage msg = read("invalidyear.mbox");
     Assert.assertNull("Envelope line with year XYZ leads to null message.", msg);
+  }
+
+  @Test
+  public void testIdentifyEnvelope() throws IOException
+  {
+    Assert.assertNull("Null input.", MboxReader.identifyEnvelope(null));
+    Assert.assertNull("Does not start with 'From '.", MboxReader.identifyEnvelope("ab"));
+    Assert.assertEquals("Large integer", MboxReader.MboxType.LARGE_INTEGER, MboxReader.identifyEnvelope("From 1345"));
+    Assert.assertEquals("Funbackup", MboxReader.MboxType.FUNBACKUP_TRAILER,
+        MboxReader.identifyEnvelope("From nobody art.2 FUNBACKUP"));
+    Assert.assertEquals("Large integer", MboxReader.MboxType.REGULAR,
+        MboxReader.identifyEnvelope("From alice@example.org Mon Jun 18 11:13:50 2001"));
+  }
+
+  @Test
+  public void testIdentifyEnvelopeLargeInteger() throws IOException
+  {
+    Assert.assertFalse("Missing 'From '.", MboxReader.identifyEnvelopeLargeInteger(null));
+    Assert.assertFalse("Missing 'From '.", MboxReader.identifyEnvelopeLargeInteger(""));
+    Assert.assertFalse("Not a number.", MboxReader.identifyEnvelopeLargeInteger("From localpart@example.org"));
+    Assert.assertFalse("Number with letter in it.", MboxReader.identifyEnvelopeLargeInteger("From 5546490a254454335"));
+    Assert.assertFalse("Number with space in it.", MboxReader.identifyEnvelopeLargeInteger("From 5546490 254454335"));
+    Assert.assertTrue("Positive number.", MboxReader.identifyEnvelopeLargeInteger("From 2345546490254454335"));
+    Assert.assertTrue("Negative number.", MboxReader.identifyEnvelopeLargeInteger("From -2345546490254454335"));
+  }
+
+  @Test
+  public void testIsEnvelopeLine() throws IOException
+  {
+    MboxReader reader = new MboxReader(new StringReader(""));
+    Assert.assertTrue("Identify funbackup", reader.isEnvelopeLine("From nobody art.2 FUNBACKUP"));
+    reader.close();
+
+    reader = new MboxReader(new StringReader(""));
+    Assert.assertTrue("Identify large integer.", reader.isEnvelopeLine("From 2345546490254454335"));
+    reader.close();
   }
 }

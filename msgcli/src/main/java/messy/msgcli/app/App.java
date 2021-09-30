@@ -257,7 +257,7 @@ public final class App
     // has done so already before explicitly calling main
     if (environment == null)
     {
-      environment = System.getenv();
+      setEnvironment(System.getenv());
     }
 
     setOutputFormat(OutputFormat.valueOf(getEnv(MESSY_OUTPUT_FORMAT, OutputFormat.TSV.name())));
