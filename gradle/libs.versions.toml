@@ -20,7 +20,7 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version = { strictly = "1.7.32" } 
 lucene = ["lucene-analyzerscommon", "lucene-core", "lucene-queries", "lucene-queryparser"]
 
 [plugins]
-dependencycheck = { id = "org.owasp.dependencycheck", version = "6.3.1" }
+dependencycheck = { id = "org.owasp.dependencycheck", version = "6.3.2" }
 dependencylicensereport = { id = "com.github.jk1.dependency-license-report", version = "2.0" }
 forbiddenapis = { id = "de.thetaphi.forbiddenapis", version = "3.2" }
 spotbugs = { id = "com.github.spotbugs", version = "4.7.6" }
