@@ -17,6 +17,7 @@ package messy.msgcli.app;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -25,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import messy.msgcli.app.App.OutputFormat;
 import messy.msgdata.formats.Message;
@@ -44,6 +46,7 @@ public final class AppTest
       + "\n" + "\n" + "Body.";
   private static final String MBOX_MISSING = "From <guestœexample.org> Sun Oct 17 12:03:20 2004\n" + "Message-ID: "
       + MESSAGE_ID + "\n" + "\n" + "Body.";
+  private File tempMboxFile;
 
   /**
    * InputStream that allows reading bytes provided in constructor, after that throws IOException.
@@ -73,6 +76,12 @@ public final class AppTest
       }
       throw new IOException("Failing on purpose.");
     }
+  }
+
+  @Before
+  public void setup() throws IOException
+  {
+    tempMboxFile = File.createTempFile("messy", ".mbox");
   }
 
   @Test
@@ -214,7 +223,7 @@ public final class AppTest
     System.setErr(tmpErr);
     final String result = out.toString(StandardCharsets.UTF_8.name());
     Assert.assertEquals("Application output identical to expected output.",
-        "Could not identify input to be in a supported format." + System.lineSeparator(), result);
+        "Could not identify '-' to be in a supported format." + System.lineSeparator(), result);
   }
 
   @Test
@@ -232,7 +241,7 @@ public final class AppTest
     System.setErr(tmpErr);
     final String result = out.toString(StandardCharsets.UTF_8.name());
     Assert.assertEquals("Application output identical to expected output.",
-        "Could not identify input to be in a supported format." + System.lineSeparator(), result);
+        "Could not identify '-' to be in a supported format." + System.lineSeparator(), result);
   }
 
   @Test
@@ -263,5 +272,15 @@ public final class AppTest
     {});
     System.setIn(tmpIn);
     System.setOut(tmpOut);
+  }
+
+  @Test
+  public void testMainTempMbox()
+  {
+    final String[] args = new String[]
+    {
+        tempMboxFile.getAbsolutePath()
+    };
+    App.main(args);
   }
 }

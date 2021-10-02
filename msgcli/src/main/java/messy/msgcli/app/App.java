@@ -15,12 +15,6 @@
  */
 package messy.msgcli.app;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PushbackInputStream;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,17 +25,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import messy.msgdata.formats.Message;
-import messy.msgdata.formats.imf.ImfHeaderList;
-import messy.msgdata.formats.imf.ImfMessage;
-import messy.msgdata.formats.mbox.MboxMessage;
-import messy.msgdata.formats.twitter.TwitterStatus;
 import messy.msgio.formats.AbstractMessageFormatter;
 import messy.msgio.formats.JsonMessageFormatter;
 import messy.msgio.formats.TsvMessageFormatter;
-import messy.msgio.formats.imf.ImfConverter;
-import messy.msgio.formats.imf.ImfParser;
-import messy.msgio.formats.mbox.MboxReader;
-import messy.msgio.formats.twitter.JsonTwitterParser;
 import messy.msgio.utils.StringUtils;
 
 /**
@@ -63,19 +49,15 @@ public final class App
    */
   public static final String MESSY_OUTPUT_ITEMS = "MESSY_OUTPUT_ITEMS";
 
-  private enum FileType
-  {
-    JSON, MBOX, UNKNOWN
-  };
-
   protected enum OutputFormat
   {
     JSON, TSV
   };
 
   private static volatile Map<String, String> environment;
+  private static List<String> fileNames;
   private static List<Message.Item> outputItems;
-  private static OutputFormat outputFormat = OutputFormat.TSV;
+  private static OutputFormat outputFormat = OutputFormat.JSON;
 
   public static OutputFormat getOutputFormat()
   {
@@ -112,82 +94,6 @@ public final class App
     return result;
   }
 
-  private static void dump(Message msg, AbstractMessageFormatter formatter)
-  {
-    System.out.println(formatter.format(msg));
-  }
-
-  private static void processJson(BufferedReader in, AbstractMessageFormatter formatter) throws IOException
-  {
-    String line;
-    while ((line = in.readLine()) != null)
-    {
-      final TwitterStatus status = JsonTwitterParser.parseStatus(line);
-      if (status == null)
-      {
-        System.err.println("Could not decode JSON tweet:'" + line + "'.");
-      }
-      else
-      {
-        final Message msg = JsonTwitterParser.toMessage(status);
-        dump(msg, formatter);
-      }
-    }
-  }
-
-  private static void processMbox(BufferedReader in, AbstractMessageFormatter formatter) throws IOException
-  {
-    MboxMessage mboxMsg;
-    final MboxReader reader = new MboxReader(in);
-    while ((mboxMsg = reader.next()) != null)
-    {
-      final ImfHeaderList headerList = new ImfParser().createMessageHeaderList(mboxMsg.getHeaderLines());
-      final ImfMessage imfMsg = new ImfMessage(headerList, mboxMsg.getBodyLines());
-      final Message msg = new ImfConverter().convert(imfMsg);
-      if (msg == null)
-      {
-        System.err.println("Null msg in " + reader.getLineNumber());
-      }
-      else
-      {
-        dump(msg, formatter);
-      }
-    }
-    reader.close();
-  }
-
-  private static void processStandardInput()
-  {
-    final DateFormat dateFormatter = createDateFormatter();
-    final AbstractMessageFormatter messageFormatter = createMessageFormatter();
-    messageFormatter.setDateFormatter(dateFormatter);
-    messageFormatter.setItems(getOutputItems());
-    final InputStream is = System.in;
-    final PushbackInputStream input = new PushbackInputStream(is, 1024 * 1024);
-    final FileType fileType = identify(input);
-    if (fileType == FileType.UNKNOWN)
-    {
-      System.err.println("Could not identify input to be in a supported format.");
-      return;
-    }
-    try (BufferedReader in = new BufferedReader(
-        new InputStreamReader(input, fileType == FileType.JSON ? StandardCharsets.UTF_8 : StandardCharsets.ISO_8859_1)))
-    {
-      if (fileType == FileType.JSON)
-      {
-        processJson(in, messageFormatter);
-      }
-      else
-      {
-        processMbox(in, messageFormatter);
-      }
-    }
-    catch (final IOException ioe)
-    {
-      ioe.printStackTrace();
-    }
-  }
-
   private static AbstractMessageFormatter createMessageFormatter()
   {
     switch (outputFormat)
@@ -197,29 +103,6 @@ public final class App
     default:
       return new JsonMessageFormatter();
     }
-  }
-
-  private static FileType identify(PushbackInputStream input)
-  {
-    FileType result = FileType.UNKNOWN;
-    try
-    {
-      final int firstByte = input.read();
-      if (firstByte == '{')
-      {
-        result = FileType.JSON;
-      }
-      else
-        if (firstByte == 'F')
-        {
-          result = FileType.MBOX;
-        }
-      input.unread(firstByte);
-    }
-    catch (final IOException ioe)
-    {
-    }
-    return result;
   }
 
   private static String getEnv(String key, String defaultValue)
@@ -251,7 +134,7 @@ public final class App
     return result;
   }
 
-  private static void initConfiguration()
+  private static void initConfiguration(String[] args)
   {
     // initialize environment map from environment unless someone (like a unit test setup method)
     // has done so already before explicitly calling main
@@ -262,11 +145,26 @@ public final class App
 
     setOutputFormat(OutputFormat.valueOf(getEnv(MESSY_OUTPUT_FORMAT, OutputFormat.TSV.name())));
     setOutputItems(initConfigurationOutputItems(getEnv(MESSY_OUTPUT_ITEMS, null)));
+
+    fileNames = Arrays.asList(args);
   }
 
   public static void main(String[] args)
   {
-    initConfiguration();
-    processStandardInput();
+    initConfiguration(args);
+    final AbstractMessageFormatter messageFormatter = createMessageFormatter();
+    messageFormatter.setDateFormatter(createDateFormatter());
+    messageFormatter.setItems(getOutputItems());
+    final InputProcessor ip = new InputProcessor();
+    ip.setMessageFormatter(messageFormatter);
+
+    if (fileNames.isEmpty())
+    {
+      ip.process(System.in, "-");
+    }
+    else
+    {
+      ip.process(fileNames);
+    }
   }
 }
