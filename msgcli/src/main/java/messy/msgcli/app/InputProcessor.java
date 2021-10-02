@@ -43,11 +43,6 @@ public class InputProcessor
 {
   private AbstractMessageFormatter messageFormatter;
 
-  enum FileType
-  {
-    JSON, MBOX, UNKNOWN
-  }
-
   private void dump(Message msg)
   {
     System.out.println(getMessageFormatter().format(msg));
@@ -56,29 +51,6 @@ public class InputProcessor
   public AbstractMessageFormatter getMessageFormatter()
   {
     return messageFormatter;
-  }
-
-  protected static FileType identify(PushbackInputStream input)
-  {
-    FileType result = FileType.UNKNOWN;
-    try
-    {
-      final int firstByte = input.read();
-      if (firstByte == '{')
-      {
-        result = FileType.JSON;
-      }
-      else
-        if (firstByte == 'F')
-        {
-          result = FileType.MBOX;
-        }
-      input.unread(firstByte);
-    }
-    catch (final IOException ioe)
-    {
-    }
-    return result;
   }
 
   private void processJson(BufferedReader in) throws IOException
@@ -123,16 +95,16 @@ public class InputProcessor
   public void process(InputStream is, String inputName)
   {
     final PushbackInputStream input = new PushbackInputStream(is, 1024 * 1024);
-    final FileType fileType = identify(input);
-    if (fileType == InputProcessor.FileType.UNKNOWN)
+    final FileFormatHelper.FileType fileType = FileFormatHelper.identify(input);
+    if (fileType == FileFormatHelper.FileType.UNKNOWN)
     {
       System.err.println("Could not identify '" + inputName + "' to be in a supported format.");
       return;
     }
     try (BufferedReader in = new BufferedReader(new InputStreamReader(input,
-        fileType == InputProcessor.FileType.JSON ? StandardCharsets.UTF_8 : StandardCharsets.ISO_8859_1)))
+        fileType == FileFormatHelper.FileType.JSON ? StandardCharsets.UTF_8 : StandardCharsets.ISO_8859_1)))
     {
-      if (fileType == InputProcessor.FileType.JSON)
+      if (fileType == FileFormatHelper.FileType.JSON)
       {
         processJson(in);
       }

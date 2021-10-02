@@ -51,7 +51,7 @@ public final class AppTest
   /**
    * InputStream that allows reading bytes provided in constructor, after that throws IOException.
    */
-  static class FailingInputStream extends InputStream
+  public static class FailingInputStream extends InputStream
   {
     private int index;
     private final byte[] data;

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
+import messy.msgcli.app.AppTest.FailingInputStream;
 
 public final class InputProcessorTest
 {
@@ -53,5 +54,16 @@ public final class InputProcessorTest
   {
     final InputProcessor ip = new InputProcessor();
     ip.process(INVALID_FILE_NAME);
+  }
+
+  @Test
+  public void testProcessFailedInputStream()
+  {
+    final FailingInputStream in = new AppTest.FailingInputStream(new byte[]
+    {
+        (byte) 'F', (byte) 'r', (byte) 'o', (byte) 'm', (byte) ' ',
+    });
+    final InputProcessor ip = new InputProcessor();
+    ip.process(in, "-");
   }
 }
