@@ -94,28 +94,33 @@ public class InputProcessor
 
   public void process(InputStream is, String inputName)
   {
-    final PushbackInputStream input = new PushbackInputStream(is, 1024 * 1024);
+    final PushbackInputStream input = new PushbackInputStream(is, 128 * 1024);
     final FileFormatHelper.FileType fileType = FileFormatHelper.identify(input);
-    if (fileType == FileFormatHelper.FileType.UNKNOWN)
+    switch (fileType)
     {
-      System.err.println("Could not identify '" + inputName + "' to be in a supported format.");
-      return;
-    }
-    try (BufferedReader in = new BufferedReader(new InputStreamReader(input,
-        fileType == FileFormatHelper.FileType.JSON ? StandardCharsets.UTF_8 : StandardCharsets.ISO_8859_1)))
-    {
-      if (fileType == FileFormatHelper.FileType.JSON)
+    case JSON:
+      try (BufferedReader in = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8)))
       {
         processJson(in);
       }
-      else
+      catch (final IOException ioe)
+      {
+        ioe.printStackTrace();
+      }
+      break;
+    case MBOX:
+      try (BufferedReader in = new BufferedReader(new InputStreamReader(input, StandardCharsets.ISO_8859_1)))
       {
         processMbox(in);
       }
-    }
-    catch (final IOException ioe)
-    {
-      ioe.printStackTrace();
+      catch (final IOException ioe)
+      {
+        ioe.printStackTrace();
+      }
+      break;
+    default:
+      System.err.println("Could not identify '" + inputName + "' to be in a supported format.");
+      break;
     }
   }
 

@@ -59,11 +59,22 @@ public final class InputProcessorTest
   @Test
   public void testProcessFailedInputStream()
   {
-    final FailingInputStream in = new AppTest.FailingInputStream(new byte[]
-    {
-        (byte) 'F', (byte) 'r', (byte) 'o', (byte) 'm', (byte) ' ',
-    });
-    final InputProcessor ip = new InputProcessor();
+    // note: buffer length must as large as or larger than FileFormatHelper.bytesToLoad
+    final byte[] buffer = new byte[512];
+    Arrays.fill(buffer, (byte) 32);
+    buffer[0] = (byte) 'F';
+    buffer[1] = (byte) 'r';
+    buffer[2] = (byte) 'o';
+    buffer[3] = (byte) 'm';
+    buffer[4] = (byte) ' ';
+    FailingInputStream in = new AppTest.FailingInputStream(buffer);
+    InputProcessor ip = new InputProcessor();
+    ip.process(in, "-");
+
+    Arrays.fill(buffer, (byte) 32);
+    buffer[0] = (byte) '{';
+    in = new AppTest.FailingInputStream(buffer);
+    ip = new InputProcessor();
     ip.process(in, "-");
   }
 }

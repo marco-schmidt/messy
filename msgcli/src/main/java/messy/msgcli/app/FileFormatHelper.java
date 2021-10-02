@@ -38,8 +38,8 @@ public final class FileFormatHelper
   static
   {
     signatures = new ArrayList<>();
-    // note: add longer signatures at the beginning in case a signature
-    // is the prefix of another prefix
+    // note: insert longer (offset + length) signatures at the beginning in case a signature
+    // is the prefix of another signature
     signatures.add(new FileSignature(new byte[]
     {
         (byte) 'F', (byte) 'r', (byte) 'o', (byte) 'm', (byte) ' ',
