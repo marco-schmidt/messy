@@ -109,7 +109,9 @@ public class InputProcessor
       final FileFormatHelper.FileType fileType = FileFormatHelper.identify(input);
       switch (fileType)
       {
+      case BZIP2:
       case GZIP:
+      case Z:
       {
         final InputStream wrappedInput = FileFormatHelper.wrapDecompressor(input, fileType);
         process(wrappedInput, inputName + "\t" + fileType.name());

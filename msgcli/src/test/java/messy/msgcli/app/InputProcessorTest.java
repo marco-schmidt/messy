@@ -112,8 +112,17 @@ public final class InputProcessorTest
     InputProcessor ip = new InputProcessor();
     String name = "example.general.tar";
     ip.process(open(name), name);
+
     ip = new InputProcessor();
     name = "example.general.tar.gz";
+    ip.process(open(name), name);
+
+    ip = new InputProcessor();
+    name = "example.general.tar.bz2";
+    ip.process(open(name), name);
+
+    ip = new InputProcessor();
+    name = "example.general.tar.Z";
     ip.process(open(name), name);
   }
 }

@@ -21,7 +21,9 @@ import java.io.PushbackInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
 
 /**
  * Identify file formats using byte array signatures.
@@ -32,7 +34,7 @@ public final class FileFormatHelper
 {
   enum FileType
   {
-    GZIP, JSON, MBOX, TAR, UNKNOWN
+    BZIP2, GZIP, JSON, MBOX, TAR, UNKNOWN, Z
   }
 
   private static int bytesToLoad;
@@ -70,6 +72,18 @@ public final class FileFormatHelper
     {
         (byte) 0x1f, (byte) 0x8b
     }, 0, FileType.GZIP));
+
+    // https://en.wikipedia.org/wiki/Compress
+    signatures.add(new FileSignature(new byte[]
+    {
+        (byte) 0x1f, (byte) 0x9d
+    }, 0, FileType.Z));
+
+    // https://en.wikipedia.org/wiki/Bzip2
+    signatures.add(new FileSignature(new byte[]
+    {
+        (byte) 0x42, (byte) 0x5a
+    }, 0, FileType.BZIP2));
 
     bytesToLoad = findNumBytesToLoad(signatures);
   }
@@ -145,7 +159,15 @@ public final class FileFormatHelper
   {
     try
     {
-      return new GzipCompressorInputStream(in, true);
+      switch (type)
+      {
+      case BZIP2:
+        return new BZip2CompressorInputStream(in, true);
+      case Z:
+        return new ZCompressorInputStream(in);
+      default:
+        return new GzipCompressorInputStream(in, true);
+      }
     }
     catch (final IOException e)
     {
