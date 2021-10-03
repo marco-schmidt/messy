@@ -31,7 +31,7 @@ import messy.msgdata.formats.mbox.MboxMessage;
  *
  * @author Marco Schmidt
  */
-public class MboxReader implements AutoCloseable
+public class MboxReader
 {
   /**
    * Mbox subtypes, identified from envelope lines.
@@ -119,7 +119,6 @@ public class MboxReader implements AutoCloseable
     return MboxType.REGULAR;
   }
 
-  @Override
   public void close() throws IOException
   {
     if (in != null)

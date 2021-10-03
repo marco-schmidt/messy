@@ -16,10 +16,12 @@
 package messy.msgcli.app;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 
 /**
  * Identify file formats using byte array signatures.
@@ -30,24 +32,45 @@ public final class FileFormatHelper
 {
   enum FileType
   {
-    JSON, MBOX, UNKNOWN
+    GZIP, JSON, MBOX, TAR, UNKNOWN
   }
 
   private static int bytesToLoad;
   private static List<FileSignature> signatures;
   static
   {
-    signatures = new ArrayList<>();
     // note: insert longer (offset + length) signatures at the beginning in case a signature
     // is the prefix of another signature
+    signatures = new ArrayList<>();
+
+    // https://en.wikipedia.org/wiki/Tar_(computing)
+    signatures.add(new FileSignature(new byte[]
+    {
+        (byte) 'u', (byte) 's', (byte) 't', (byte) 'a', (byte) 'r', (byte) 0, (byte) '0', (byte) '0'
+    }, 257, FileType.TAR));
+    signatures.add(new FileSignature(new byte[]
+    {
+        (byte) 'u', (byte) 's', (byte) 't', (byte) 'a', (byte) 'r', (byte) ' ', (byte) ' ', (byte) 0
+    }, 257, FileType.TAR));
+
+    // https://en.wikipedia.org/wiki/Mbox
     signatures.add(new FileSignature(new byte[]
     {
         (byte) 'F', (byte) 'r', (byte) 'o', (byte) 'm', (byte) ' ',
     }, 0, FileType.MBOX));
+
+    // https://en.wikipedia.org/wiki/JSON
     signatures.add(new FileSignature(new byte[]
     {
         (byte) '{'
     }, 0, FileType.JSON));
+
+    // https://en.wikipedia.org/wiki/Gzip
+    signatures.add(new FileSignature(new byte[]
+    {
+        (byte) 0x1f, (byte) 0x8b
+    }, 0, FileType.GZIP));
+
     bytesToLoad = findNumBytesToLoad(signatures);
   }
 
@@ -65,6 +88,11 @@ public final class FileFormatHelper
       max = Math.max(candidate, max);
     }
     return max;
+  }
+
+  public static int getNumBytesToLoad()
+  {
+    return bytesToLoad;
   }
 
   protected static FileType identify(PushbackInputStream input)
@@ -102,9 +130,26 @@ public final class FileFormatHelper
     }
     catch (final IOException ioe)
     {
-      return FileType.UNKNOWN;
+      ioe.printStackTrace();
     }
 
     return FileType.UNKNOWN;
+  }
+
+  /**
+   * Puts an input stream into a decompressor input stream according to the file type.
+   *
+   * @return wrapped input or null in case of error or unknown type
+   */
+  public static InputStream wrapDecompressor(InputStream in, FileType type)
+  {
+    try
+    {
+      return new GzipCompressorInputStream(in, true);
+    }
+    catch (final IOException e)
+    {
+      return null;
+    }
   }
 }

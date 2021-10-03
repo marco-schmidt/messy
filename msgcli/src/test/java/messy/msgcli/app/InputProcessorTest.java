@@ -17,11 +17,14 @@ package messy.msgcli.app;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import messy.msgcli.app.AppTest.FailingInputStream;
+import messy.msgcli.app.FileFormatHelper.FileType;
 
 public final class InputProcessorTest
 {
@@ -32,6 +35,18 @@ public final class InputProcessorTest
   public void setup() throws IOException
   {
     tempMboxFile = File.createTempFile("messy", ".mbox");
+  }
+
+  @Test
+  public void testIsFileNameInteger()
+  {
+    Assert.assertFalse("Null input leads to false.", InputProcessor.isFileNameInteger(null));
+    Assert.assertFalse("Empty input leads to false.", InputProcessor.isFileNameInteger(""));
+    Assert.assertFalse("Letter input leads to false.", InputProcessor.isFileNameInteger("file.txt"));
+    Assert.assertFalse("Letter input leads to false.", InputProcessor.isFileNameInteger("dir/file.txt"));
+    Assert.assertFalse("Mixed input leads to false.", InputProcessor.isFileNameInteger("dir/file123"));
+    Assert.assertTrue("Mixed input leads to false.", InputProcessor.isFileNameInteger("0012345"));
+    Assert.assertTrue("Mixed input leads to false.", InputProcessor.isFileNameInteger("dir/0012345"));
   }
 
   @Test
@@ -76,5 +91,29 @@ public final class InputProcessorTest
     in = new AppTest.FailingInputStream(buffer);
     ip = new InputProcessor();
     ip.process(in, "-");
+  }
+
+  @Test
+  public void testProcessFailedArchiveInputStream()
+  {
+    final FailingInputStream in = new AppTest.FailingInputStream();
+    final InputProcessor ip = new InputProcessor();
+    ip.processArchiveInput(in, "-", FileType.TAR);
+  }
+
+  public InputStream open(String name)
+  {
+    return getClass().getResourceAsStream(name);
+  }
+
+  @Test
+  public void testProcessInputStream() throws IOException
+  {
+    InputProcessor ip = new InputProcessor();
+    String name = "example.general.tar";
+    ip.process(open(name), name);
+    ip = new InputProcessor();
+    name = "example.general.tar.gz";
+    ip.process(open(name), name);
   }
 }

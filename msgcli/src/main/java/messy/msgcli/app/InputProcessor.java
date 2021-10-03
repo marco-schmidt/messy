@@ -21,8 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PushbackInputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import messy.msgcli.app.FileFormatHelper.FileType;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.imf.ImfHeaderList;
 import messy.msgdata.formats.imf.ImfMessage;
@@ -89,38 +94,119 @@ public class InputProcessor
         dump(msg);
       }
     }
-    reader.close();
+  }
+
+  private BufferedReader openAsBufferedReader(InputStream in, Charset cs)
+  {
+    return new BufferedReader(new InputStreamReader(in, cs));
   }
 
   public void process(InputStream is, String inputName)
   {
-    final PushbackInputStream input = new PushbackInputStream(is, 128 * 1024);
-    final FileFormatHelper.FileType fileType = FileFormatHelper.identify(input);
-    switch (fileType)
+    try
     {
-    case JSON:
-      try (BufferedReader in = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8)))
+      final PushbackInputStream input = new PushbackInputStream(is, FileFormatHelper.getNumBytesToLoad());
+      final FileFormatHelper.FileType fileType = FileFormatHelper.identify(input);
+      switch (fileType)
       {
-        processJson(in);
-      }
-      catch (final IOException ioe)
+      case GZIP:
       {
-        ioe.printStackTrace();
+        final InputStream wrappedInput = FileFormatHelper.wrapDecompressor(input, fileType);
+        process(wrappedInput, inputName + "\t" + fileType.name());
+        break;
       }
-      break;
-    case MBOX:
-      try (BufferedReader in = new BufferedReader(new InputStreamReader(input, StandardCharsets.ISO_8859_1)))
+      case TAR:
+        processArchiveInput(input, inputName, fileType);
+        break;
+      case JSON:
+        final BufferedReader jsonIn = openAsBufferedReader(input, StandardCharsets.UTF_8);
+        processJson(jsonIn);
+        break;
+      case MBOX:
+        final BufferedReader mboxIn = openAsBufferedReader(input, StandardCharsets.ISO_8859_1);
+        processMbox(mboxIn);
+        break;
+      default:
+        System.err.println("Could not identify '" + inputName + "' to be in a supported format.");
+        break;
+      }
+    }
+    catch (final IOException ioe)
+    {
+      ioe.printStackTrace();
+    }
+  }
+
+  /**
+   * Is the argument string a file name that consists of decimal digits only? A forward slash may separate a directory
+   * name.
+   */
+  public static boolean isFileNameInteger(String name)
+  {
+    if (name == null)
+    {
+      return false;
+    }
+    int index = name.length() - 1;
+    int numDigits = 0;
+    while (index >= 0)
+    {
+      final char c = name.charAt(index--);
+      if (c >= '0' && c <= '9')
       {
-        processMbox(in);
+        numDigits++;
       }
-      catch (final IOException ioe)
+      else
       {
-        ioe.printStackTrace();
+        if (c == '/')
+        {
+          break;
+        }
+        else
+        {
+          return false;
+        }
       }
-      break;
-    default:
-      System.err.println("Could not identify '" + inputName + "' to be in a supported format.");
-      break;
+    }
+    return numDigits > 0;
+  }
+
+  private ArchiveInputStream openArchive(InputStream is, String inputName, FileType type)
+  {
+    return new TarArchiveInputStream(is, true);
+  }
+
+  protected void processArchiveInput(InputStream is, String inputName, FileType type)
+  {
+    final ArchiveInputStream ain = openArchive(is, inputName, type);
+    try
+    {
+      ArchiveEntry entry;
+      while ((entry = ain.getNextEntry()) != null)
+      {
+        if (entry.isDirectory())
+        {
+          continue;
+        }
+        final String name = entry.getName();
+        // if (!ain.canReadEntryData(entry))
+        // {
+        // System.err.println("Cannot decode, skipping '" + inputName + "\t" + name);
+        // continue;
+        // }
+        // if (isFileNameInteger(name))
+        // {
+        //
+        // }
+        // else
+        // {
+        // }
+        process(ain, inputName + "\t" + name);
+      }
+    }
+    catch (final IOException ioe)
+    {
+      ioe.printStackTrace();
     }
   }
 

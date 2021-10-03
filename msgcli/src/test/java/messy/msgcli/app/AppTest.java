@@ -239,9 +239,6 @@ public final class AppTest
     {});
     System.setIn(tmpIn);
     System.setErr(tmpErr);
-    final String result = out.toString(StandardCharsets.UTF_8.name());
-    Assert.assertEquals("Application output identical to expected output.",
-        "Could not identify '-' to be in a supported format." + System.lineSeparator(), result);
   }
 
   @Test

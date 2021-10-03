@@ -6,6 +6,7 @@ mainClassName = 'messy.msgcli.app.App'
 dependencies {
   implementation project(':msgdata')
   implementation project(':msgio')
+  implementation libs.commons.compress
   implementation libs.json.smart
   testImplementation libs.junit
 }
