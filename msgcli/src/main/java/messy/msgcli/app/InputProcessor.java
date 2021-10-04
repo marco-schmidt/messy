@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import messy.msgcli.app.FileFormatHelper.FileType;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.imf.ImfHeaderList;
@@ -118,6 +119,7 @@ public class InputProcessor
         break;
       }
       case TAR:
+      case ZIP:
         processArchiveInput(input, inputName, fileType);
         break;
       case JSON:
@@ -175,7 +177,14 @@ public class InputProcessor
 
   private ArchiveInputStream openArchive(InputStream is, String inputName, FileType type)
   {
-    return new TarArchiveInputStream(is, true);
+    if (type == FileType.ZIP)
+    {
+      return new ZipArchiveInputStream(is);
+    }
+    else
+    {
+      return new TarArchiveInputStream(is, true);
+    }
   }
 
   protected void processArchiveInput(InputStream is, String inputName, FileType type)

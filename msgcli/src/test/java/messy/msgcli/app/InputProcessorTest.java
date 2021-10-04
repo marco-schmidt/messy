@@ -124,5 +124,9 @@ public final class InputProcessorTest
     ip = new InputProcessor();
     name = "example.general.tar.Z";
     ip.process(open(name), name);
+
+    ip = new InputProcessor();
+    name = "example.general.zip";
+    ip.process(open(name), name);
   }
 }

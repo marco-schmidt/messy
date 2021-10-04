@@ -34,7 +34,7 @@ public final class FileFormatHelper
 {
   enum FileType
   {
-    BZIP2, GZIP, JSON, MBOX, TAR, UNKNOWN, Z
+    BZIP2, GZIP, JSON, MBOX, TAR, UNKNOWN, Z, ZIP
   }
 
   private static int bytesToLoad;
@@ -66,6 +66,12 @@ public final class FileFormatHelper
     {
         (byte) '{'
     }, 0, FileType.JSON));
+
+    // https://en.wikipedia.org/wiki/ZIP_(file_format)
+    signatures.add(new FileSignature(new byte[]
+    {
+        (byte) 'P', (byte) 'K', (byte) 3, (byte) 4
+    }, 0, FileType.ZIP));
 
     // https://en.wikipedia.org/wiki/Gzip
     signatures.add(new FileSignature(new byte[]
