@@ -4,12 +4,36 @@ A tool suite for electronic messages.
 
 ## Features
 
-### Message and File Formats
+### Input Formats
 
-* Read [mbox](https://en.wikipedia.org/wiki/Mbox) and parse [Internet Message Format (IMF)](https://en.wikipedia.org/wiki/Email#Message_format) used with email and Usenet messages.
-* Parse [JSON tweets](https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/overview) distributed as a directory tree of [newline-delimited JSON (ndjson)](http://ndjson.org/) files, each compressed with bzip2, the directory tree then packed in a single tar archive file.
-* Parse [A News](https://en.wikipedia.org/wiki/A_News) messages, a 1980s format for Usenet messages.
-* Write *messy tar files* (tar files with one file per message) suitable for long-term archival.
+Messy recursively reads archive and container formats and parses several types of messages. Typically, one or more messages are stored in a file using a container format. One or more of those container files are then stored within an archive.
+
+#### Archive Formats
+
+These are general-purpose archive formats, not specific to messages.
+* Single compressed files
+    * Gzip (.gz)
+    * Bzip2 (.bz2)
+    * Compress (.Z)
+* Multiple files stored without compression
+    * Tar (.tar)
+* Multiple files stored with compression
+    * Zip (.zip)
+
+#### Container Formats
+
+* [Mbox](https://en.wikipedia.org/wiki/Mbox) files.
+    * Supports various subtypes.
+* [Newline-delimited JSON (ndjson)](http://ndjson.org/) files.
+* Single-message files.
+     * File extensions .eml and .msg.
+     * Newsspool messages, no file extension, name is an integer number.
+
+#### Message Formats
+
+* [Internet Message Format (IMF)](https://en.wikipedia.org/wiki/Email#Message_format) used with email and Usenet messages.
+* [A News](https://en.wikipedia.org/wiki/A_News) messages, a 1980s format for Usenet messages.
+* [JSON tweets](https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/overview) distributed as a directory tree of , each compressed with bzip2, the directory tree then packed in a single tar archive file.
 
 ### Storage
 
