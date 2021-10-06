@@ -27,6 +27,11 @@ import messy.msgdata.formats.anews.ANewsMessage;
  */
 public class ANewsMessageConverterTest
 {
+  private static final String[] REGULAR =
+  {
+      "Amsg1", "news.misc", "foo!bar", "Sat Mar 28 17:56:20 1981", "Subject line", "First message body line."
+  };
+
   @Test
   public void testNullInput()
   {
@@ -70,6 +75,13 @@ public class ANewsMessageConverterTest
     }));
     Assert.assertFalse("Correct A news lines lead to non-null message object.", msg == null);
     Assert.assertEquals("Message ID properly parsed.", id, msg.getMessageId());
+  }
+
+  @Test
+  public void testCompleteMessage()
+  {
+    final ANewsMessage msg = ANewsMessageConverter.fromLines(Arrays.asList(REGULAR));
+    Assert.assertNotNull("Message was properly parsed.", msg);
   }
 
   @Test

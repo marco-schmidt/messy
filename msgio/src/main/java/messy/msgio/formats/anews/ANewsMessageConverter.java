@@ -15,8 +15,12 @@
  */
 package messy.msgio.formats.anews;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.anews.ANewsMessage;
 import messy.msgio.utils.StringUtils;
@@ -35,11 +39,28 @@ public final class ANewsMessageConverter
 
   private static final int NUM_HEADER_LINES = 5;
 
+  // https://stackoverflow.com/questions/5879546/parsing-dates-with-variable-spaces
+  private static final String DATE_TIME_PATTERN = "EEE MMM d HH:mm:ss yyyy";
+
   /**
    * Prevent instantiation of this class.
    */
   private ANewsMessageConverter()
   {
+  }
+
+  public static Date parseDate(String dateString)
+  {
+    final SimpleDateFormat parser = new SimpleDateFormat(DATE_TIME_PATTERN, Locale.US);
+    try
+    {
+      return parser.parse(dateString);
+    }
+    catch (final ParseException e)
+    {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   /**
@@ -71,6 +92,7 @@ public final class ANewsMessageConverter
     // fourth line: date
     final String dateString = list.get(3);
     msg.setDateString(dateString);
+    msg.setDate(parseDate(dateString));
     // fifth line: Subject
     msg.setSubject(list.get(4));
     // all remaining lines are part of the body
@@ -101,6 +123,7 @@ public final class ANewsMessageConverter
     result.setGroups(StringUtils.splitAndNormalize(msg.getNewsgroups(), ","));
     result.setSent(msg.getDate());
     result.setSubject(msg.getSubject());
+    result.setText(StringUtils.concatItems(msg.getBodyLines(), "\n"));
     return result;
   }
 }
