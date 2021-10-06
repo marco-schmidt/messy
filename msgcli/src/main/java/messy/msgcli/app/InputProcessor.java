@@ -16,6 +16,8 @@
 package messy.msgcli.app;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,18 +25,23 @@ import java.io.InputStreamReader;
 import java.io.PushbackInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 import messy.msgcli.app.FileFormatHelper.FileType;
 import messy.msgdata.formats.Message;
+import messy.msgdata.formats.anews.ANewsMessage;
 import messy.msgdata.formats.imf.ImfHeaderList;
 import messy.msgdata.formats.imf.ImfMessage;
 import messy.msgdata.formats.mbox.MboxMessage;
 import messy.msgdata.formats.twitter.TwitterStatus;
 import messy.msgio.formats.AbstractMessageFormatter;
+import messy.msgio.formats.anews.ANewsMessageConverter;
 import messy.msgio.formats.imf.ImfConverter;
 import messy.msgio.formats.imf.ImfParser;
 import messy.msgio.formats.mbox.MboxReader;
@@ -131,13 +138,87 @@ public class InputProcessor
         processMbox(mboxIn);
         break;
       default:
-        System.err.println("Could not identify '" + inputName + "' to be in a supported format.");
+        processUnidentified(input, inputName);
         break;
       }
     }
     catch (final IOException ioe)
     {
       ioe.printStackTrace();
+    }
+  }
+
+  protected static boolean isLikelySingleMessageFile(String name)
+  {
+    if (name == null || name.isEmpty())
+    {
+      return false;
+    }
+    boolean result;
+    if (Character.isDigit(name.charAt(name.length() - 1)))
+    {
+      result = true;
+    }
+    else
+    {
+      final String lower = name.toLowerCase(Locale.ROOT);
+      result = lower.endsWith(".eml") || lower.endsWith(".msg");
+    }
+    return result;
+  }
+
+  protected boolean processSingleMessageAnews(InputStream is, String inputName)
+  {
+    final BufferedReader reader = openAsBufferedReader(is, StandardCharsets.ISO_8859_1);
+    final List<String> lines = new ArrayList<>();
+    String line;
+    try
+    {
+      while ((line = reader.readLine()) != null)
+      {
+        lines.add(line);
+      }
+    }
+    catch (final IOException e)
+    {
+      e.printStackTrace();
+    }
+    final ANewsMessage msg = ANewsMessageConverter.fromLines(lines);
+    if (msg == null)
+    {
+      return false;
+    }
+    else
+    {
+      dump(ANewsMessageConverter.toMessage(msg));
+      return true;
+    }
+  }
+
+  protected void processUnidentified(InputStream is, String inputName)
+  {
+    final boolean success = false;
+
+    if (isLikelySingleMessageFile(inputName))
+    {
+      final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+      try
+      {
+        IOUtils.copy(is, bout);
+        final byte[] array = bout.toByteArray();
+        if (array.length > 0 && array[0] == (byte) 'A')
+        {
+          processSingleMessageAnews(new ByteArrayInputStream(array), inputName);
+        }
+      }
+      catch (final IOException e)
+      {
+        e.printStackTrace();
+      }
+    }
+    if (!success)
+    {
+      System.err.println("Could not identify '" + inputName + "' to be in a supported format.");
     }
   }
 
@@ -208,13 +289,6 @@ public class InputProcessor
         // {
         // System.err.println("Cannot decode, skipping '" + inputName + "\t" + name);
         // continue;
-        // }
-        // if (isFileNameInteger(name))
-        // {
-        //
-        // }
-        // else
-        // {
         // }
         process(ain, inputName + "\t" + name);
       }
