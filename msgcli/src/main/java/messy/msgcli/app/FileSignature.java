@@ -47,6 +47,12 @@ public class FileSignature
 
   /**
    * Does argument buffer match this signature?
+   *
+   * @param buffer
+   *          checks whether this array is a match for this signature
+   * @param bufferSize
+   *          number of bytes in array filled with data
+   * @return whether the argument matches this signature
    */
   public boolean matches(byte[] buffer, int bufferSize)
   {

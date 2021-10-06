@@ -144,6 +144,10 @@ public class InputProcessor
   /**
    * Is the argument string a file name that consists of decimal digits only? A forward slash may separate a directory
    * name.
+   *
+   * @param name
+   *          file system path to be checked
+   * @return whether the argument name contains a name that consists only of digits
    */
   public static boolean isFileNameInteger(String name)
   {

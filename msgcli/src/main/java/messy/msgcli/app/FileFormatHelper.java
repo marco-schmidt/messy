@@ -159,6 +159,10 @@ public final class FileFormatHelper
   /**
    * Puts an input stream into a decompressor input stream according to the file type.
    *
+   * @param in
+   *          stream to be wrapped into a decompressor
+   * @param type
+   *          identified file type of input stream
    * @return wrapped input or null in case of error or unknown type
    */
   public static InputStream wrapDecompressor(InputStream in, FileType type)
