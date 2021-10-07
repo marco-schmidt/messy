@@ -197,7 +197,7 @@ public class InputProcessor
 
   protected void processUnidentified(InputStream is, String inputName)
   {
-    final boolean success = false;
+    boolean success = false;
 
     if (isLikelySingleMessageFile(inputName))
     {
@@ -208,7 +208,7 @@ public class InputProcessor
         final byte[] array = bout.toByteArray();
         if (array.length > 0 && array[0] == (byte) 'A')
         {
-          processSingleMessageAnews(new ByteArrayInputStream(array), inputName);
+          success = processSingleMessageAnews(new ByteArrayInputStream(array), inputName);
         }
       }
       catch (final IOException e)

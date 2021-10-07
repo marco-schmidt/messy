@@ -154,6 +154,8 @@ public final class InputProcessorTest
   public void testProcessUnidentified() throws IOException
   {
     final InputProcessor ip = new InputProcessor();
+    ip.setMessageFormatter(new JsonMessageFormatter());
+    ip.getMessageFormatter().setItems(new ArrayList<>());
     ip.processUnidentified(new ByteArrayInputStream(new byte[]
     {}), "1.msg");
     ip.processUnidentified(new ByteArrayInputStream(new byte[]
@@ -168,6 +170,8 @@ public final class InputProcessorTest
     {
         (byte) 'A'
     }), "1.msg");
+    final String s = StringUtils.concatItems(Arrays.asList(ANEWS), "\n");
+    ip.processUnidentified(new ByteArrayInputStream(s.getBytes(StandardCharsets.ISO_8859_1)), "1.msg");
   }
 
   @Test
