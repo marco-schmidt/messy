@@ -72,7 +72,7 @@ public final class ANewsMessageConverter
    */
   public static ANewsMessage fromLines(List<String> list)
   {
-    if (list == null || list.size() <= NUM_HEADER_LINES)
+    if (list == null || list.size() < NUM_HEADER_LINES)
     {
       return null;
     }
