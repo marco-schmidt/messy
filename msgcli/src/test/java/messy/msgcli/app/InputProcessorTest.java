@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -126,28 +127,40 @@ public final class InputProcessorTest
     return getClass().getResourceAsStream(name);
   }
 
+  private InputProcessor createInputProcessor()
+  {
+    final InputProcessor ip = new InputProcessor();
+    ip.setMessageFormatter(new JsonMessageFormatter());
+    ip.getMessageFormatter().setItems(new ArrayList<>());
+    return ip;
+  }
+
   @Test
   public void testProcessInputStream() throws IOException
   {
-    InputProcessor ip = new InputProcessor();
+    final InputProcessor ip = createInputProcessor();
     String name = "example.general.tar";
     ip.process(open(name), name);
 
-    ip = new InputProcessor();
     name = "example.general.tar.gz";
     ip.process(open(name), name);
 
-    ip = new InputProcessor();
     name = "example.general.tar.bz2";
     ip.process(open(name), name);
 
-    ip = new InputProcessor();
     name = "example.general.tar.Z";
     ip.process(open(name), name);
 
-    ip = new InputProcessor();
     name = "example.general.zip";
     ip.process(open(name), name);
+  }
+
+  @Test
+  public void testToLines()
+  {
+    final InputProcessor ip = new InputProcessor();
+    final List<String> lines = ip.toLines(new AppTest.FailingInputStream());
+    Assert.assertTrue("List is empty.", lines.isEmpty());
   }
 
   @Test
@@ -180,18 +193,11 @@ public final class InputProcessorTest
     final InputProcessor ip = new InputProcessor();
     ip.setMessageFormatter(new JsonMessageFormatter());
     ip.getMessageFormatter().setItems(new ArrayList<>());
-    Assert.assertFalse("Not enough data for anews message.",
-        ip.processSingleMessageAnews(new ByteArrayInputStream(new byte[]
-        {
-            (byte) 'A'
-        }), "1.msg"));
-
-    Assert.assertFalse("Failed I/O.", ip.processSingleMessageAnews(new AppTest.FailingInputStream(new byte[]
+    Assert.assertFalse("Not enough data for anews message.", ip.processSingleMessageAnews(Arrays.asList(new String[]
     {
-        (byte) 'A'
+        "A"
     }), "1.msg"));
-    final String s = StringUtils.concatItems(Arrays.asList(ANEWS), "\n");
-    final ByteArrayInputStream bin = new ByteArrayInputStream(s.getBytes(StandardCharsets.ISO_8859_1));
-    Assert.assertTrue("Regular anews.", ip.processSingleMessageAnews(bin, "1.msg"));
+
+    Assert.assertTrue("Regular anews.", ip.processSingleMessageAnews(Arrays.asList(ANEWS), "1.msg"));
   }
 }

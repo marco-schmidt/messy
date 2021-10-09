@@ -26,6 +26,7 @@ import java.io.PushbackInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -167,7 +168,58 @@ public class InputProcessor
     return result;
   }
 
-  protected boolean processSingleMessageAnews(InputStream is, String inputName)
+  protected boolean processSingleMessageAnews(List<String> lines, String inputName)
+  {
+    final ANewsMessage msg = ANewsMessageConverter.fromLines(lines);
+    if (msg == null)
+    {
+      return false;
+    }
+    else
+    {
+      dump(ANewsMessageConverter.toMessage(msg));
+      return true;
+    }
+  }
+
+  protected boolean processSingleMessageImf(List<String> lines, String inputName)
+  {
+    // copy header lines to one list
+    final Iterator<String> iter = lines.iterator();
+    final List<String> headerLines = new ArrayList<>();
+    while (iter.hasNext())
+    {
+      final String line = iter.next();
+      if (line.isEmpty())
+      {
+        break;
+      }
+      headerLines.add(line);
+    }
+
+    // and body lines to another
+    final List<String> bodyLines = new ArrayList<>();
+    while (iter.hasNext())
+    {
+      bodyLines.add(iter.next());
+    }
+
+    final ImfHeaderList headerList = new ImfParser().createMessageHeaderList(headerLines);
+    final ImfMessage imfMsg = new ImfMessage(headerList, bodyLines);
+    final Message msg = new ImfConverter().convert(imfMsg);
+
+    if (msg == null)
+    {
+      return false;
+    }
+    else
+    {
+      dump(msg);
+      return true;
+    }
+  }
+
+  protected List<String> toLines(InputStream is)
   {
     final BufferedReader reader = openAsBufferedReader(is, StandardCharsets.ISO_8859_1);
     final List<String> lines = new ArrayList<>();
@@ -183,16 +235,7 @@ public class InputProcessor
     {
       e.printStackTrace();
     }
-    final ANewsMessage msg = ANewsMessageConverter.fromLines(lines);
-    if (msg == null)
-    {
-      return false;
-    }
-    else
-    {
-      dump(ANewsMessageConverter.toMessage(msg));
-      return true;
-    }
+    return lines;
   }
 
   protected void processUnidentified(InputStream is, String inputName)
@@ -206,9 +249,14 @@ public class InputProcessor
       {
         IOUtils.copy(is, bout);
         final byte[] array = bout.toByteArray();
+        final List<String> lines = toLines(new ByteArrayInputStream(array));
         if (array.length > 0 && array[0] == (byte) 'A')
         {
-          success = processSingleMessageAnews(new ByteArrayInputStream(array), inputName);
+          success = processSingleMessageAnews(lines, inputName);
+        }
+        if (!success)
+        {
+          success = processSingleMessageImf(lines, inputName);
         }
       }
       catch (final IOException e)
