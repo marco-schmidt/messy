@@ -21,9 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PushbackInputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,7 +31,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import messy.msgcli.app.FileFormatHelper.FileType;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.anews.ANewsMessage;
@@ -105,11 +102,6 @@ public class InputProcessor
     }
   }
 
-  private BufferedReader openAsBufferedReader(InputStream in, Charset cs)
-  {
-    return new BufferedReader(new InputStreamReader(in, cs));
-  }
-
   public void process(InputStream is, String inputName)
   {
     try
@@ -131,11 +123,12 @@ public class InputProcessor
         processArchiveInput(input, inputName, fileType);
         break;
       case JSON:
-        final BufferedReader jsonIn = openAsBufferedReader(input, StandardCharsets.UTF_8);
+        final BufferedReader jsonIn = messy.msgio.utils.IOUtils.openAsBufferedReader(input, StandardCharsets.UTF_8);
         processJson(jsonIn);
         break;
       case MBOX:
-        final BufferedReader mboxIn = openAsBufferedReader(input, StandardCharsets.ISO_8859_1);
+        final BufferedReader mboxIn = messy.msgio.utils.IOUtils.openAsBufferedReader(input,
+            StandardCharsets.ISO_8859_1);
         processMbox(mboxIn);
         break;
       default:
@@ -219,25 +212,6 @@ public class InputProcessor
     }
   }
 
-  protected List<String> toLines(InputStream is)
-  {
-    final BufferedReader reader = openAsBufferedReader(is, StandardCharsets.ISO_8859_1);
-    final List<String> lines = new ArrayList<>();
-    String line;
-    try
-    {
-      while ((line = reader.readLine()) != null)
-      {
-        lines.add(line);
-      }
-    }
-    catch (final IOException e)
-    {
-      e.printStackTrace();
-    }
-    return lines;
-  }
-
   protected void processUnidentified(InputStream is, String inputName)
   {
     boolean success = false;
@@ -247,9 +221,9 @@ public class InputProcessor
       final ByteArrayOutputStream bout = new ByteArrayOutputStream();
       try
       {
-        IOUtils.copy(is, bout);
+        org.apache.commons.compress.utils.IOUtils.copy(is, bout);
         final byte[] array = bout.toByteArray();
-        final List<String> lines = toLines(new ByteArrayInputStream(array));
+        final List<String> lines = messy.msgio.utils.IOUtils.toLines(new ByteArrayInputStream(array));
         if (array.length > 0 && array[0] == (byte) 'A')
         {
           success = processSingleMessageAnews(lines, inputName);
@@ -268,44 +242,6 @@ public class InputProcessor
     {
       System.err.println("Could not identify '" + inputName + "' to be in a supported format.");
     }
-  }
-
-  /**
-   * Is the argument string a file name that consists of decimal digits only? A forward slash may separate a directory
-   * name.
-   *
-   * @param name
-   *          file system path to be checked
-   * @return whether the argument name contains a name that consists only of digits
-   */
-  public static boolean isFileNameInteger(String name)
-  {
-    if (name == null)
-    {
-      return false;
-    }
-    int index = name.length() - 1;
-    int numDigits = 0;
-    while (index >= 0)
-    {
-      final char c = name.charAt(index--);
-      if (c >= '0' && c <= '9')
-      {
-        numDigits++;
-      }
-      else
-      {
-        if (c == '/')
-        {
-          break;
-        }
-        else
-        {
-          return false;
-        }
-      }
-    }
-    return numDigits > 0;
   }
 
   private ArchiveInputStream openArchive(InputStream is, String inputName, FileType type)

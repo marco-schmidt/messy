@@ -29,6 +29,7 @@ import org.junit.Test;
 import messy.msgcli.app.AppTest.FailingInputStream;
 import messy.msgcli.app.FileFormatHelper.FileType;
 import messy.msgio.formats.JsonMessageFormatter;
+import messy.msgio.utils.IOUtils;
 import messy.msgio.utils.StringUtils;
 
 public final class InputProcessorTest
@@ -44,18 +45,6 @@ public final class InputProcessorTest
   public void setup() throws IOException
   {
     tempMboxFile = File.createTempFile("messy", ".mbox");
-  }
-
-  @Test
-  public void testIsFileNameInteger()
-  {
-    Assert.assertFalse("Null input leads to false.", InputProcessor.isFileNameInteger(null));
-    Assert.assertFalse("Empty input leads to false.", InputProcessor.isFileNameInteger(""));
-    Assert.assertFalse("Letter input leads to false.", InputProcessor.isFileNameInteger("file.txt"));
-    Assert.assertFalse("Letter input leads to false.", InputProcessor.isFileNameInteger("dir/file.txt"));
-    Assert.assertFalse("Mixed input leads to false.", InputProcessor.isFileNameInteger("dir/file123"));
-    Assert.assertTrue("Mixed input leads to false.", InputProcessor.isFileNameInteger("0012345"));
-    Assert.assertTrue("Mixed input leads to false.", InputProcessor.isFileNameInteger("dir/0012345"));
   }
 
   @Test
@@ -158,8 +147,7 @@ public final class InputProcessorTest
   @Test
   public void testToLines()
   {
-    final InputProcessor ip = new InputProcessor();
-    final List<String> lines = ip.toLines(new AppTest.FailingInputStream());
+    final List<String> lines = IOUtils.toLines(new AppTest.FailingInputStream());
     Assert.assertTrue("List is empty.", lines.isEmpty());
   }
 
