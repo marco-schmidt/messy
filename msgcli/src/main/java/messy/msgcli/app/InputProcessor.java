@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import messy.msgcli.app.FileFormatHelper.FileType;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.anews.ANewsMessage;
@@ -244,21 +242,9 @@ public class InputProcessor
     }
   }
 
-  private ArchiveInputStream openArchive(InputStream is, String inputName, FileType type)
-  {
-    if (type == FileType.ZIP)
-    {
-      return new ZipArchiveInputStream(is);
-    }
-    else
-    {
-      return new TarArchiveInputStream(is, true);
-    }
-  }
-
   protected void processArchiveInput(InputStream is, String inputName, FileType type)
   {
-    final ArchiveInputStream ain = openArchive(is, inputName, type);
+    final ArchiveInputStream ain = FileFormatHelper.openArchive(is, inputName, type);
     try
     {
       ArchiveEntry entry;

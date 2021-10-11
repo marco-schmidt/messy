@@ -21,6 +21,9 @@ import java.io.PushbackInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
@@ -154,6 +157,18 @@ public final class FileFormatHelper
     }
 
     return FileType.UNKNOWN;
+  }
+
+  protected static ArchiveInputStream openArchive(InputStream is, String inputName, FileType type)
+  {
+    if (type == FileType.ZIP)
+    {
+      return new ZipArchiveInputStream(is);
+    }
+    else
+    {
+      return new TarArchiveInputStream(is, true);
+    }
   }
 
   /**
