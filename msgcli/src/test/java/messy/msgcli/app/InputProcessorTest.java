@@ -48,18 +48,6 @@ public final class InputProcessorTest
   }
 
   @Test
-  public void testIsLikelySingleMessageFile()
-  {
-    Assert.assertFalse("Null input leads to false.", InputProcessor.isLikelySingleMessageFile(null));
-    Assert.assertFalse("Empty input leads to false.", InputProcessor.isLikelySingleMessageFile(""));
-    Assert.assertFalse("Letter input leads to false.", InputProcessor.isLikelySingleMessageFile("file.txt"));
-    Assert.assertTrue("Trailing digit leads to true.", InputProcessor.isLikelySingleMessageFile("dir/ab.100"));
-    Assert.assertTrue("Msg leads to true.", InputProcessor.isLikelySingleMessageFile("dir/a.msg"));
-    Assert.assertTrue("Eml leads to true.", InputProcessor.isLikelySingleMessageFile("dir/a.eml"));
-    Assert.assertFalse("Txt  leads to false.", InputProcessor.isLikelySingleMessageFile("dir/x.txt"));
-  }
-
-  @Test
   public void testProcessList()
   {
     final InputProcessor ip = new InputProcessor();

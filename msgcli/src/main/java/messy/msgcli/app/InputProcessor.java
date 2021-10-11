@@ -26,7 +26,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import messy.msgcli.app.FileFormatHelper.FileType;
@@ -140,25 +139,6 @@ public class InputProcessor
     }
   }
 
-  protected static boolean isLikelySingleMessageFile(String name)
-  {
-    if (name == null || name.isEmpty())
-    {
-      return false;
-    }
-    boolean result;
-    if (Character.isDigit(name.charAt(name.length() - 1)))
-    {
-      result = true;
-    }
-    else
-    {
-      final String lower = name.toLowerCase(Locale.ROOT);
-      result = lower.endsWith(".eml") || lower.endsWith(".msg");
-    }
-    return result;
-  }
-
   protected boolean processSingleMessageAnews(List<String> lines, String inputName)
   {
     final ANewsMessage msg = ANewsMessageConverter.fromLines(lines);
@@ -214,7 +194,7 @@ public class InputProcessor
   {
     boolean success = false;
 
-    if (isLikelySingleMessageFile(inputName))
+    if (FileFormatHelper.isLikelySingleMessageFile(inputName))
     {
       final ByteArrayOutputStream bout = new ByteArrayOutputStream();
       try

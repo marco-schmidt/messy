@@ -15,12 +15,26 @@
  */
 package messy.msgcli.app;
 
+import org.junit.Assert;
 import org.junit.Test;
 import messy.msgcli.app.AppTest.FailingInputStream;
 import messy.msgcli.app.FileFormatHelper.FileType;
 
 public final class FileFormatHelperTest
 {
+
+  @Test
+  public void testIsLikelySingleMessageFile()
+  {
+    Assert.assertFalse("Null input leads to false.", FileFormatHelper.isLikelySingleMessageFile(null));
+    Assert.assertFalse("Empty input leads to false.", FileFormatHelper.isLikelySingleMessageFile(""));
+    Assert.assertFalse("Letter input leads to false.", FileFormatHelper.isLikelySingleMessageFile("file.txt"));
+    Assert.assertTrue("Trailing digit leads to true.", FileFormatHelper.isLikelySingleMessageFile("dir/ab.100"));
+    Assert.assertTrue("Msg leads to true.", FileFormatHelper.isLikelySingleMessageFile("dir/a.msg"));
+    Assert.assertTrue("Eml leads to true.", FileFormatHelper.isLikelySingleMessageFile("dir/a.eml"));
+    Assert.assertFalse("Txt  leads to false.", FileFormatHelper.isLikelySingleMessageFile("dir/x.txt"));
+  }
+
   @Test
   public void testWrapDecompressor()
   {

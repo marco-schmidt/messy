@@ -21,6 +21,7 @@ import java.io.PushbackInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -157,6 +158,25 @@ public final class FileFormatHelper
     }
 
     return FileType.UNKNOWN;
+  }
+
+  public static boolean isLikelySingleMessageFile(String name)
+  {
+    if (name == null || name.isEmpty())
+    {
+      return false;
+    }
+    boolean result;
+    if (Character.isDigit(name.charAt(name.length() - 1)))
+    {
+      result = true;
+    }
+    else
+    {
+      final String lower = name.toLowerCase(Locale.ROOT);
+      result = lower.endsWith(".eml") || lower.endsWith(".msg");
+    }
+    return result;
   }
 
   protected static ArchiveInputStream openArchive(InputStream is, String inputName, FileType type)
