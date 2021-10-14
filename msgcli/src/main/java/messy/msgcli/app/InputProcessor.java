@@ -235,11 +235,11 @@ public class InputProcessor
           continue;
         }
         final String name = entry.getName();
-        // if (!ain.canReadEntryData(entry))
-        // {
-        // System.err.println("Cannot decode, skipping '" + inputName + "\t" + name);
-        // continue;
-        // }
+        if (!ain.canReadEntryData(entry))
+        {
+          System.err.println("Cannot decode, skipping '" + inputName + "\t" + name);
+          continue;
+        }
         process(ain, inputName + "\t" + name);
       }
     }

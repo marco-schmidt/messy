@@ -130,6 +130,10 @@ public final class InputProcessorTest
 
     name = "example.general.zip";
     ip.process(open(name), name);
+
+    // password is "secret" in case decryption is supported in the future
+    name = "example.general.encrypted.zip";
+    ip.process(open(name), name);
   }
 
   @Test
