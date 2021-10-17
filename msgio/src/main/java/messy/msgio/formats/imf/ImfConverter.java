@@ -292,8 +292,8 @@ public class ImfConverter
   {
     if (value != null)
     {
-      value = value.toLowerCase(Locale.ROOT);
-      if ("yes".equals(value))
+      final String lower = value.toLowerCase(Locale.ROOT);
+      if ("yes".equals(lower))
       {
         return Boolean.FALSE;
       }

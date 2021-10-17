@@ -400,15 +400,15 @@ public final class ImfBodyDecoder
     final List<ImfBodySection> bodySections = message.getBodySections();
     for (final List<String> list : stringLists)
     {
-      final ImfBodySection section = decodeMultipartSection(message, list);
+      final ImfBodySection section = decodeMultipartSection(list);
       bodySections.add(section);
     }
   }
 
-  private static ImfBodySection decodeMultipartSection(ImfMessage message, List<String> list)
+  private static ImfBodySection decodeMultipartSection(List<String> lines)
   {
     final List<String> headerLines = new ArrayList<>();
-    final Iterator<String> iter = list.iterator();
+    final Iterator<String> iter = lines.iterator();
     while (iter.hasNext())
     {
       final String line = iter.next();
@@ -422,6 +422,6 @@ public final class ImfBodyDecoder
 
     final ImfHeaderList headerList = new ImfParser().createMessageHeaderList(headerLines);
     final Map<String, String> lookup = new ImfConverter().createLookup(headerList);
-    return decodeSection(lookup, list);
+    return decodeSection(lookup, lines);
   }
 }
