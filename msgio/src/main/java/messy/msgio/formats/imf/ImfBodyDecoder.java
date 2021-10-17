@@ -109,11 +109,12 @@ public final class ImfBodyDecoder
     }
   }
 
-  protected static int extract(String s, int index, StringBuilder result, char delim, boolean endOfInputAllowed)
+  protected static int extract(String s, int initialIndex, StringBuilder result, char delim, boolean endOfInputAllowed)
   {
     final int length = s.length();
     boolean quoted = false;
 
+    int index = initialIndex;
     while (index < length)
     {
       final char c = s.charAt(index++);
@@ -309,12 +310,12 @@ public final class ImfBodyDecoder
 
   public static void decode(ImfMessage message, Map<String, String> headers)
   {
-    final ImfBodySection section = decodeSection(message, headers, message.getBodyLines());
+    final ImfBodySection section = decodeSection(headers, message.getBodyLines());
     final String contentType = section.getContentType();
     final boolean mime = contentType.startsWith(CONTENT_TYPE_MULTIPART_PREFIX + "/");
     if (mime)
     {
-      decodeMime(message, headers, section);
+      decodeMime(message, section);
     }
     else
     {
@@ -322,7 +323,7 @@ public final class ImfBodyDecoder
     }
   }
 
-  private static ImfBodySection decodeSection(ImfMessage message, Map<String, String> headers, List<String> textLines)
+  private static ImfBodySection decodeSection(Map<String, String> headers, List<String> textLines)
   {
     final ImfBodySection result = new ImfBodySection();
 
@@ -363,7 +364,7 @@ public final class ImfBodyDecoder
     return result;
   }
 
-  private static void decodeMime(ImfMessage message, Map<String, String> headers, ImfBodySection section)
+  private static void decodeMime(ImfMessage message, ImfBodySection section)
   {
     final Map<String, String> contentTypeAttr = section.getContentTypeAttributes();
     final String boundary = contentTypeAttr.get(CONTENT_TYPE_ATTR_BOUNDARY);
@@ -421,6 +422,6 @@ public final class ImfBodyDecoder
 
     final ImfHeaderList headerList = new ImfParser().createMessageHeaderList(headerLines);
     final Map<String, String> lookup = new ImfConverter().createLookup(headerList);
-    return decodeSection(message, lookup, list);
+    return decodeSection(lookup, list);
   }
 }

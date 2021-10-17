@@ -266,12 +266,12 @@ public class ImfConverter
     {
       return null;
     }
-    value = value.toLowerCase(Locale.ROOT);
-    if ("yes".equals(value))
+    final String lower = value.toLowerCase(Locale.ROOT);
+    if ("yes".equals(lower))
     {
       return Boolean.TRUE;
     }
-    if ("no".equals(value))
+    if ("no".equals(lower))
     {
       return Boolean.FALSE;
     }
@@ -339,9 +339,12 @@ public class ImfConverter
     }
     if (unwanted.contains(s.charAt(0)))
     {
-      s = s.substring(1);
+      return s.substring(1);
     }
-    return s;
+    else
+    {
+      return s;
+    }
   }
 
   protected String removeUnwantedLast(String s, Set<Character> unwanted)
@@ -353,9 +356,12 @@ public class ImfConverter
     final int lastIndex = s.length() - 1;
     if (unwanted.contains(s.charAt(lastIndex)))
     {
-      s = s.substring(0, lastIndex);
+      return s.substring(0, lastIndex);
     }
-    return s;
+    else
+    {
+      return s;
+    }
   }
 
   private void extractOrigin(Message msg, String headerValue)

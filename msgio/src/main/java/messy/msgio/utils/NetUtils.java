@@ -25,10 +25,6 @@ import java.util.List;
  */
 public final class NetUtils
 {
-  private NetUtils()
-  {
-  }
-
   /**
    * Maximum length of a hostname label, a part of hostname separated by dot(s).
    */
@@ -38,6 +34,10 @@ public final class NetUtils
    * Maximum length of entire hostname including dots.
    */
   public static final int MAX_HOSTNAME_LENGTH = 253;
+
+  private NetUtils()
+  {
+  }
 
   public static boolean isValidHostname(List<String> labels)
   {

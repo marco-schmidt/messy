@@ -35,11 +35,6 @@ import messy.msgio.utils.StringUtils;
  */
 public final class App
 {
-  private App()
-  {
-    // prevent instantiation
-  }
-
   /**
    * Environment variable to specify the output format.
    */
@@ -49,15 +44,20 @@ public final class App
    */
   public static final String MESSY_OUTPUT_ITEMS = "MESSY_OUTPUT_ITEMS";
 
-  protected enum OutputFormat
-  {
-    JSON, TSV
-  };
-
   private static volatile Map<String, String> environment;
   private static List<String> fileNames;
   private static List<Message.Item> outputItems;
   private static OutputFormat outputFormat = OutputFormat.JSON;
+
+  private App()
+  {
+    // prevent instantiation
+  }
+
+  protected enum OutputFormat
+  {
+    JSON, TSV
+  };
 
   public static OutputFormat getOutputFormat()
   {
