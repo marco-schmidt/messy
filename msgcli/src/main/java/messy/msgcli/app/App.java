@@ -143,7 +143,7 @@ public final class App
       setEnvironment(System.getenv());
     }
 
-    setOutputFormat(OutputFormat.valueOf(getEnv(MESSY_OUTPUT_FORMAT, OutputFormat.TSV.name())));
+    setOutputFormat(OutputFormat.valueOf(getEnv(MESSY_OUTPUT_FORMAT, OutputFormat.JSON.name())));
     setOutputItems(initConfigurationOutputItems(getEnv(MESSY_OUTPUT_ITEMS, null)));
 
     fileNames = Arrays.asList(args);
@@ -156,7 +156,7 @@ public final class App
     messageFormatter.setDateFormatter(createDateFormatter());
     messageFormatter.setItems(getOutputItems());
     final InputProcessor ip = new InputProcessor();
-    ip.setMessageFormatter(messageFormatter);
+    ip.getOutputProcessor().setMessageFormatter(messageFormatter);
 
     if (fileNames.isEmpty())
     {

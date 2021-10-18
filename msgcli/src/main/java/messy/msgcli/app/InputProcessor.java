@@ -29,18 +29,13 @@ import java.util.List;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import messy.msgcli.app.FileFormatHelper.FileType;
-import messy.msgdata.formats.Message;
 import messy.msgdata.formats.anews.ANewsMessage;
-import messy.msgdata.formats.imf.ImfHeaderList;
-import messy.msgdata.formats.imf.ImfMessage;
 import messy.msgdata.formats.mbox.MboxMessage;
 import messy.msgdata.formats.twitter.TwitterStatus;
-import messy.msgio.formats.AbstractMessageFormatter;
 import messy.msgio.formats.anews.ANewsMessageConverter;
-import messy.msgio.formats.imf.ImfConverter;
-import messy.msgio.formats.imf.ImfParser;
 import messy.msgio.formats.mbox.MboxReader;
 import messy.msgio.formats.twitter.JsonTwitterParser;
+import messy.msgio.output.OutputProcessor;
 
 /**
  * Process streams.
@@ -49,16 +44,11 @@ import messy.msgio.formats.twitter.JsonTwitterParser;
  */
 public class InputProcessor
 {
-  private AbstractMessageFormatter messageFormatter;
+  private final OutputProcessor outputProcessor = new OutputProcessor();
 
-  private void dump(Message msg)
+  public OutputProcessor getOutputProcessor()
   {
-    System.out.println(getMessageFormatter().format(msg));
-  }
-
-  public AbstractMessageFormatter getMessageFormatter()
-  {
-    return messageFormatter;
+    return outputProcessor;
   }
 
   private void processJson(BufferedReader in) throws IOException
@@ -73,8 +63,7 @@ public class InputProcessor
       }
       else
       {
-        final Message msg = JsonTwitterParser.toMessage(status);
-        dump(msg);
+        outputProcessor.write(status);
       }
     }
   }
@@ -85,17 +74,7 @@ public class InputProcessor
     final MboxReader reader = new MboxReader(in);
     while ((mboxMsg = reader.next()) != null)
     {
-      final ImfHeaderList headerList = new ImfParser().createMessageHeaderList(mboxMsg.getHeaderLines());
-      final ImfMessage imfMsg = new ImfMessage(headerList, mboxMsg.getBodyLines());
-      final Message msg = new ImfConverter().convert(imfMsg);
-      if (msg == null)
-      {
-        System.err.println("Null msg in " + reader.getLineNumber());
-      }
-      else
-      {
-        dump(msg);
-      }
+      outputProcessor.write(mboxMsg, reader.getLineNumber());
     }
   }
 
@@ -148,7 +127,7 @@ public class InputProcessor
     }
     else
     {
-      dump(ANewsMessageConverter.toMessage(msg));
+      outputProcessor.write(msg);
       return true;
     }
   }
@@ -175,19 +154,7 @@ public class InputProcessor
       bodyLines.add(iter.next());
     }
 
-    final ImfHeaderList headerList = new ImfParser().createMessageHeaderList(headerLines);
-    final ImfMessage imfMsg = new ImfMessage(headerList, bodyLines);
-    final Message msg = new ImfConverter().convert(imfMsg);
-
-    if (msg == null)
-    {
-      return false;
-    }
-    else
-    {
-      dump(msg);
-      return true;
-    }
+    return outputProcessor.write(headerLines, bodyLines);
   }
 
   protected void processUnidentified(InputStream is, String inputName)
@@ -267,10 +234,5 @@ public class InputProcessor
     {
       process(name);
     }
-  }
-
-  public void setMessageFormatter(AbstractMessageFormatter messageFormatter)
-  {
-    this.messageFormatter = messageFormatter;
   }
 }

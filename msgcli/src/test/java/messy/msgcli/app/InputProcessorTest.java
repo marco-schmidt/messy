@@ -107,8 +107,9 @@ public final class InputProcessorTest
   private InputProcessor createInputProcessor()
   {
     final InputProcessor ip = new InputProcessor();
-    ip.setMessageFormatter(new JsonMessageFormatter());
-    ip.getMessageFormatter().setItems(new ArrayList<>());
+    final JsonMessageFormatter jsonMessageFormatter = new JsonMessageFormatter();
+    jsonMessageFormatter.setItems(new ArrayList<>());
+    ip.getOutputProcessor().setMessageFormatter(jsonMessageFormatter);
     return ip;
   }
 
@@ -146,9 +147,8 @@ public final class InputProcessorTest
   @Test
   public void testProcessUnidentified() throws IOException
   {
-    final InputProcessor ip = new InputProcessor();
-    ip.setMessageFormatter(new JsonMessageFormatter());
-    ip.getMessageFormatter().setItems(new ArrayList<>());
+    final InputProcessor ip = createInputProcessor();
+
     ip.processUnidentified(new ByteArrayInputStream(new byte[]
     {}), "1.msg");
     ip.processUnidentified(new ByteArrayInputStream(new byte[]
@@ -170,9 +170,7 @@ public final class InputProcessorTest
   @Test
   public void testProcessSingleMessageAnews() throws IOException
   {
-    final InputProcessor ip = new InputProcessor();
-    ip.setMessageFormatter(new JsonMessageFormatter());
-    ip.getMessageFormatter().setItems(new ArrayList<>());
+    final InputProcessor ip = createInputProcessor();
     Assert.assertFalse("Not enough data for anews message.", ip.processSingleMessageAnews(Arrays.asList(new String[]
     {
         "A"
