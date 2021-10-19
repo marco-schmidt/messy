@@ -1,7 +1,7 @@
 [versions]
 checkstyle = "9.0.1"
 jacoco = "0.8.7"
-lucene = "8.10.0"
+lucene = "8.10.1"
 spotbugs = "4.4.1"
 
 [libraries]
