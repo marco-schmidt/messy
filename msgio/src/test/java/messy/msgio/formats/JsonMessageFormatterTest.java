@@ -31,8 +31,12 @@ public class JsonMessageFormatterTest
     final List<String> list = new ArrayList<>();
     list.add("a");
     list.add("b");
-    final String key = "test";
+    String key = "test";
     mf.append(jo, key, list);
     Assert.assertNotNull("Adding non-null list works.", jo.get(key));
+    key = "num";
+    final Long l = Long.valueOf(1234567890L);
+    mf.append(jo, key, l);
+    Assert.assertNotNull("Adding long works.", jo.get(key));
   }
 }

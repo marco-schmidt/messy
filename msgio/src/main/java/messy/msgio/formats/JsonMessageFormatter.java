@@ -47,7 +47,14 @@ public class JsonMessageFormatter extends AbstractMessageFormatter
       }
       else
       {
-        res.put(key, obj.toString());
+        if (obj instanceof Long)
+        {
+          res.put(key, obj);
+        }
+        else
+        {
+          res.put(key, obj.toString());
+        }
       }
     }
   }
