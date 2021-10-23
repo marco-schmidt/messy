@@ -43,6 +43,7 @@ These are general-purpose archive formats, not specific to messages.
 
 Created November 8th, 2020.
 As of 2021, a one-person hobby project.
+Command-line application msgcli can be used to explore message archives, converting messages to JSON and printing them to standard output. 
 
 ## Goals
 
@@ -61,23 +62,23 @@ As of 2021, a one-person hobby project.
 * Create a message database with full text search and reporting.
 * Analyze messages to allow more fine-grained search, separate public from private ones.
 
-## Command-line Application
+## Command-Line Application
 
 Command-line application ``msgcli`` reads messages from standard input, converts them and prints a summary of each message to standard output.
 
 Clone the git repository and install msgcli locally:
-```
+```shell
 ./gradlew :msgcli:install
 ```
 Then the ``/path/to/installed/msgcli/bin/msgcli`` placeholder in the following example can be replaced with ``msgcli/build/install/msgcli/bin/msgcli``.
 
 This makes tar copy all the .json.bz2 files contained in a typical twitter stream archive to standard output,
 lets bzip2 decompress that .bz2 data and send the resulting newline-delimited JSON text lines to msgcli, which will then convert them and print them to standard output:
-```
+```shell
 tar -xOf /path/to/twitter-stream-2017-07-01.tar|bzip2 -d|/path/to/installed/msgcli/bin/msgcli
 ```
 More recently zip has become the format of choice:
-```
+```shell
 unzip -p /path/to/twitter-stream-2021-01-01.zip|/path/to/installed/msgcli/bin/msgcli
 ```
 
@@ -86,15 +87,16 @@ unzip -p /path/to/twitter-stream-2021-01-01.zip|/path/to/installed/msgcli/bin/ms
 * Written in Java 8, using [Adoptium](https://adoptium.net) (but any JDK version 8 or higher should do).
 * Build tool [gradle](https://gradle.org/), as a multi-project build with the gradle wrapper.
 * Hosted in a public git repository at [GitHub](https://github.com/).
-* Continuous integration with GitHub Workflow Java CI.
+* Continuous integration with [GitHub Workflow Java CI](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle).
 * Dependencies:
-    * JUnit for unit tests,
-    * archive I/O from Apache Commons Compress,
-    * MIME support from Jakarta Mail,
-    * logging with slf4j and logback.
+    * [JUnit](https://junit.org/) for unit tests,
+    * archive I/O from [Apache Commons Compress](https://commons.apache.org/proper/commons-compress/),
+    * MIME support from [Jakarta Mail](https://eclipse-ee4j.github.io/mail/),
+    * logging with [SLF4J](http://www.slf4j.org) and [Logback](http://logback.qos.ch),
+    * [Lucene](https://lucene.apache.org) for full-text search.
 * Static code analysis with
-    * gradle plugins spotbugs, checkstyle and forbiddenApis and
-    * service codacy.com.
+    * gradle plugins [SpotBugs](https://spotbugs.readthedocs.io/en/stable/gradle.html), [checkstyle](https://docs.gradle.org/current/userguide/checkstyle_plugin.html) and [Forbidden API Checker](https://plugins.gradle.org/plugin/de.thetaphi.forbiddenapis) and
+    * service [Codacy](https://app.codacy.com/gh/marco-schmidt/messy/issues).
 * Project comes with an Eclipse configuration file and gradle is configured to generate a workspace for Eclipse. Any other Java IDE will probably also work.
 * Code formatting and license header with gradle spotless plugin. Also format automatically when saving in Eclipse (if provided configuration file is used, see below for gradle Eclipse workspace setup).
 * Vulnerability analysis:
