@@ -44,7 +44,7 @@ public class DocumentConverterTest
   public void testRegular()
   {
     final Document doc = new DocumentConverter().from(createSample());
-    Assert.assertEquals("Expect identical subject.", SUBJECT, doc.get(DocumentConverter.FIELD_SUBJECT));
+    Assert.assertEquals("Expect identical subject.", SUBJECT, doc.get(Message.Item.SUBJECT.name()));
   }
 
   @Test
@@ -53,6 +53,6 @@ public class DocumentConverterTest
     final Message message = createSample();
     message.setSent(null);
     final Document doc = new DocumentConverter().from(message);
-    Assert.assertNull("Sent long point will return null.", doc.get(DocumentConverter.FIELD_SENT));
+    Assert.assertNull("Sent long point will return null.", doc.get(Message.Item.SENT.name()));
   }
 }

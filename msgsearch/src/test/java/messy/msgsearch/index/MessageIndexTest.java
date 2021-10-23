@@ -31,6 +31,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import messy.msgdata.formats.Message;
 
 /**
  * Test {@link MessageIndex}.
@@ -56,7 +57,7 @@ public class MessageIndexTest
   {
     final DirectoryReader reader = DirectoryReader.open(directory);
     final IndexSearcher searcher = new IndexSearcher(reader);
-    final QueryParser parser = new QueryParser(DocumentConverter.FIELD_SUBJECT, analyzer);
+    final QueryParser parser = new QueryParser(Message.Item.SUBJECT.name(), analyzer);
     final Query query = parser.parse(DocumentConverterTest.SUBJECT_LAST_WORD);
     final ScoreDoc[] hits = searcher.search(query, 10).scoreDocs;
     Assert.assertEquals("Expecting exactly one match.", 1, hits.length);
@@ -64,7 +65,7 @@ public class MessageIndexTest
     {
       final Document hitDoc = searcher.doc(hits[i].doc);
       Assert.assertEquals("Expecting stored subject to be the same as in input message used to build index.",
-          DocumentConverterTest.SUBJECT, hitDoc.get(DocumentConverter.FIELD_SUBJECT));
+          DocumentConverterTest.SUBJECT, hitDoc.get(Message.Item.SUBJECT.name()));
     }
     reader.close();
   }

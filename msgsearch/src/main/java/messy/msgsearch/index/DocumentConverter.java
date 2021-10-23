@@ -29,15 +29,6 @@ import messy.msgdata.formats.Message;
 public class DocumentConverter
 {
   /**
-   * Date and time when message was sent.
-   */
-  public static final String FIELD_SENT = "sent";
-  /**
-   * Subject line of message.
-   */
-  public static final String FIELD_SUBJECT = "subj";
-
-  /**
    * Convert a message to a document.
    *
    * @param msg
@@ -47,8 +38,8 @@ public class DocumentConverter
   public Document from(Message msg)
   {
     final Document doc = new Document();
-    doc.add(new Field(FIELD_SUBJECT, msg.getSubject(), TextField.TYPE_STORED));
-    doc.add(new LongPoint(FIELD_SENT, msg.getSent() == null ? 0L : msg.getSent().getTime()));
+    doc.add(new Field(Message.Item.SUBJECT.name(), msg.getSubject(), TextField.TYPE_STORED));
+    doc.add(new LongPoint(Message.Item.SENT.name(), msg.getSent() == null ? 0L : msg.getSent().getTime()));
     return doc;
   }
 }
