@@ -8,5 +8,7 @@ dependencies {
   implementation project(':msgio')
   implementation libs.commons.compress
   implementation libs.json.smart
+  implementation libs.logback.classic
+  implementation libs.slf4j.api
   testImplementation libs.junit
 }

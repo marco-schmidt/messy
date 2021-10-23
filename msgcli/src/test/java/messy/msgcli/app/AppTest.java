@@ -82,6 +82,7 @@ public final class AppTest
   public void setup() throws IOException
   {
     tempMboxFile = File.createTempFile("messy", ".mbox");
+    App.initLogging();
   }
 
   @Test
@@ -202,7 +203,7 @@ public final class AppTest
     System.setIn(tmpIn);
     System.setErr(tmpErr);
     final String result = out.toString(StandardCharsets.UTF_8.name());
-    Assert.assertTrue("Expected failed decoding.", result.startsWith("Could not decode JSON tweet:'"));
+    Assert.assertTrue("Expected failed decoding.", result.contains("Could not decode JSON tweet:'"));
   }
 
   @Test
@@ -222,8 +223,8 @@ public final class AppTest
     System.setIn(tmpIn);
     System.setErr(tmpErr);
     final String result = out.toString(StandardCharsets.UTF_8.name());
-    Assert.assertEquals("Application output identical to expected output.",
-        "Could not identify '-' to be in a supported format." + System.lineSeparator(), result);
+    Assert.assertTrue("Application output identical to expected output.",
+        result.contains("Could not identify '-' to be in a supported format." + System.lineSeparator()));
   }
 
   @Test

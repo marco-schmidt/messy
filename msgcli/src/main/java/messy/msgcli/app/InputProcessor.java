@@ -28,6 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import messy.msgcli.app.FileFormatHelper.FileType;
 import messy.msgdata.formats.anews.ANewsMessage;
 import messy.msgdata.formats.mbox.MboxMessage;
@@ -44,6 +46,7 @@ import messy.msgio.output.OutputProcessor;
  */
 public class InputProcessor
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger(InputProcessor.class);
   private final OutputProcessor outputProcessor = new OutputProcessor();
 
   public OutputProcessor getOutputProcessor()
@@ -59,7 +62,7 @@ public class InputProcessor
       final TwitterStatus status = JsonTwitterParser.parseStatus(line);
       if (status == null)
       {
-        System.err.println("Could not decode JSON tweet:'" + line + "'.");
+        LOGGER.error("Could not decode JSON tweet:'{}'.", line);
       }
       else
       {
@@ -114,7 +117,7 @@ public class InputProcessor
     }
     catch (final IOException ioe)
     {
-      ioe.printStackTrace();
+      LOGGER.error("I/O error: ", ioe);
     }
   }
 
@@ -178,14 +181,14 @@ public class InputProcessor
           success = processSingleMessageImf(lines, inputName);
         }
       }
-      catch (final IOException e)
+      catch (final IOException ioe)
       {
-        e.printStackTrace();
+        LOGGER.error("I/O error reading from '" + inputName + "'.", ioe);
       }
     }
     if (!success)
     {
-      System.err.println("Could not identify '" + inputName + "' to be in a supported format.");
+      LOGGER.error("Could not identify '{}' to be in a supported format.", inputName);
     }
   }
 
@@ -204,7 +207,7 @@ public class InputProcessor
         final String name = entry.getName();
         if (!ain.canReadEntryData(entry))
         {
-          System.err.println("Cannot decode, skipping '" + inputName + "\t" + name);
+          LOGGER.error("Cannot decode, skipping '" + inputName + "'\t" + name);
           continue;
         }
         process(ain, inputName + "\t" + name);
@@ -212,7 +215,7 @@ public class InputProcessor
     }
     catch (final IOException ioe)
     {
-      ioe.printStackTrace();
+      LOGGER.error("I/O error reading from archive '" + inputName + "'.", ioe);
     }
   }
 
@@ -224,7 +227,7 @@ public class InputProcessor
     }
     catch (final IOException ioe)
     {
-      System.err.println("Unable to open '" + name + "': " + ioe.getMessage());
+      LOGGER.error("Unable to open '" + name + "': " + ioe.getMessage());
     }
   }
 

@@ -24,6 +24,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.ConsoleAppender;
 import messy.msgdata.formats.Message;
 import messy.msgio.formats.AbstractMessageFormatter;
 import messy.msgio.formats.JsonMessageFormatter;
@@ -143,10 +150,34 @@ public final class App
       setEnvironment(System.getenv());
     }
 
+    initLogging();
+
     setOutputFormat(OutputFormat.valueOf(getEnv(MESSY_OUTPUT_FORMAT, OutputFormat.JSON.name())));
     setOutputItems(initConfigurationOutputItems(getEnv(MESSY_OUTPUT_ITEMS, null)));
 
     fileNames = Arrays.asList(args);
+  }
+
+  protected static void initLogging()
+  {
+    final ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory
+        .getLogger(Logger.ROOT_LOGGER_NAME);
+    final LoggerContext loggerContext = rootLogger.getLoggerContext();
+    loggerContext.reset();
+
+    final PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+    encoder.setContext(loggerContext);
+    encoder.setPattern("%date{yyyy-MM-dd'T'HH:mm:ss.SSSZ}\t%thread\t%level\t%message%n");
+    encoder.start();
+
+    final ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
+    appender.setContext(loggerContext);
+    appender.setEncoder(encoder);
+    appender.setTarget("System.err");
+    appender.start();
+
+    rootLogger.addAppender(appender);
+    rootLogger.setLevel(Level.INFO);
   }
 
   public static void main(String[] args)
