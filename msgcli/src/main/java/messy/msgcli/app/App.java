@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import messy.msgdata.formats.Message;
@@ -36,6 +35,8 @@ import messy.msgio.formats.AbstractMessageFormatter;
 import messy.msgio.formats.JsonMessageFormatter;
 import messy.msgio.formats.TsvMessageFormatter;
 import messy.msgio.utils.StringUtils;
+import net.logstash.logback.encoder.LogstashEncoder;
+import net.logstash.logback.fieldnames.LogstashFieldNames;
 
 /**
  * Command-line application to provide messy conversion functionality.
@@ -165,9 +166,10 @@ public final class App
     final LoggerContext loggerContext = rootLogger.getLoggerContext();
     loggerContext.reset();
 
-    final PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+    final LogstashEncoder encoder = new LogstashEncoder();
     encoder.setContext(loggerContext);
-    encoder.setPattern("%date{yyyy-MM-dd'T'HH:mm:ss.SSSZ}\t%thread\t%level\t%message%n");
+    final LogstashFieldNames names = new LogstashFieldNames();
+    encoder.setFieldNames(names);
     encoder.start();
 
     final ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();

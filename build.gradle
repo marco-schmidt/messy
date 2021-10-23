@@ -167,6 +167,7 @@ artifactId=${project.name}
 
   licenseReport {
     allowedLicensesFile = new File("$rootDir/config/licenseReport/allowed-licenses.json")
+    excludeBoms = true
   }
   check.dependsOn checkLicense
 

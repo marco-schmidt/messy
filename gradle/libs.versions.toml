@@ -10,6 +10,7 @@ jakarta-mail = { module = "com.sun.mail:jakarta.mail", version = { strictly = "2
 json-smart = { module = "net.minidev:json-smart", version = { strictly = "2.4.7" } }
 junit = { module = "junit:junit", version = { strictly = "4.13.2" } }
 logback-classic = { module = "ch.qos.logback:logback-classic", version = { strictly = "1.2.6" } }
+logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version = { strictly = "6.6" } }
 lucene-analyzerscommon = { module = "org.apache.lucene:lucene-analyzers-common", version.ref = "lucene" }
 lucene-core = { module = "org.apache.lucene:lucene-core", version.ref = "lucene" }
 lucene-queries = { module = "org.apache.lucene:lucene-queries", version.ref = "lucene" }
