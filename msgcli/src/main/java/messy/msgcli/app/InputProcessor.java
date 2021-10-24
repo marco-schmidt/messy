@@ -38,6 +38,8 @@ import messy.msgio.formats.anews.ANewsMessageConverter;
 import messy.msgio.formats.mbox.MboxReader;
 import messy.msgio.formats.twitter.JsonTwitterParser;
 import messy.msgio.output.OutputProcessor;
+import net.logstash.logback.argument.StructuredArgument;
+import net.logstash.logback.argument.StructuredArguments;
 
 /**
  * Process streams.
@@ -221,13 +223,15 @@ public class InputProcessor
 
   protected void process(String name)
   {
+    final StructuredArgument nameRec = StructuredArguments.value("file_name", name);
     try (FileInputStream in = new FileInputStream(name))
     {
+      LOGGER.info("Opening '{}'.", nameRec);
       process(in, name);
     }
     catch (final IOException ioe)
     {
-      LOGGER.error("Unable to open '" + name + "': " + ioe.getMessage());
+      LOGGER.error("Unable to open '{}': {}", nameRec, ioe.getMessage());
     }
   }
 

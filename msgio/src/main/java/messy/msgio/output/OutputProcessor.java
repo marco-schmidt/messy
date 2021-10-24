@@ -16,6 +16,8 @@
 package messy.msgio.output;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import messy.msgdata.formats.Message;
 import messy.msgdata.formats.anews.ANewsMessage;
 import messy.msgdata.formats.imf.ImfHeaderList;
@@ -27,6 +29,8 @@ import messy.msgio.formats.anews.ANewsMessageConverter;
 import messy.msgio.formats.imf.ImfConverter;
 import messy.msgio.formats.imf.ImfParser;
 import messy.msgio.formats.twitter.JsonTwitterParser;
+import net.logstash.logback.argument.StructuredArgument;
+import net.logstash.logback.argument.StructuredArguments;
 
 /**
  * Write messages to their destination.
@@ -35,6 +39,7 @@ import messy.msgio.formats.twitter.JsonTwitterParser;
  */
 public class OutputProcessor
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger(OutputProcessor.class);
   private AbstractMessageFormatter messageFormatter;
 
   private void dump(Message msg)
@@ -69,7 +74,8 @@ public class OutputProcessor
     final Message msg = toMessage(mboxMsg.getHeaderLines(), mboxMsg.getBodyLines());
     if (msg == null)
     {
-      System.err.println("Null msg in line " + lineNumber);
+      final StructuredArgument lineRec = StructuredArguments.value("line_nr", lineNumber);
+      LOGGER.error("Null mbox message in line {}.", lineRec);
     }
     else
     {
