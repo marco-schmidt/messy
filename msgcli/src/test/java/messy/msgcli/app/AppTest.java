@@ -178,15 +178,17 @@ public final class AppTest
   public void testMainJsonTruncated() throws UnsupportedEncodingException
   {
     final InputStream tmpIn = System.in;
-    final PrintStream tmpOut = System.out;
+    final PrintStream tmpErr = System.err;
     final FailingInputStream in = new FailingInputStream("{".getBytes(StandardCharsets.US_ASCII));
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     System.setIn(in);
-    System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8.name()));
+    System.setErr(new PrintStream(out, true, StandardCharsets.UTF_8.name()));
     App.main(new String[]
     {});
     System.setIn(tmpIn);
-    System.setOut(tmpOut);
+    System.setErr(tmpErr);
+    final String output = new String(out.toByteArray(), StandardCharsets.UTF_8);
+    Assert.assertTrue("Failing input.", output.contains("Failing on purpose"));
   }
 
   @Test
