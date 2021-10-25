@@ -19,7 +19,9 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -203,7 +205,7 @@ public class ImfConverter
     }
   }
 
-  private Date decodeDate(String s)
+  protected Date decodeDate(String s)
   {
     if (s == null)
     {
@@ -214,6 +216,15 @@ public class ImfConverter
       final Date result = decodeDate(s, pattern);
       if (result != null)
       {
+        final Calendar cal = new GregorianCalendar();
+        cal.setTime(result);
+        int year = cal.get(Calendar.YEAR);
+        if (year < 100)
+        {
+          year += 1900;
+          cal.set(Calendar.YEAR, year);
+          return cal.getTime();
+        }
         return result;
       }
     }

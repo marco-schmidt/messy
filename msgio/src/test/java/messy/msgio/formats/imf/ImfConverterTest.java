@@ -16,7 +16,9 @@
 package messy.msgio.formats.imf;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +46,17 @@ public class ImfConverterTest
     final ImfConverter converter = new ImfConverter();
     final Message output = converter.convert(input);
     Assert.assertNull("Expect null result.", output);
+  }
+
+  @Test
+  public void testDecodeDate()
+  {
+    final ImfConverter converter = new ImfConverter();
+    final Date date = converter.decodeDate("12 Apr 93 07:44:33 GMT");
+    Assert.assertNotNull("Could parse date string", date);
+    final Calendar cal = new GregorianCalendar();
+    cal.setTime(date);
+    Assert.assertTrue("Year larger 100.", cal.get(Calendar.YEAR) == 1993);
   }
 
   @Test
