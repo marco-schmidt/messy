@@ -44,6 +44,10 @@ import net.logstash.logback.fieldnames.LogstashFieldNames;
 public final class App
 {
   /**
+   * Name of the application.
+   */
+  public static final String APP_NAME = "msgcli";
+  /**
    * Environment variable to specify the output format.
    */
   public static final String MESSY_OUTPUT_FORMAT = "MESSY_OUTPUT_FORMAT";
@@ -170,6 +174,7 @@ public final class App
     encoder.setContext(loggerContext);
     final LogstashFieldNames names = new LogstashFieldNames();
     encoder.setFieldNames(names);
+    encoder.setCustomFields("{\"app_name\":\"" + APP_NAME + "\"}");
     encoder.start();
 
     final ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
