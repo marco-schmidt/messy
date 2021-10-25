@@ -71,6 +71,10 @@ public class Message
      */
     MESSAGE_ID,
     /**
+     * Organization from whose system the message was sent.
+     */
+    ORGANIZATION,
+    /**
      * Hostname of system from which message got sent.
      */
     POSTING_HOST,
@@ -122,6 +126,7 @@ public class Message
   private String languageCode;
   private String medium;
   private String messageId;
+  private String organization;
   private String postingHost;
   private String postingIpAddress;
   private Long postingIpv4Address;
@@ -219,6 +224,16 @@ public class Message
   public void setMessageId(String messageId)
   {
     this.messageId = messageId;
+  }
+
+  public String getOrganization()
+  {
+    return organization;
+  }
+
+  public void setOrganization(String organization)
+  {
+    this.organization = organization;
   }
 
   public String getPostingHost()
@@ -323,6 +338,8 @@ public class Message
       return getMedium();
     case MESSAGE_ID:
       return getMessageId();
+    case ORGANIZATION:
+      return getOrganization();
     case POSTING_HOST:
       return getPostingHost();
     case POSTING_IP_ADDRESS:

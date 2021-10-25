@@ -60,6 +60,7 @@ public class ImfConverter
       "nntp-posting-host", "x-nntp-posting-host", "x-original-nntp-posting-host"
   };
   private static final String FIELD_NEWSGROUPS = "newsgroups";
+  private static final String FIELD_ORGANIZATION = "organization";
   private static final String FIELD_X_NO_ARCHIVE = "x-no-archive";
   private static final String FIELD_X_TRACE = "x-trace";
 
@@ -236,6 +237,7 @@ public class ImfConverter
     final Message result = new Message();
     parseFrom(result, lookup);
     extractOrigin(result, lookup);
+    result.setOrganization(lookup.get(FIELD_ORGANIZATION));
     result.setGroups(StringUtils.splitAndNormalize(lookup.get(FIELD_NEWSGROUPS), ","));
     result.setReferences(extractReferences(lookup.get(FIELD_REFERENCES)));
     decodeBody(message, result, lookup);

@@ -126,7 +126,7 @@ public final class AppTest
     System.setOut(tmpOut);
     final String result = out.toString(StandardCharsets.UTF_8.name());
     Assert.assertEquals("Application output identical to expected output.",
-        "\t\t\t\tjsontweet\t\ten\ttwitter\t10\t\t\t\t\t2012-01-01T07:00:06+0000\t\t\tJust a message."
+        "\t\t\t\tjsontweet\t\ten\ttwitter\t10\t\t\t\t\t\t2012-01-01T07:00:06+0000\t\t\tJust a message."
             + System.lineSeparator(),
         result);
   }
