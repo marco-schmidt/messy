@@ -40,6 +40,7 @@ public class DocumentConverter
     final Document doc = new Document();
     doc.add(new Field(Message.Item.SUBJECT.name(), msg.getSubject(), TextField.TYPE_STORED));
     doc.add(new LongPoint(Message.Item.SENT.name(), msg.getSent() == null ? 0L : msg.getSent().getTime()));
+
     return doc;
   }
 }

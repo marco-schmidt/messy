@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-description 'command-line application to read, convert and write electronic messages in various formats'
+description 'command-line application to convert electronic messages in various formats'
 mainClassName = 'messy.msgcli.app.App'
 
 dependencies {

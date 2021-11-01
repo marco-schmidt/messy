@@ -19,6 +19,7 @@ import java.io.IOException;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.LongPoint;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -48,25 +49,41 @@ public class MessageIndexTest
     analyzer = new StandardAnalyzer();
     directory = new ByteBuffersDirectory();
     index = new MessageIndex(directory, analyzer);
-    index.add(DocumentConverterTest.createSample());
+    for (int i = 0; i < DocumentConverterTest.SUBJECTS.length; i++)
+    {
+      index.add(DocumentConverterTest.createMessage(i));
+    }
     index.closeWriter();
   }
 
   @Test
-  public void testSingleHit() throws IOException, ParseException
+  public void testAllHits() throws IOException, ParseException
   {
     final DirectoryReader reader = DirectoryReader.open(directory);
     final IndexSearcher searcher = new IndexSearcher(reader);
     final QueryParser parser = new QueryParser(Message.Item.SUBJECT.name(), analyzer);
     final Query query = parser.parse(DocumentConverterTest.SUBJECT_LAST_WORD);
     final ScoreDoc[] hits = searcher.search(query, 10).scoreDocs;
-    Assert.assertEquals("Expecting exactly one match.", 1, hits.length);
+    Assert.assertEquals("Expecting two matches.", 2, hits.length);
     for (int i = 0; i < hits.length; i++)
     {
       final Document hitDoc = searcher.doc(hits[i].doc);
       Assert.assertEquals("Expecting stored subject to be the same as in input message used to build index.",
-          DocumentConverterTest.SUBJECT, hitDoc.get(Message.Item.SUBJECT.name()));
+          DocumentConverterTest.SUBJECTS[i], hitDoc.get(Message.Item.SUBJECT.name()));
     }
+    reader.close();
+  }
+
+  @Test
+  public void testSmallerThan() throws IOException, ParseException
+  {
+    final DirectoryReader reader = DirectoryReader.open(directory);
+    final IndexSearcher searcher = new IndexSearcher(reader);
+
+    final Query query = LongPoint.newRangeQuery(Message.Item.SENT.name(), 0, DocumentConverterTest.SENT_1 + 1);
+    final ScoreDoc[] hits = searcher.search(query, 10).scoreDocs;
+    Assert.assertEquals("Expecting one match.", 1, hits.length);
+
     reader.close();
   }
 

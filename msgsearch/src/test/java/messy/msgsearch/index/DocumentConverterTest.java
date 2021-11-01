@@ -28,29 +28,39 @@ import messy.msgdata.formats.Message;
  */
 public class DocumentConverterTest
 {
-  public static final long SENT = 1000000000L;
+  public static final long SENT_1 = 1000000000L;
+  public static final long SENT_2 = 1040000000L;
+  static final long[] SENT =
+  {
+      SENT_1, SENT_2
+  };
   public static final String SUBJECT_LAST_WORD = "line";
-  public static final String SUBJECT = "A subject " + SUBJECT_LAST_WORD;
+  public static final String SUBJECT_1 = "A subject " + SUBJECT_LAST_WORD;
+  public static final String SUBJECT_2 = "Re: " + SUBJECT_1;
+  static final String[] SUBJECTS =
+  {
+      SUBJECT_1, SUBJECT_2
+  };
 
-  public static Message createSample()
+  public static Message createMessage(int index)
   {
     final Message msg = new Message();
-    msg.setSent(new Date(SENT));
-    msg.setSubject(SUBJECT);
+    msg.setSent(new Date(SENT[index]));
+    msg.setSubject(SUBJECTS[index]);
     return msg;
   }
 
   @Test
   public void testRegular()
   {
-    final Document doc = new DocumentConverter().from(createSample());
-    Assert.assertEquals("Expect identical subject.", SUBJECT, doc.get(Message.Item.SUBJECT.name()));
+    final Document doc = new DocumentConverter().from(createMessage(0));
+    Assert.assertEquals("Expect identical subject.", SUBJECT_1, doc.get(Message.Item.SUBJECT.name()));
   }
 
   @Test
   public void testNull()
   {
-    final Message message = createSample();
+    final Message message = createMessage(0);
     message.setSent(null);
     final Document doc = new DocumentConverter().from(message);
     Assert.assertNull("Sent long point will return null.", doc.get(Message.Item.SENT.name()));
