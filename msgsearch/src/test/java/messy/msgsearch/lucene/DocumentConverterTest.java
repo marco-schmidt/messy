@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package messy.msgsearch.index;
+package messy.msgsearch.lucene;
 
 import java.util.Date;
 import org.apache.lucene.document.Document;
 import org.junit.Assert;
 import org.junit.Test;
 import messy.msgdata.formats.Message;
+import messy.msgsearch.lucene.DocumentConverter;
 
 /**
  * Test {@link DocumentConverter}.

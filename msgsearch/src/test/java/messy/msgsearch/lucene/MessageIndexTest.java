@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package messy.msgsearch.index;
+package messy.msgsearch.lucene;
 
 import java.io.IOException;
 import org.apache.lucene.analysis.Analyzer;
@@ -33,6 +33,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import messy.msgdata.formats.Message;
+import messy.msgsearch.lucene.MessageIndex;
 
 /**
  * Test {@link MessageIndex}.

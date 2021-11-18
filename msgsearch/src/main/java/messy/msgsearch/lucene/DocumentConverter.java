@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package messy.msgsearch.index;
+package messy.msgsearch.lucene;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
