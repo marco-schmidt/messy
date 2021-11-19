@@ -6,8 +6,10 @@ mainClassName = 'messy.msgcli.app.App'
 dependencies {
   implementation project(':msgdata')
   implementation project(':msgio')
+  implementation project(':msgsearch')
   implementation libs.commons.compress
   implementation libs.json.smart
+  implementation libs.log4j.to.slf4j
   implementation libs.logback.classic
   implementation libs.logstash.logback.encoder
   implementation libs.slf4j.api

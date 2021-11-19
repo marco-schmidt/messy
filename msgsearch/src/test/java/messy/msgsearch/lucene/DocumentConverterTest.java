@@ -20,7 +20,6 @@ import org.apache.lucene.document.Document;
 import org.junit.Assert;
 import org.junit.Test;
 import messy.msgdata.formats.Message;
-import messy.msgsearch.lucene.DocumentConverter;
 
 /**
  * Test {@link DocumentConverter}.

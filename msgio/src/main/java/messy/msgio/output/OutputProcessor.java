@@ -37,12 +37,17 @@ import net.logstash.logback.argument.StructuredArguments;
  *
  * @author Marco Schmidt
  */
-public class OutputProcessor
+public class OutputProcessor implements AutoCloseable
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(OutputProcessor.class);
   private AbstractMessageFormatter messageFormatter;
 
-  private void dump(Message msg)
+  @Override
+  public void close()
+  {
+  }
+
+  public void dump(Message msg)
   {
     System.out.println(getMessageFormatter().format(msg));
   }

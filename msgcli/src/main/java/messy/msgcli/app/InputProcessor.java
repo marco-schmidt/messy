@@ -49,11 +49,21 @@ import net.logstash.logback.argument.StructuredArguments;
 public class InputProcessor
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(InputProcessor.class);
-  private final OutputProcessor outputProcessor = new OutputProcessor();
+  private OutputProcessor outputProcessor = new OutputProcessor();
+
+  public void close()
+  {
+    outputProcessor.close();
+  }
 
   public OutputProcessor getOutputProcessor()
   {
     return outputProcessor;
+  }
+
+  public void setOutputProcessor(OutputProcessor op)
+  {
+    outputProcessor = op;
   }
 
   private void processJson(BufferedReader in) throws IOException

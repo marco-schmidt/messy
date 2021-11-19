@@ -33,7 +33,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import messy.msgdata.formats.Message;
-import messy.msgsearch.lucene.MessageIndex;
 
 /**
  * Test {@link MessageIndex}.

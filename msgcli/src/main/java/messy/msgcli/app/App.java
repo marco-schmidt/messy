@@ -35,6 +35,7 @@ import messy.msgio.formats.AbstractMessageFormatter;
 import messy.msgio.formats.JsonMessageFormatter;
 import messy.msgio.formats.TsvMessageFormatter;
 import messy.msgio.utils.StringUtils;
+import messy.msgsearch.elastic.ElasticOutputProcessor;
 import net.logstash.logback.encoder.LogstashEncoder;
 import net.logstash.logback.fieldnames.LogstashFieldNames;
 
@@ -68,7 +69,7 @@ public final class App
 
   protected enum OutputFormat
   {
-    JSON, TSV
+    ELASTIC, JSON, TSV
   };
 
   public static OutputFormat getOutputFormat()
@@ -194,7 +195,17 @@ public final class App
     messageFormatter.setDateFormatter(createDateFormatter());
     messageFormatter.setItems(getOutputItems());
     final InputProcessor ip = new InputProcessor();
-    ip.getOutputProcessor().setMessageFormatter(messageFormatter);
+    if (outputFormat == OutputFormat.ELASTIC)
+    {
+      final ElasticOutputProcessor op = new ElasticOutputProcessor();
+      op.setMessageFormatter(messageFormatter);
+      op.connect();
+      ip.setOutputProcessor(op);
+    }
+    else
+    {
+      ip.getOutputProcessor().setMessageFormatter(messageFormatter);
+    }
 
     if (fileNames.isEmpty())
     {
@@ -204,5 +215,6 @@ public final class App
     {
       ip.process(fileNames);
     }
+    ip.close();
   }
 }
