@@ -18,6 +18,7 @@ package messy.msgsearch.elastic;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -26,6 +27,8 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import messy.msgdata.formats.Message;
 import messy.msgio.formats.JsonMessageFormatter;
 import messy.msgio.output.OutputProcessor;
@@ -37,13 +40,14 @@ import messy.msgio.output.OutputProcessor;
  */
 public class ElasticOutputProcessor extends OutputProcessor
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ElasticOutputProcessor.class);
   private BulkRequest bulkRequest;
   private RestHighLevelClient client;
   private int currentBulkSize;
   private String host = "localhost";
-  private String indexDatePattern = "yyyy-MM";
+  private String indexDatePattern = "yyyy";
   private String indexPrefix = "msg-";
-  private int maxBulkSize = 5 * 1024 * 1024;
+  private int maxBulkSize = 3 * 1024 * 1024;
   private int port = 9200;
 
   public ElasticOutputProcessor()
@@ -67,7 +71,7 @@ public class ElasticOutputProcessor extends OutputProcessor
       }
       catch (final IOException e)
       {
-        e.printStackTrace();
+        LOGGER.error("Failure closing Elastic client: {}.", e.getMessage());
       }
       client = null;
     }
@@ -86,7 +90,8 @@ public class ElasticOutputProcessor extends OutputProcessor
   public String determineIndexName(Message msg)
   {
     final DateFormat formatter = new SimpleDateFormat(indexDatePattern, Locale.ROOT);
-    final String date = formatter.format(msg.getSent());
+    final Date sent = msg.getSent();
+    final String date = sent == null ? "misc" : formatter.format(sent);
     return indexPrefix + date;
   }
 
@@ -112,7 +117,7 @@ public class ElasticOutputProcessor extends OutputProcessor
     }
     catch (final IOException e)
     {
-      e.printStackTrace();
+      LOGGER.error("Failure flushing bulk request to Elastic: {}.", e.getMessage());
     }
     currentBulkSize = 0;
   }

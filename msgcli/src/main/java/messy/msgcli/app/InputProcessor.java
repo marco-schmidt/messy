@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -234,9 +236,19 @@ public class InputProcessor
   protected void process(String name)
   {
     final StructuredArgument nameRec = StructuredArguments.value("file_name", name);
+    long size;
+    try
+    {
+      size = Files.size(Path.of(name));
+    }
+    catch (final IOException e)
+    {
+      size = -1;
+    }
+    final StructuredArgument sizeRec = StructuredArguments.value("file_size", Long.valueOf(size));
     try (FileInputStream in = new FileInputStream(name))
     {
-      LOGGER.info("Opening '{}'.", nameRec);
+      LOGGER.info("Opening '{}' ({} bytes).", nameRec, sizeRec);
       process(in, name);
     }
     catch (final IOException ioe)
