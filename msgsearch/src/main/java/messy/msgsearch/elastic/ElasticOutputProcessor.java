@@ -15,6 +15,7 @@
  */
 package messy.msgsearch.elastic;
 
+import static net.logstash.logback.argument.StructuredArguments.value;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -44,6 +45,9 @@ public class ElasticOutputProcessor extends OutputProcessor
   private BulkRequest bulkRequest;
   private RestHighLevelClient client;
   private int currentBulkSize;
+  private int currentMessages;
+  private long totalMessages;
+  private long connectionTimeMillis;
   private String host = "localhost";
   private String indexDatePattern = "yyyy";
   private String indexPrefix = "msg-";
@@ -68,6 +72,10 @@ public class ElasticOutputProcessor extends OutputProcessor
       try
       {
         client.close();
+        final long millis = System.currentTimeMillis() - connectionTimeMillis;
+        LOGGER.info("Closed connection to Elastic server '{}:{}', sent {} message(s) in {} ms.", value("host", host),
+            value("port", Integer.valueOf(port)), value("total_messages", Long.valueOf(totalMessages)),
+            value("duration_ms", Long.valueOf(millis)));
       }
       catch (final IOException e)
       {
@@ -85,6 +93,11 @@ public class ElasticOutputProcessor extends OutputProcessor
     }
     client = new RestHighLevelClient(RestClient.builder(new HttpHost(host, port)));
     bulkRequest = new BulkRequest();
+    currentBulkSize = 0;
+    currentMessages = 0;
+    totalMessages = 0;
+    connectionTimeMillis = System.currentTimeMillis();
+    LOGGER.info("Connected to Elastic server '{}:{}'.", value("host", host), value("port", Integer.valueOf(port)));
   }
 
   public String determineIndexName(Message msg)
@@ -103,6 +116,8 @@ public class ElasticOutputProcessor extends OutputProcessor
     final String messageId = msg.getMessageId();
     bulkRequest.add(new IndexRequest(indexName).id(messageId).source(json, XContentType.JSON));
     currentBulkSize += json.length();
+    currentMessages++;
+    totalMessages++;
     if (currentBulkSize > maxBulkSize)
     {
       flushBulkRequest();
@@ -113,13 +128,19 @@ public class ElasticOutputProcessor extends OutputProcessor
   {
     try
     {
+      final long now = System.currentTimeMillis();
       client.bulk(bulkRequest, RequestOptions.DEFAULT);
+      LOGGER.info("Sent {} messages to Elastic server, {} characters in {} ms.",
+          value("num_messages", Integer.valueOf(currentMessages)), value("num_chars", Integer.valueOf(currentBulkSize)),
+          value("duration_ms", Long.valueOf(System.currentTimeMillis() - now)));
     }
     catch (final IOException e)
     {
       LOGGER.error("Failure flushing bulk request to Elastic: {}.", e.getMessage());
     }
+    bulkRequest = new BulkRequest();
     currentBulkSize = 0;
+    currentMessages = 0;
   }
 
   public int getMaxBulkSize()

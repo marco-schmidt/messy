@@ -248,7 +248,7 @@ public class InputProcessor
     final StructuredArgument sizeRec = StructuredArguments.value("file_size", Long.valueOf(size));
     try (FileInputStream in = new FileInputStream(name))
     {
-      LOGGER.info("Opening '{}' ({} bytes).", nameRec, sizeRec);
+      LOGGER.info("Opening file '{}' ({} bytes).", nameRec, sizeRec);
       process(in, name);
     }
     catch (final IOException ioe)

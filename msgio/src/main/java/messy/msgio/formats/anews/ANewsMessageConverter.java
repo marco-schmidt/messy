@@ -103,7 +103,7 @@ public final class ANewsMessageConverter
       bodyLines.add(list.get(index++));
     }
     msg.setBodyLines(bodyLines);
-    return msg;
+    return msg.getDate() == null ? null : msg;
   }
 
   /**
