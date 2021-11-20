@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -239,7 +239,7 @@ public class InputProcessor
     long size;
     try
     {
-      size = Files.size(Path.of(name));
+      size = Files.size(Paths.get(name));
     }
     catch (final IOException e)
     {
