@@ -71,7 +71,7 @@ public class ANewsMessageConverterTest
     final String id = "test.12";
     final ANewsMessage msg = ANewsMessageConverter.fromLines(Arrays.asList(new String[]
     {
-        "A" + id, "", "", "", "", ""
+        "A" + id, "", "", REGULAR[3], "", ""
     }));
     Assert.assertFalse("Correct A news lines lead to non-null message object.", msg == null);
     Assert.assertEquals("Message ID properly parsed.", id, msg.getMessageId());
