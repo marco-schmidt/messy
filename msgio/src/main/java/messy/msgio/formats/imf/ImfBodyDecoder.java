@@ -222,9 +222,15 @@ public final class ImfBodyDecoder
     final CharArrayWriter out = new CharArrayWriter(0);
     for (final String line : bodyLines)
     {
-      final byte[] bytes = base64.decode(line);
-      final String chars = new String(bytes, charset);
-      out.append(chars);
+      try
+      {
+        final byte[] bytes = base64.decode(line);
+        final String chars = new String(bytes, charset);
+        out.append(chars);
+      }
+      catch (final IllegalArgumentException iae)
+      {
+      }
     }
     final String text = out.toString();
     final String[] strings = text.split("\r\n");

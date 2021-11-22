@@ -188,6 +188,25 @@ public class ImfBodyDecoderTest
   }
 
   @Test
+  public void testDecodeLinesBase64Broken()
+  {
+    final List<String> input = new ArrayList<>();
+    input.add("SGksDQoNCnRoaXMgaXMgYSBzYW1 bGUgdGV4dCB0byBiZSBlbmNvZGVkIGluIGJhc2U2NCBz");
+
+    final Map<String, String> attr = new HashMap<>();
+    attr.put("charset", "us-ascii");
+
+    final String cte = ImfBodyDecoder.CONTENT_TRANSFER_ENCODING_BASE_64;
+    final String ct = ImfBodyDecoder.DEFAULT_CONTENT_TYPE;
+
+    final List<String> list = ImfBodyDecoder.decodeLines(input, cte, ct, attr);
+
+    Assert.assertNotNull("Expect non-null result.", list);
+    Assert.assertEquals("Expect one line.", 1, list.size());
+    Assert.assertEquals("Expect empty string.", "", list.get(0));
+  }
+
+  @Test
   public void testDecodeMimeNoBoundary()
   {
     final Map<String, String> headers = new HashMap<>();
