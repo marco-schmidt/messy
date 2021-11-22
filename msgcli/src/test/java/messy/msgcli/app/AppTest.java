@@ -24,6 +24,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
@@ -282,5 +283,52 @@ public final class AppTest
         tempMboxFile.getAbsolutePath()
     };
     App.main(args);
+  }
+
+  @Test
+  public void testParseArguments()
+  {
+    final String[] args = new String[]
+    {
+        "a.txt", "b.txt"
+    };
+    final List<String> names = App.parseArguments(args);
+    Assert.assertNotNull("Expect name list.", names);
+    Assert.assertEquals("Expect identical number of names.", args.length, names.size());
+  }
+
+  @Test
+  public void testParseArgumentsFileNamesStdin()
+  {
+    final String fileNameArg = "c.txt";
+    final String[] fileNames = new String[]
+    {
+        "a.txt", "b.txt"
+    };
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    for (int i = 0; i < fileNames.length; i++)
+    {
+      try
+      {
+        out.write(fileNames[i].getBytes(StandardCharsets.US_ASCII));
+        out.write(System.lineSeparator().getBytes(StandardCharsets.US_ASCII));
+      }
+      catch (final IOException e)
+      {
+      }
+    }
+    final byte[] array = out.toByteArray();
+    final InputStream tmpIn = System.in;
+    System.setIn(new ByteArrayInputStream(array));
+    final List<String> result = App.parseArguments(new String[]
+    {
+        fileNameArg, App.SWITCH_READ_FILE_NAMES_STDIN
+    });
+    System.setIn(tmpIn);
+    Assert.assertNotNull("Expect name list.", result);
+    Assert.assertEquals("Expect identical number of names.", 3, result.size());
+    Assert.assertEquals("Expect identical first name.", fileNameArg, result.get(0));
+    Assert.assertEquals("Expect identical second name.", fileNames[0], result.get(1));
+    Assert.assertEquals("Expect identical third name.", fileNames[1], result.get(2));
   }
 }

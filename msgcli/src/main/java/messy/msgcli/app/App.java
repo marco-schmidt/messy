@@ -15,15 +15,20 @@
  */
 package messy.msgcli.app;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
@@ -48,6 +53,10 @@ public final class App
    * Name of the application.
    */
   public static final String APP_NAME = "msgcli";
+  /**
+   * Program argument to indicate that file names are to be read from standard input.
+   */
+  public static final String SWITCH_READ_FILE_NAMES_STDIN = "-@";
   /**
    * Environment variable to specify the output format.
    */
@@ -147,6 +156,32 @@ public final class App
     return result;
   }
 
+  protected static List<String> parseArguments(String[] args)
+  {
+    final List<String> argsList = Arrays.asList(args);
+    final List<String> fileNames = new ArrayList<>();
+    final Iterator<String> iter = argsList.iterator();
+    boolean readFileNamesFromStdin = false;
+    while (iter.hasNext())
+    {
+      final String arg = iter.next();
+      if (App.SWITCH_READ_FILE_NAMES_STDIN.equals(arg))
+      {
+        readFileNamesFromStdin = true;
+      }
+      else
+      {
+        fileNames.add(arg);
+      }
+    }
+    if (readFileNamesFromStdin)
+    {
+      fileNames.addAll(new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8)).lines()
+          .collect(Collectors.toList()));
+    }
+    return fileNames;
+  }
+
   private static void initConfiguration(String[] args)
   {
     // initialize environment map from environment unless someone (like a unit test setup method)
@@ -161,7 +196,7 @@ public final class App
     setOutputFormat(OutputFormat.valueOf(getEnv(MESSY_OUTPUT_FORMAT, OutputFormat.JSON.name())));
     setOutputItems(initConfigurationOutputItems(getEnv(MESSY_OUTPUT_ITEMS, null)));
 
-    fileNames = Arrays.asList(args);
+    fileNames = parseArguments(args);
   }
 
   protected static void initLogging()
