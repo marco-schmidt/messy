@@ -219,7 +219,13 @@ public class ImfConverter
         final Calendar cal = new GregorianCalendar();
         cal.setTime(result);
         int year = cal.get(Calendar.YEAR);
-        if (year < 100)
+        if (year <= 70)
+        {
+          year += 2000;
+          cal.set(Calendar.YEAR, year);
+          return cal.getTime();
+        }
+        if (year <= 100)
         {
           year += 1900;
           cal.set(Calendar.YEAR, year);

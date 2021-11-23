@@ -51,7 +51,12 @@ import net.logstash.logback.argument.StructuredArguments;
 public class InputProcessor
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(InputProcessor.class);
-  private OutputProcessor outputProcessor = new OutputProcessor();
+  private OutputProcessor outputProcessor;
+
+  public InputProcessor()
+  {
+    setOutputProcessor(new OutputProcessor());
+  }
 
   public void close()
   {

@@ -49,7 +49,7 @@ public class ImfConverterTest
   }
 
   @Test
-  public void testDecodeDate()
+  public void testDecodeDateTwoDigitYear1990s()
   {
     final ImfConverter converter = new ImfConverter();
     final Date date = converter.decodeDate("12 Apr 93 07:44:33 GMT");
@@ -57,6 +57,17 @@ public class ImfConverterTest
     final Calendar cal = new GregorianCalendar();
     cal.setTime(date);
     Assert.assertTrue("Year larger 100.", cal.get(Calendar.YEAR) == 1993);
+  }
+
+  @Test
+  public void testDecodeDateTwoDigitYear2000s()
+  {
+    final ImfConverter converter = new ImfConverter();
+    final Date date = converter.decodeDate("12 Apr 04 07:44:33 GMT");
+    Assert.assertNotNull("Could parse date string", date);
+    final Calendar cal = new GregorianCalendar();
+    cal.setTime(date);
+    Assert.assertTrue("Year larger 100.", cal.get(Calendar.YEAR) == 2004);
   }
 
   @Test

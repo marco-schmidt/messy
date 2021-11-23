@@ -66,6 +66,22 @@ public class ANewsMessageConverterTest
   }
 
   @Test
+  public void testInvalidDateMessage()
+  {
+    Assert.assertNull("First line contains an 'A' only, leads to null output.",
+        ANewsMessageConverter.fromLines(Arrays.asList(new String[]
+        {
+            "Aabc", "net.general", "abc!def", "invaliddate", "Subject line", "Body line"
+        })));
+  }
+
+  @Test
+  public void testInvalidDate()
+  {
+    Assert.assertNull("Invalid date string leads to null output.", ANewsMessageConverter.parseDate("cxdf"));
+  }
+
+  @Test
   public void testMessageId()
   {
     final String id = "test.12";

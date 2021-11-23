@@ -66,6 +66,15 @@ public class ElasticOutputProcessor extends OutputProcessor implements ActionLis
     setMessageFormatter(new JsonMessageFormatter());
   }
 
+  private void addRequest(IndexRequest req)
+  {
+    if (bulkRequest != null)
+    {
+      bulkRequest.add(req);
+
+    }
+  }
+
   @Override
   public void close()
   {
@@ -140,7 +149,7 @@ public class ElasticOutputProcessor extends OutputProcessor implements ActionLis
     final String indexName = determineIndexName(msg);
     final String json = getMessageFormatter().format(msg);
     final String messageId = msg.getMessageId();
-    bulkRequest.add(new IndexRequest(indexName).id(messageId).source(json, XContentType.JSON));
+    addRequest(new IndexRequest(indexName).id(messageId).source(json, XContentType.JSON));
     currentBulkSize += json.length();
     currentMessages++;
     totalMessages++;
