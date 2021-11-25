@@ -2,7 +2,7 @@
 checkstyle = "9.1"
 jacoco = "0.8.7"
 lucene = "8.11.0"
-spotbugs = "4.4.2"
+spotbugs = "4.5.0"
 
 [libraries]
 commons-compress = { module = "org.apache.commons:commons-compress", version = { strictly = "1.21" } }
@@ -27,6 +27,6 @@ lucene = ["lucene-analyzerscommon", "lucene-core", "lucene-queries", "lucene-que
 dependencycheck = { id = "org.owasp.dependencycheck", version = "6.5.0.1" }
 dependencylicensereport = { id = "com.github.jk1.dependency-license-report", version = "2.0" }
 forbiddenapis = { id = "de.thetaphi.forbiddenapis", version = "3.2" }
-spotbugs = { id = "com.github.spotbugs", version = "4.7.10" }
+spotbugs = { id = "com.github.spotbugs", version = "4.8.0" }
 spotless = { id = "com.diffplug.spotless", version = "6.0.0" }
 ver = { id = "com.github.ben-manes.versions", version = "0.39.0" }
