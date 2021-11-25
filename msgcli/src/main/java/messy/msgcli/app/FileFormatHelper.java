@@ -38,7 +38,7 @@ public final class FileFormatHelper
 {
   enum FileType
   {
-    BZIP2, GZIP, JSON, MBOX, TAR, UNKNOWN, Z, ZIP
+    BZIP2, GZIP, JSON, MBOX, SEVENZIP, TAR, UNKNOWN, Z, ZIP
   }
 
   private static int bytesToLoad;
@@ -76,6 +76,12 @@ public final class FileFormatHelper
     {
         (byte) 'P', (byte) 'K', (byte) 3, (byte) 4
     }, 0, FileType.ZIP));
+
+    // https://en.wikipedia.org/wiki/7z
+    signatures.add(new FileSignature(new byte[]
+    {
+        (byte) '7', (byte) 'z', (byte) 0xbc, (byte) 0xaf, (byte) 0x27, (byte) 0x1c,
+    }, 0, FileType.SEVENZIP));
 
     // https://en.wikipedia.org/wiki/Gzip
     signatures.add(new FileSignature(new byte[]

@@ -18,6 +18,7 @@ package messy.msgcli.app;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +31,8 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import messy.msgcli.app.FileFormatHelper.FileType;
@@ -129,6 +132,9 @@ public class InputProcessor
             StandardCharsets.ISO_8859_1);
         processMbox(mboxIn);
         break;
+      case SEVENZIP:
+        processSevenZip(is, inputName);
+        break;
       default:
         processUnidentified(input, inputName);
         break;
@@ -137,6 +143,27 @@ public class InputProcessor
     catch (final IOException ioe)
     {
       LOGGER.error("I/O error: ", ioe);
+    }
+  }
+
+  private void processSevenZip(InputStream is, String inputName)
+  {
+    try
+    {
+      final SevenZFile file = new SevenZFile(new File(inputName));
+      SevenZArchiveEntry entry;
+      while ((entry = file.getNextEntry()) != null)
+      {
+        if (!entry.isDirectory())
+        {
+          final InputStream entryInputStream = file.getInputStream(entry);
+          process(entryInputStream, entry.getName());
+        }
+      }
+    }
+    catch (final IOException ioe)
+    {
+      LOGGER.error("Failed to open 7z file: ", ioe);
     }
   }
 

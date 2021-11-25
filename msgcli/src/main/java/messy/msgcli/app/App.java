@@ -208,6 +208,7 @@ public final class App
 
     final LogstashEncoder encoder = new LogstashEncoder();
     encoder.setContext(loggerContext);
+    encoder.setVersion(null);
     final LogstashFieldNames names = new LogstashFieldNames();
     encoder.setFieldNames(names);
     encoder.setCustomFields("{\"app_name\":\"" + APP_NAME + "\"}");

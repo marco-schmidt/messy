@@ -14,5 +14,6 @@ dependencies {
   implementation libs.logback.classic
   implementation libs.logstash.logback.encoder
   implementation libs.slf4j.api
+  implementation libs.xz
   testImplementation libs.junit
 }
