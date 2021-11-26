@@ -40,6 +40,7 @@ import messy.msgdata.formats.anews.ANewsMessage;
 import messy.msgdata.formats.mbox.MboxMessage;
 import messy.msgdata.formats.twitter.TwitterStatus;
 import messy.msgio.formats.anews.ANewsMessageConverter;
+import messy.msgio.formats.hamster.HamsterReader;
 import messy.msgio.formats.mbox.MboxReader;
 import messy.msgio.formats.twitter.JsonTwitterParser;
 import messy.msgio.output.OutputProcessor;
@@ -108,7 +109,7 @@ public class InputProcessor
     try
     {
       final PushbackInputStream input = new PushbackInputStream(is, FileFormatHelper.getNumBytesToLoad());
-      final FileFormatHelper.FileType fileType = FileFormatHelper.identify(input);
+      final FileFormatHelper.FileType fileType = FileFormatHelper.identify(input, inputName);
       switch (fileType)
       {
       case BZIP2:
@@ -131,6 +132,9 @@ public class InputProcessor
         final BufferedReader mboxIn = messy.msgio.utils.IOUtils.openAsBufferedReader(input,
             StandardCharsets.ISO_8859_1);
         processMbox(mboxIn);
+        break;
+      case HAMSTER:
+        processHamster(input, inputName);
         break;
       case SEVENZIP:
         processSevenZip(is, inputName);
@@ -210,31 +214,64 @@ public class InputProcessor
   {
     boolean success = false;
 
-    if (FileFormatHelper.isLikelySingleMessageFile(inputName))
+    if (HamsterReader.isDataFileName(inputName))
     {
-      final ByteArrayOutputStream bout = new ByteArrayOutputStream();
       try
       {
-        org.apache.commons.compress.utils.IOUtils.copy(is, bout);
-        final byte[] array = bout.toByteArray();
-        final List<String> lines = messy.msgio.utils.IOUtils.toLines(new ByteArrayInputStream(array));
-        if (array.length > 0 && array[0] == (byte) 'A')
-        {
-          success = processSingleMessageAnews(lines, inputName);
-        }
-        if (!success)
-        {
-          success = processSingleMessageImf(lines, inputName);
-        }
+        processHamster(is, inputName);
+        success = true;
       }
       catch (final IOException ioe)
       {
-        LOGGER.error("I/O error reading from '" + inputName + "'.", ioe);
+        LOGGER.error("I/O error reading from Hamster '" + inputName + "'.", ioe);
       }
     }
+    else
+    {
+      if (FileFormatHelper.isLikelySingleMessageFile(inputName))
+      {
+        final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        try
+        {
+          org.apache.commons.compress.utils.IOUtils.copy(is, bout);
+          final byte[] array = bout.toByteArray();
+          success = processSingleMessage(array, inputName);
+        }
+        catch (final IOException ioe)
+        {
+          LOGGER.error("I/O error reading from '" + inputName + "'.", ioe);
+        }
+      }
+    }
+
     if (!success)
     {
       LOGGER.error("Could not identify '{}' to be in a supported format.", inputName);
+    }
+  }
+
+  private boolean processSingleMessage(byte[] array, String inputName)
+  {
+    boolean success = false;
+    final List<String> lines = messy.msgio.utils.IOUtils.toLines(new ByteArrayInputStream(array));
+    if (array.length > 0 && array[0] == (byte) 'A')
+    {
+      success = processSingleMessageAnews(lines, inputName);
+    }
+    if (!success)
+    {
+      success = processSingleMessageImf(lines, inputName);
+    }
+    return success;
+  }
+
+  protected void processHamster(InputStream is, String inputName) throws IOException
+  {
+    final HamsterReader reader = new HamsterReader(is);
+    byte[] msg;
+    while ((msg = reader.readNext()) != null)
+    {
+      processSingleMessage(msg, inputName);
     }
   }
 
@@ -281,7 +318,14 @@ public class InputProcessor
     try (FileInputStream in = new FileInputStream(name))
     {
       LOGGER.info("Opening file '{}' ({} bytes).", nameRec, sizeRec);
-      process(in, name);
+      if (HamsterReader.isDataFileName(name))
+      {
+        processHamster(in, name);
+      }
+      else
+      {
+        process(in, name);
+      }
     }
     catch (final IOException ioe)
     {

@@ -28,6 +28,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
+import messy.msgio.formats.hamster.HamsterReader;
 
 /**
  * Identify file formats using byte array signatures.
@@ -38,7 +39,7 @@ public final class FileFormatHelper
 {
   enum FileType
   {
-    BZIP2, GZIP, JSON, MBOX, SEVENZIP, TAR, UNKNOWN, Z, ZIP
+    BZIP2, GZIP, HAMSTER, JSON, MBOX, SEVENZIP, TAR, UNKNOWN, Z, ZIP
   }
 
   private static int bytesToLoad;
@@ -123,6 +124,18 @@ public final class FileFormatHelper
   public static int getNumBytesToLoad()
   {
     return bytesToLoad;
+  }
+
+  protected static FileType identify(PushbackInputStream input, String name)
+  {
+    if (HamsterReader.isDataFileName(name))
+    {
+      return FileType.HAMSTER;
+    }
+    else
+    {
+      return identify(input);
+    }
   }
 
   protected static FileType identify(PushbackInputStream input)

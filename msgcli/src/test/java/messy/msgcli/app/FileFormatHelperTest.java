@@ -15,6 +15,8 @@
  */
 package messy.msgcli.app;
 
+import java.io.ByteArrayInputStream;
+import java.io.PushbackInputStream;
 import org.junit.Assert;
 import org.junit.Test;
 import messy.msgcli.app.AppTest.FailingInputStream;
@@ -22,6 +24,16 @@ import messy.msgcli.app.FileFormatHelper.FileType;
 
 public final class FileFormatHelperTest
 {
+  @Test
+  public void testIdentify()
+  {
+    final ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[]
+    {
+        (byte) '7', (byte) 'z', (byte) 0xbc, (byte) 0xaf, (byte) 0x27, (byte) 0x1c, 1
+    });
+    final FileType type = FileFormatHelper.identify(new PushbackInputStream(inputStream, 7));
+    Assert.assertEquals("Identiy 7z.", FileType.SEVENZIP, type);
+  }
 
   @Test
   public void testIsLikelySingleMessageFile()

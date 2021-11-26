@@ -67,6 +67,7 @@ public final class InputProcessorTest
   {
     final InputProcessor ip = new InputProcessor();
     ip.process(INVALID_FILE_NAME);
+    ip.process("data.dat");
   }
 
   @Test
@@ -135,6 +136,18 @@ public final class InputProcessorTest
     // password is "secret" in case decryption is supported in the future
     name = "example.general.encrypted.zip";
     ip.process(open(name), name);
+
+    ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[]
+    {
+        (byte) '7', (byte) 'z', (byte) 0xbc, (byte) 0xaf, (byte) 0x27, (byte) 0x1c, 1
+    });
+    ip.process(inputStream, "DoesNotExist.7z");
+
+    inputStream = new ByteArrayInputStream(new byte[]
+    {
+        (byte) 32, 0, 0, 0, 1
+    });
+    ip.process(inputStream, "data.dat");
   }
 
   @Test
@@ -164,7 +177,19 @@ public final class InputProcessorTest
         (byte) 'A'
     }), "1.msg");
     final String s = StringUtils.concatItems(Arrays.asList(ANEWS), "\n");
-    ip.processUnidentified(new ByteArrayInputStream(s.getBytes(StandardCharsets.ISO_8859_1)), "1.msg");
+    final byte[] anewsBytes = s.getBytes(StandardCharsets.ISO_8859_1);
+    ip.processUnidentified(new ByteArrayInputStream(anewsBytes), "1.msg");
+
+    final int anewsNumBytes = anewsBytes.length;
+    final byte[] hamsterData = new byte[anewsNumBytes + 4];
+    System.arraycopy(anewsBytes, 0, hamsterData, 4, anewsNumBytes);
+    hamsterData[0] = (byte) (anewsNumBytes & 0xff);
+    ip.processUnidentified(new ByteArrayInputStream(hamsterData), "data.dat");
+
+    ip.processUnidentified(new AppTest.FailingInputStream(new byte[]
+    {
+
+    }), "data.dat");
   }
 
   @Test
