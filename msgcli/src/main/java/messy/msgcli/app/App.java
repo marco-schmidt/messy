@@ -36,6 +36,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import messy.msgdata.formats.Message;
+import messy.msgio.AppState;
 import messy.msgio.formats.AbstractMessageFormatter;
 import messy.msgio.formats.JsonMessageFormatter;
 import messy.msgio.formats.TsvMessageFormatter;
@@ -65,6 +66,7 @@ public final class App
    * Environment variable to specify message items to be included in output.
    */
   public static final String MESSY_OUTPUT_ITEMS = "MESSY_OUTPUT_ITEMS";
+  private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
 
   private static volatile Map<String, String> environment;
   private static List<String> fileNames;
@@ -189,6 +191,19 @@ public final class App
     if (environment == null)
     {
       setEnvironment(System.getenv());
+
+      Runtime.getRuntime().addShutdownHook(new Thread()
+      {
+        @Override
+        public void run()
+        {
+          if (!AppState.isMainFinished())
+          {
+            LOGGER.info("Received shutdown notice. Application is terminating.");
+          }
+          AppState.setActive(false);
+        }
+      });
     }
 
     initLogging();
@@ -252,5 +267,6 @@ public final class App
       ip.process(fileNames);
     }
     ip.close();
+    AppState.setMainFinished(true);
   }
 }

@@ -35,6 +35,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import messy.msgdata.formats.Message;
+import messy.msgio.AppState;
 import messy.msgio.formats.JsonMessageFormatter;
 import messy.msgio.output.OutputProcessor;
 
@@ -57,8 +58,8 @@ public class ElasticOutputProcessor extends OutputProcessor implements ActionLis
   private String indexPrefix = "msg-";
   private int maxBulkSize = 8 * 1024 * 1024;
   private int port = 9200;
-  private long totalMessages;
   private final AtomicInteger requestCounter = new AtomicInteger(0);
+  private long totalMessages;
 
   public ElasticOutputProcessor()
   {
@@ -71,7 +72,6 @@ public class ElasticOutputProcessor extends OutputProcessor implements ActionLis
     if (bulkRequest != null)
     {
       bulkRequest.add(req);
-
     }
   }
 
@@ -81,20 +81,20 @@ public class ElasticOutputProcessor extends OutputProcessor implements ActionLis
     if (client != null)
     {
       // send out any remaining elements
-      if (currentBulkSize > 0)
+      if (AppState.isActive() && currentBulkSize > 0)
       {
         flushBulkRequest();
       }
 
       // wait for all requests to terminate
-      while (true)
+      while (AppState.isActive())
       {
         final int left = requestCounter.get();
         if (left == 0)
         {
           break;
         }
-        LOGGER.info("Waiting for {} bulk request(s) to finish.", value("num_requests", left));
+        LOGGER.info("Waiting for {} pending bulk request(s) to finish.", value("num_requests", left));
         try
         {
           Thread.sleep(bulkRequestWaitMillis);

@@ -39,6 +39,7 @@ import messy.msgcli.app.FileFormatHelper.FileType;
 import messy.msgdata.formats.anews.ANewsMessage;
 import messy.msgdata.formats.mbox.MboxMessage;
 import messy.msgdata.formats.twitter.TwitterStatus;
+import messy.msgio.AppState;
 import messy.msgio.formats.anews.ANewsMessageConverter;
 import messy.msgio.formats.hamster.HamsterReader;
 import messy.msgio.formats.mbox.MboxReader;
@@ -80,7 +81,7 @@ public class InputProcessor
   private void processJson(BufferedReader in) throws IOException
   {
     String line;
-    while ((line = in.readLine()) != null)
+    while (AppState.isActive() && (line = in.readLine()) != null)
     {
       final TwitterStatus status = JsonTwitterParser.parseStatus(line);
       if (status == null)
@@ -98,7 +99,7 @@ public class InputProcessor
   {
     MboxMessage mboxMsg;
     final MboxReader reader = new MboxReader(in);
-    while ((mboxMsg = reader.next()) != null)
+    while (AppState.isActive() && (mboxMsg = reader.next()) != null)
     {
       outputProcessor.write(mboxMsg, reader.getLineNumber());
     }
@@ -152,11 +153,10 @@ public class InputProcessor
 
   private void processSevenZip(InputStream is, String inputName)
   {
-    try
+    try (SevenZFile file = new SevenZFile(new File(inputName)))
     {
-      final SevenZFile file = new SevenZFile(new File(inputName));
       SevenZArchiveEntry entry;
-      while ((entry = file.getNextEntry()) != null)
+      while (AppState.isActive() && (entry = file.getNextEntry()) != null)
       {
         if (!entry.isDirectory())
         {
@@ -269,7 +269,7 @@ public class InputProcessor
   {
     final HamsterReader reader = new HamsterReader(is);
     byte[] msg;
-    while ((msg = reader.readNext()) != null)
+    while (AppState.isActive() && (msg = reader.readNext()) != null)
     {
       processSingleMessage(msg, inputName);
     }
@@ -281,7 +281,7 @@ public class InputProcessor
     try
     {
       ArchiveEntry entry;
-      while ((entry = ain.getNextEntry()) != null)
+      while (AppState.isActive() && (entry = ain.getNextEntry()) != null)
       {
         if (entry.isDirectory())
         {
