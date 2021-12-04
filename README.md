@@ -92,11 +92,11 @@ $ m /path/to/twitter-stream-2017-07-01.tar
 {"@timestamp":"2021-12-04T16:49:56.655+01:00","message":"Opening file '/path/to/twitter-stream-2017-07-01.tar' (35864390 bytes).","logger_name":"messy.msgcli.app.InputProcessor","thread_name":"main","level":"INFO","level_value":20000,"file_name":"/path/to/twitter-stream-2017-07-01.tar","file_size":35864390,"app_name":"msgcli"}
 ...
 ```
-More recently zip has become the format of choice. This prints user id and handle as tab-separated values to standard output:
+This uses Unix tool ``find`` to create a list of mbox files and pipe them to ``msgcli`` which will print two properties as tab-separated values to standard output:
 ```shell
 $ export MESSY_OUTPUT_FORMAT=TSV
 $ export MESSY_OUTPUT_ITEMS=AUTHOR_ID,AUTHOR_NAME
-$ m /path/to/twitter-stream-2021-01-01.zip
+$ find /mnt/hdd2/archive/usenet -type f -name '*.mbox'|m -@
 ...
 ```
 
