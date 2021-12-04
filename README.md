@@ -19,12 +19,14 @@ These are general-purpose archive formats, not specific to messages.
     * Tar (.tar)
 * Multiple files stored with compression
     * Zip (.zip)
+    * 7-Zip (.7z)
 
 #### Container Formats
 
 * [Mbox](https://en.wikipedia.org/wiki/Mbox) files.
     * Supports various subtypes.
 * [Newline-delimited JSON (ndjson)](http://ndjson.org/) files.
+* [Hamster](https://de.wikipedia.org/wiki/Hamster_(Software)) data.dat files.
 * Single-message files.
      * File extensions .eml and .msg.
      * Newsspool messages, no file extension, name is an integer number.
@@ -37,7 +39,7 @@ These are general-purpose archive formats, not specific to messages.
 
 ### Storage
 
-* Store messages in a [Lucene](https://lucene.apache.org/) search index directory.
+* Upload messages to an [Elasticsearch](https://github.com/elastic/elasticsearch) instance.
 
 ## Status
 
@@ -64,23 +66,43 @@ Command-line application msgcli can be used to explore message archives, convert
 
 ## Command-Line Application
 
-Command-line application ``msgcli`` reads messages from standard input, converts them and prints a summary of each message to standard output.
+Command-line application ``msgcli`` reads messages from standard input or files, converts them and prints a summary of each message to standard output or upoads it to Elastic.
 
 Clone the git repository and install msgcli locally:
 ```shell
-./gradlew :msgcli:install
+$ javac -version
+# ... should print version 1.8 or higher
+$ cd ~
+$ git clone https://github.com/marco-schmidt/messy.git
+...
+$ cd messy
+$ ./gradlew :msgcli:install
+...
+$ alias m='/path/to/homedir/messy/msgcli/build/install/msgcli/bin/msgcli'
+$ m ../test.mbox
+...
 ```
-Then the ``/path/to/installed/msgcli/bin/msgcli`` placeholder in the following example can be replaced with ``msgcli/build/install/msgcli/bin/msgcli``.
+The application can now be used with ``m``.
 
-This makes tar copy all the .json.bz2 files contained in a typical twitter stream archive to standard output,
-lets bzip2 decompress that .bz2 data and send the resulting newline-delimited JSON text lines to msgcli, which will then convert them and print them to standard output:
+This makes msgcli upload the content of a twitter stream tar file to Elasticsearch running locally listening on port 9200:
 ```shell
-tar -xOf /path/to/twitter-stream-2017-07-01.tar|bzip2 -d|/path/to/installed/msgcli/bin/msgcli
+$ export MESSY_OUTPUT_FORMAT=ELASTIC
+$ m /path/to/twitter-stream-2017-07-01.tar
+{"@timestamp":"2021-12-04T16:49:56.631+01:00","message":"Connected to Elastic server 'localhost:9200'.","logger_name":"messy.msgsearch.elastic.ElasticOutputProcessor","thread_name":"main","level":"INFO","level_value":20000,"server_type":"Elastic","host":"localhost","port":9200,"app_name":"msgcli"}
+{"@timestamp":"2021-12-04T16:49:56.655+01:00","message":"Opening file '/path/to/twitter-stream-2017-07-01.tar' (35864390 bytes).","logger_name":"messy.msgcli.app.InputProcessor","thread_name":"main","level":"INFO","level_value":20000,"file_name":"/path/to/twitter-stream-2017-07-01.tar","file_size":35864390,"app_name":"msgcli"}
+...
 ```
-More recently zip has become the format of choice:
+More recently zip has become the format of choice. This prints user id and handle as tab-separated values to standard output:
 ```shell
-unzip -p /path/to/twitter-stream-2021-01-01.zip|/path/to/installed/msgcli/bin/msgcli
+$ export MESSY_OUTPUT_FORMAT=TSV
+$ export MESSY_OUTPUT_ITEMS=AUTHOR_ID,AUTHOR_NAME
+$ m /path/to/twitter-stream-2021-01-01.zip
+...
 ```
+
+## Known Limitations
+
+* 7-Zip streams can only be opened as files, not as part of archives.
 
 ## Technology Stack
 
