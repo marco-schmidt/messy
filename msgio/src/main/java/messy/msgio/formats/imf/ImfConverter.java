@@ -256,7 +256,8 @@ public class ImfConverter
     extractOrigin(result, lookup);
     result.setOrganization(lookup.get(FIELD_ORGANIZATION));
     result.setGroups(StringUtils.splitAndNormalize(lookup.get(FIELD_NEWSGROUPS), ","));
-    result.setReferences(extractReferences(lookup.get(FIELD_REFERENCES)));
+    final List<String> references = extractReferences(lookup.get(FIELD_REFERENCES));
+    result.setReferences(references.isEmpty() ? null : references);
     decodeBody(message, result, lookup);
     return result;
   }
