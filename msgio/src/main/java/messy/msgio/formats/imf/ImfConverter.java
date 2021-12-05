@@ -35,6 +35,7 @@ import messy.msgdata.formats.imf.ImfBodySection;
 import messy.msgdata.formats.imf.ImfHeaderField;
 import messy.msgdata.formats.imf.ImfHeaderList;
 import messy.msgdata.formats.imf.ImfMessage;
+import messy.msgio.analysis.LanguageDetection;
 import messy.msgio.utils.NetUtils;
 import messy.msgio.utils.StringUtils;
 
@@ -76,7 +77,7 @@ public class ImfConverter
   private static final String FIELD_MESSAGE_ID = "message-id";
   private static final String FIELD_REFERENCES = "references";
   private static final String FIELD_SUBJECT = "subject";
-
+  private static final String FIELD_X_GOOGLE_LANGUAGE = "x-google-language";
   private static final String[] DATE_PATTERNS =
   {
       "EEE, dd MMM yyyy HH:mm:ss z", "dd MMM yyyy HH:mm:ss z", "dd MMM yy HH:mm:ss z", "EEE, dd MMM yy HH:mm:ss z",
@@ -530,6 +531,7 @@ public class ImfConverter
   private Message convertRfc850(Map<String, String> lookup, ImfMessage message)
   {
     final Message result = convertShared(lookup, message);
+    result.setLanguageCode(LanguageDetection.fromGoogleLanguage(lookup.get(FIELD_X_GOOGLE_LANGUAGE)));
     result.setMedium(Message.MEDIUM_USENET);
     result.setFormat(ImfMessage.FORMAT_INTERNET_MESSAGE_FORMAT);
     result.setSubject(decodeText(lookup.get(FIELD_SUBJECT)));
