@@ -135,6 +135,10 @@ public final class App
 
   private static String getEnv(String key, String defaultValue)
   {
+    if (environment == null)
+    {
+      return defaultValue;
+    }
     String result = environment.get(key);
     if (result == null)
     {
