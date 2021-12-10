@@ -59,6 +59,10 @@ public final class App
    */
   public static final String SWITCH_READ_FILE_NAMES_STDIN = "-@";
   /**
+   * Environment variable to specify granularity of logging.
+   */
+  public static final String MESSY_LOG_LEVEL = "MESSY_LOG_LEVEL";
+  /**
    * Environment variable to specify the output format.
    */
   public static final String MESSY_OUTPUT_FORMAT = "MESSY_OUTPUT_FORMAT";
@@ -236,7 +240,7 @@ public final class App
     appender.start();
 
     rootLogger.addAppender(appender);
-    rootLogger.setLevel(Level.INFO);
+    rootLogger.setLevel(Level.toLevel(getEnv(MESSY_LOG_LEVEL, "INFO")));
   }
 
   public static void main(String[] args)
