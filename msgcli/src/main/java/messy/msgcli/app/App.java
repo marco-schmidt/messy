@@ -41,7 +41,7 @@ import messy.msgio.formats.AbstractMessageFormatter;
 import messy.msgio.formats.JsonMessageFormatter;
 import messy.msgio.formats.TsvMessageFormatter;
 import messy.msgio.utils.StringUtils;
-import messy.msgsearch.elastic.ElasticOutputProcessor;
+import messy.msgsearch.elk.ElkOutputProcessor;
 import net.logstash.logback.encoder.LogstashEncoder;
 import net.logstash.logback.fieldnames.LogstashFieldNames;
 
@@ -248,7 +248,7 @@ public final class App
     final InputProcessor ip = new InputProcessor();
     if (outputFormat == OutputFormat.ELASTIC)
     {
-      final ElasticOutputProcessor op = new ElasticOutputProcessor();
+      final ElkOutputProcessor op = new ElkOutputProcessor();
       op.setMessageFormatter(messageFormatter);
       op.connect();
       ip.setOutputProcessor(op);

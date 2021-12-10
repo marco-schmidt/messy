@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package messy.msgsearch.elastic;
+package messy.msgsearch.elk;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import java.io.IOException;
@@ -44,9 +44,9 @@ import messy.msgio.output.OutputProcessor;
  *
  * @author Marco Schmidt
  */
-public class ElasticOutputProcessor extends OutputProcessor implements ActionListener<BulkResponse>
+public class ElkOutputProcessor extends OutputProcessor implements ActionListener<BulkResponse>
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ElasticOutputProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ElkOutputProcessor.class);
   private BulkRequest bulkRequest;
   private final long bulkRequestWaitMillis = 1000L;
   private RestHighLevelClient client;
@@ -61,7 +61,7 @@ public class ElasticOutputProcessor extends OutputProcessor implements ActionLis
   private final AtomicInteger requestCounter = new AtomicInteger(0);
   private long totalMessages;
 
-  public ElasticOutputProcessor()
+  public ElkOutputProcessor()
   {
     super();
     setMessageFormatter(new JsonMessageFormatter());
@@ -125,7 +125,8 @@ public class ElasticOutputProcessor extends OutputProcessor implements ActionLis
   public void connect()
   {
     close();
-    client = new RestHighLevelClient(RestClient.builder(new HttpHost(host, port)));
+    client = new RestHighLevelClient(RestClient.builder(new HttpHost(host, port)).setRequestConfigCallback(
+        requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(5000).setSocketTimeout(60000)));
     bulkRequest = new BulkRequest();
     currentBulkSize = 0;
     currentMessages = 0;
@@ -164,11 +165,13 @@ public class ElasticOutputProcessor extends OutputProcessor implements ActionLis
     final long now = System.currentTimeMillis();
     requestCounter.incrementAndGet();
     client.bulkAsync(bulkRequest, RequestOptions.DEFAULT, this);
-    LOGGER.info("Sending {} messages to {} server, {} characters in {} ms.",
-        value("num_messages", Integer.valueOf(currentMessages)), value("server_type", getServerType()),
-        value("num_chars", Integer.valueOf(currentBulkSize)),
-        value("duration_ms", Long.valueOf(System.currentTimeMillis() - now)));
-
+    if (LOGGER.isDebugEnabled())
+    {
+      LOGGER.info("Sending {} messages to {} server, {} characters in {} ms.",
+          value("num_messages", Integer.valueOf(currentMessages)), value("server_type", getServerType()),
+          value("num_chars", Integer.valueOf(currentBulkSize)),
+          value("duration_ms", Long.valueOf(System.currentTimeMillis() - now)));
+    }
     bulkRequest = new BulkRequest();
     currentBulkSize = 0;
     currentMessages = 0;
@@ -176,7 +179,7 @@ public class ElasticOutputProcessor extends OutputProcessor implements ActionLis
 
   public String getServerType()
   {
-    return "Elastic";
+    return "ELK";
   }
 
   public int getMaxBulkSize()
@@ -243,10 +246,12 @@ public class ElasticOutputProcessor extends OutputProcessor implements ActionLis
     final long took = response.getTook().getMillis();
     final BulkItemResponse[] items = response.getItems();
     final int numMessages = items.length;
-    LOGGER.info("Sent {} messages to {} server, ingest {} ms and bulk execution {} ms.",
-        value("num_messages", Integer.valueOf(numMessages)), value("server_type", getServerType()),
-        value("ingest_duration_ms", Long.valueOf(ingestTook)), value("bulk_duration_ms", Long.valueOf(took)));
-
+    if (LOGGER.isDebugEnabled())
+    {
+      LOGGER.info("Sent {} messages to {} server, ingest {} ms and bulk execution {} ms.",
+          value("num_messages", Integer.valueOf(numMessages)), value("server_type", getServerType()),
+          value("ingest_duration_ms", Long.valueOf(ingestTook)), value("bulk_duration_ms", Long.valueOf(took)));
+    }
     if (response.hasFailures())
     {
       for (final BulkItemResponse bir : items)

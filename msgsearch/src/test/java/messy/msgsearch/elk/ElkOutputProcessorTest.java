@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package messy.msgsearch.elastic;
+package messy.msgsearch.elk;
 
 import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import messy.msgdata.formats.Message;
 
-public class ElasticOutputProcessorTest
+public class ElkOutputProcessorTest
 {
   @Test
   public void testMessageFormatter()
   {
-    final ElasticOutputProcessor proc = new ElasticOutputProcessor();
+    final ElkOutputProcessor proc = new ElkOutputProcessor();
     proc.close();
     Assert.assertNotNull("Has message formatter.", proc.getMessageFormatter());
   }
@@ -33,7 +33,7 @@ public class ElasticOutputProcessorTest
   @Test
   public void testDetermineIndexNameProperDate()
   {
-    final ElasticOutputProcessor proc = new ElasticOutputProcessor();
+    final ElkOutputProcessor proc = new ElkOutputProcessor();
     proc.setIndexDatePattern("yyyy");
     proc.setIndexPrefix("msg-");
     final Message msg = new Message();
@@ -46,7 +46,7 @@ public class ElasticOutputProcessorTest
   @Test
   public void testDetermineIndexNameMissingDate()
   {
-    final ElasticOutputProcessor proc = new ElasticOutputProcessor();
+    final ElkOutputProcessor proc = new ElkOutputProcessor();
     proc.setIndexDatePattern("yyyy");
     proc.setIndexPrefix("msg-");
     final Message msg = new Message();
