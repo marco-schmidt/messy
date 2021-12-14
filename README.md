@@ -103,6 +103,7 @@ $ find /mnt/hdd2/archive/usenet -type f -name '*.mbox'|m -@
 ## Known Limitations
 
 * 7-Zip streams can only be opened as files, not as part of archives.
+* Hamster message data files have no magic bytes file signature to properly identify them. Their file name data.dat is therefore used to detect them.
 
 ## Technology Stack
 
