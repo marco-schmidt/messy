@@ -24,7 +24,7 @@ xz = { module = "org.tukaani:xz", version = { strictly = "1.9" } }
 lucene = ["lucene-analyzerscommon", "lucene-core", "lucene-queries", "lucene-queryparser"]
 
 [plugins]
-dependencycheck = { id = "org.owasp.dependencycheck", version = "6.5.0.1" }
+dependencycheck = { id = "org.owasp.dependencycheck", version = "6.5.1" }
 dependencylicensereport = { id = "com.github.jk1.dependency-license-report", version = "2.0" }
 forbiddenapis = { id = "de.thetaphi.forbiddenapis", version = "3.2" }
 spotbugs = { id = "com.github.spotbugs", version = "5.0.3" }
