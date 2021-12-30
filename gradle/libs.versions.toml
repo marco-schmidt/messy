@@ -12,7 +12,7 @@ json-smart = { module = "net.minidev:json-smart", version = { strictly = "2.4.7"
 junit = { module = "junit:junit", version = { strictly = "4.13.2" } }
 logback-classic = { module = "ch.qos.logback:logback-classic", version = { strictly = "1.2.10" } }
 logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version = { strictly = "7.0.1" } }
-log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version = { strictly = "2.17.0" } }
+log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version = { strictly = "2.17.1" } }
 lucene-analyzerscommon = { module = "org.apache.lucene:lucene-analyzers-common", version.ref = "lucene" }
 lucene-core = { module = "org.apache.lucene:lucene-core", version.ref = "lucene" }
 lucene-queries = { module = "org.apache.lucene:lucene-queries", version.ref = "lucene" }
