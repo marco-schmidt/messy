@@ -29,4 +29,4 @@ dependencylicensereport = { id = "com.github.jk1.dependency-license-report", ver
 forbiddenapis = { id = "de.thetaphi.forbiddenapis", version = "3.2" }
 spotbugs = { id = "com.github.spotbugs", version = "5.0.3" }
 spotless = { id = "com.diffplug.spotless", version = "6.1.0" }
-ver = { id = "com.github.ben-manes.versions", version = "0.39.0" }
+ver = { id = "com.github.ben-manes.versions", version = "0.40.0" }
