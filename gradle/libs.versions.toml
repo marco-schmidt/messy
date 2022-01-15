@@ -17,16 +17,16 @@ lucene-analyzerscommon = { module = "org.apache.lucene:lucene-analyzers-common",
 lucene-core = { module = "org.apache.lucene:lucene-core", version.ref = "lucene" }
 lucene-queries = { module = "org.apache.lucene:lucene-queries", version.ref = "lucene" }
 lucene-queryparser = { module = "org.apache.lucene:lucene-queryparser", version.ref = "lucene" }
-slf4j-api = { module = "org.slf4j:slf4j-api", version = { strictly = "1.7.32" } }
+slf4j-api = { module = "org.slf4j:slf4j-api", version = { strictly = "1.7.33" } }
 xz = { module = "org.tukaani:xz", version = { strictly = "1.9" } }
 
 [bundles]
 lucene = ["lucene-analyzerscommon", "lucene-core", "lucene-queries", "lucene-queryparser"]
 
 [plugins]
-dependencycheck = { id = "org.owasp.dependencycheck", version = "6.5.2.1" }
+dependencycheck = { id = "org.owasp.dependencycheck", version = "6.5.3" }
 dependencylicensereport = { id = "com.github.jk1.dependency-license-report", version = "2.0" }
 forbiddenapis = { id = "de.thetaphi.forbiddenapis", version = "3.2" }
 spotbugs = { id = "com.github.spotbugs", version = "5.0.4" }
-spotless = { id = "com.diffplug.spotless", version = "6.1.0" }
+spotless = { id = "com.diffplug.spotless", version = "6.2.0" }
 ver = { id = "com.github.ben-manes.versions", version = "0.41.0" }
