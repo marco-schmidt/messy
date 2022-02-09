@@ -17,7 +17,7 @@ lucene-analyzerscommon = { module = "org.apache.lucene:lucene-analyzers-common",
 lucene-core = { module = "org.apache.lucene:lucene-core", version.ref = "lucene" }
 lucene-queries = { module = "org.apache.lucene:lucene-queries", version.ref = "lucene" }
 lucene-queryparser = { module = "org.apache.lucene:lucene-queryparser", version.ref = "lucene" }
-slf4j-api = { module = "org.slf4j:slf4j-api", version = { strictly = "1.7.35" } }
+slf4j-api = { module = "org.slf4j:slf4j-api", version = { strictly = "1.7.36" } }
 xz = { module = "org.tukaani:xz", version = { strictly = "1.9" } }
 
 [bundles]
