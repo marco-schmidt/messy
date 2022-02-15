@@ -4,5 +4,3 @@ include 'msgio'
 include 'msgsearch'
 
 rootProject.name = 'messy'
-
-enableFeaturePreview('VERSION_CATALOGS')
