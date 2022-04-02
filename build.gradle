@@ -159,7 +159,7 @@ artifactId=${project.name}
   spotless {
     java {
       licenseHeaderFile "${rootDir}/config/spotless/license-header.txt"
-      removeUnusedImports()
+      //removeUnusedImports()
       trimTrailingWhitespace()
       eclipse().configFile "${rootDir}/config/eclipse/formatter.xml"
     }
