@@ -2,7 +2,7 @@
 checkstyle = "9.1"
 jacoco = "0.8.8"
 lucene = "8.11.1"
-spotbugs = "4.5.2"
+spotbugs = "4.6.0"
 
 [libraries]
 commons-compress = { module = "org.apache.commons:commons-compress", version = { strictly = "1.21" } }
@@ -11,7 +11,7 @@ jakarta-mail = { module = "com.sun.mail:jakarta.mail", version = { strictly = "2
 json-smart = { module = "net.minidev:json-smart", version = { strictly = "2.4.8" } }
 junit = { module = "junit:junit", version = { strictly = "4.13.2" } }
 logback-classic = { module = "ch.qos.logback:logback-classic", version = { strictly = "1.2.11" } }
-logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version = { strictly = "7.1" } }
+logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version = { strictly = "7.1.1" } }
 log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version = { strictly = "2.17.2" } }
 lucene-analyzerscommon = { module = "org.apache.lucene:lucene-analyzers-common", version.ref = "lucene" }
 lucene-core = { module = "org.apache.lucene:lucene-core", version.ref = "lucene" }
@@ -24,9 +24,9 @@ xz = { module = "org.tukaani:xz", version = { strictly = "1.9" } }
 lucene = ["lucene-analyzerscommon", "lucene-core", "lucene-queries", "lucene-queryparser"]
 
 [plugins]
-dependencycheck = { id = "org.owasp.dependencycheck", version = "7.0.4.1" }
+dependencycheck = { id = "org.owasp.dependencycheck", version = "7.1.0.1" }
 dependencylicensereport = { id = "com.github.jk1.dependency-license-report", version = "2.0" }
 forbiddenapis = { id = "de.thetaphi.forbiddenapis", version = "3.3" }
 spotbugs = { id = "com.github.spotbugs", version = "5.0.6" }
-spotless = { id = "com.diffplug.spotless", version = "6.4.2" }
+spotless = { id = "com.diffplug.spotless", version = "6.5.0" }
 ver = { id = "com.github.ben-manes.versions", version = "0.42.0" }
