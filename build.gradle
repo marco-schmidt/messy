@@ -64,6 +64,23 @@ dateFormatter.setTimeZone(timeZone)
 rootProject.ext.now = dateFormatter.format(new Date())
 rootProject.ext.gradleVersion = getProject().getGradle().getGradleVersion()
 
+dependencyCheck {
+  cveValidForHours=24
+  failBuildOnCVSS=0
+  suppressionFile=file("${rootDir}/config/dependencyCheck/suppressions.xml")
+  analyzers {
+    assemblyEnabled=false
+  }
+}
+check.dependsOn dependencyCheckAnalyze
+
+task packageDependencyCheckReport(type: Zip, dependsOn: 'dependencyCheckAnalyze') {
+  description "create a zip archive with report on dependency vulnerability issues (as stored in NVD)"
+  from dependencyCheck.outputDirectory
+  include 'dependency-check-report.html'
+  classifier = 'depvulnreport'
+}
+
 subprojects {
   repositories {
     mavenLocal()
@@ -155,6 +172,7 @@ artifactId=${project.name}
     classifier = 'deplicensereport'
   }
 
+
   // https://github.com/diffplug/spotless
   spotless {
     java {
@@ -185,7 +203,7 @@ artifactId=${project.name}
 
   jacocoTestReport {
     reports {
-      html.destination file("${buildDir}/reports/jacoco")
+      html.outputLocation = file("${buildDir}/reports/jacoco")
     }
   }
   jacocoTestCoverageVerification {
@@ -203,7 +221,7 @@ artifactId=${project.name}
 
   task packageCoverageReport(type: Zip, dependsOn: 'jacocoTestReport') {
     description "create a zip archive with coverage report information"
-    from jacocoTestReport.reports.html.entryPoint
+    from jacocoTestReport.reports.html.outputLocation
     classifier = 'coveragereport'
   }
 
@@ -230,16 +248,6 @@ artifactId=${project.name}
     configDirectory = file("${rootDir}/config/checkstyle")
   }
 
-  dependencyCheck {
-    cveValidForHours=24
-    failBuildOnCVSS=0
-    suppressionFile=file("${rootDir}/config/dependencyCheck/suppressions.xml")
-    analyzers {
-      assemblyEnabled=false
-    }
-  }
-  check.dependsOn dependencyCheckAnalyze
-
   publishing {
     repositories {
       maven {
@@ -256,7 +264,7 @@ artifactId=${project.name}
         from components.java
         artifact packageSources
         artifact packageJavadoc
-        artifact packageCoverageReport
+      //  artifact packageCoverageReport
         artifact packageLicenseReport
         groupId group
         pom.withXml {
