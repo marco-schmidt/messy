@@ -197,34 +197,6 @@ artifactId=${project.name}
     ignoreFailures = false
   }
 
-  jacoco {
-    toolVersion = libs.versions.jacoco.get()
-  }
-
-  jacocoTestReport {
-    reports {
-      html.outputLocation = file("${buildDir}/reports/jacoco")
-    }
-  }
-  jacocoTestCoverageVerification {
-    violationRules {
-      rule {
-        limit {
-          minimum = 0.0
-        }
-      }
-    }
-    dependsOn test
-  }
-  jacocoTestReport.dependsOn jacocoTestCoverageVerification
-  check.dependsOn jacocoTestCoverageVerification
-
-  task packageCoverageReport(type: Zip, dependsOn: 'jacocoTestReport') {
-    description "create a zip archive with coverage report information"
-    from jacocoTestReport.reports.html.outputLocation
-    classifier = 'coveragereport'
-  }
-
   spotbugs {
     toolVersion = libs.versions.spotbugs.get()
     effort = 'max' // min, default, max

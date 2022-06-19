@@ -36,7 +36,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: ./gradlew jar check packageLicenseReport packageJavadoc packageSources dependencyUpdates packageCoverageReport packageDependencyCheckReport codeCoverageReport distTar --info --stacktrace
+      run: ./gradlew jar check packageLicenseReport packageJavadoc packageSources dependencyUpdates packageDependencyCheckReport codeCoverageReport packageCoverageReport distTar --info --stacktrace
     - name: Upload msgdata package
       uses: actions/upload-artifact@v2
       with:
