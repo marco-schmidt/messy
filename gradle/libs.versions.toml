@@ -1,8 +1,8 @@
 [versions]
-checkstyle = "9.1"
+checkstyle = "10.3"
 jacoco = "0.8.8"
 lucene = "8.11.1"
-spotbugs = "4.6.0"
+spotbugs = "4.7.0"
 
 [libraries]
 commons-compress = { module = "org.apache.commons:commons-compress", version = { strictly = "1.21" } }
