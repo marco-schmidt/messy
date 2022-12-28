@@ -23,6 +23,15 @@ description 'a tool suite for electronic messages'
 defaultTasks 'clean', 'check', 'allJavadoc', 'installDist', 'distTar', 'distZip', 'generateLicenseReport', 'codeCoverageReport'
 ext.licenseName = 'The Apache Software License, Version 2.0'
 
+configurations.all {
+  resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+    if (details.requested.group == 'org.apache.bcel' && details.requested.name == 'bcel') {
+      details.useVersion '6.7.0'
+      details.because 'CVE-2022-42920'
+    }
+  }
+}
+
 // version is stable if it contains only numerical parts or a 'stable keyword'
 def isStable = { String version ->
   def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase(Locale.ENGLISH).contains(it) }
