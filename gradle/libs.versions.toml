@@ -28,5 +28,5 @@ dependencycheck = { id = "org.owasp.dependencycheck", version = "7.4.2" }
 dependencylicensereport = { id = "com.github.jk1.dependency-license-report", version = "2.0" }
 forbiddenapis = { id = "de.thetaphi.forbiddenapis", version = "3.4" }
 spotbugs = { id = "com.github.spotbugs", version = "5.0.13" }
-spotless = { id = "com.diffplug.spotless", version = "6.17.0" }
+spotless = { id = "com.diffplug.spotless", version = "6.12.0" }
 ver = { id = "com.github.ben-manes.versions", version = "0.46.0" }
