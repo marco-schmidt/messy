@@ -8,11 +8,11 @@ spotbugs = "4.7.3"
 commons-compress = { module = "org.apache.commons:commons-compress", version = { strictly = "1.22" } }
 elasticsearch = { module = "org.elasticsearch.client:elasticsearch-rest-high-level-client", version = { strictly = "7.10.2" } }
 jakarta-mail = { module = "com.sun.mail:jakarta.mail", version = { strictly = "2.0.1" } }
-json-smart = { module = "net.minidev:json-smart", version = { strictly = "2.4.8" } }
+json-smart = { module = "net.minidev:json-smart", version = { strictly = "2.4.10" } }
 junit = { module = "junit:junit", version = { strictly = "4.13.2" } }
 logback-classic = { module = "ch.qos.logback:logback-classic", version = { strictly = "1.2.11" } }
-logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version = { strictly = "7.2" } }
-log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version = { strictly = "2.19.0" } }
+logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version = { strictly = "7.3" } }
+log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version = { strictly = "2.20.0" } }
 lucene-analyzerscommon = { module = "org.apache.lucene:lucene-analyzers-common", version.ref = "lucene" }
 lucene-core = { module = "org.apache.lucene:lucene-core", version.ref = "lucene" }
 lucene-queries = { module = "org.apache.lucene:lucene-queries", version.ref = "lucene" }
@@ -28,5 +28,5 @@ dependencycheck = { id = "org.owasp.dependencycheck", version = "7.4.2" }
 dependencylicensereport = { id = "com.github.jk1.dependency-license-report", version = "2.1" }
 forbiddenapis = { id = "de.thetaphi.forbiddenapis", version = "3.4" }
 spotbugs = { id = "com.github.spotbugs", version = "5.0.13" }
-spotless = { id = "com.diffplug.spotless", version = "6.12.0" }
-ver = { id = "com.github.ben-manes.versions", version = "0.44.0" }
+spotless = { id = "com.diffplug.spotless", version = "6.17.0" }
+ver = { id = "com.github.ben-manes.versions", version = "0.46.0" }
