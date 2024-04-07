@@ -8,7 +8,7 @@ spotbugs = "4.7.3"
 commons-compress = { module = "org.apache.commons:commons-compress", version = { strictly = "1.23.0" } }
 elasticsearch = { module = "org.elasticsearch.client:elasticsearch-rest-high-level-client", version = { strictly = "7.10.2" } }
 jakarta-mail = { module = "com.sun.mail:jakarta.mail", version = { strictly = "2.0.1" } }
-json-smart = { module = "net.minidev:json-smart", version = { strictly = "2.4.10" } }
+json-smart = { module = "net.minidev:json-smart", version = { strictly = "2.5.1" } }
 junit = { module = "junit:junit", version = { strictly = "4.13.2" } }
 logback-classic = { module = "ch.qos.logback:logback-classic", version = { strictly = "1.2.11" } }
 logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version = { strictly = "7.3" } }
