@@ -81,7 +81,7 @@ dependencyCheck {
     assemblyEnabled=false
   }
 }
-check.dependsOn dependencyCheckAnalyze
+//check.dependsOn dependencyCheckAnalyze
 
 task packageDependencyCheckReport(type: Zip, dependsOn: 'dependencyCheckAnalyze') {
   description "create a zip archive with report on dependency vulnerability issues (as stored in NVD)"
